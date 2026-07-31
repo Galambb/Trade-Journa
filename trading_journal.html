@@ -1177,10 +1177,18 @@ function formatDate(d) {
 
 function fixScreenshotUrl(url) {
   if (!url) return null;
+  var id = null;
   if (url.includes('drive.google.com/uc?id=')) {
-    var id = url.replace('https://drive.google.com/uc?id=', '');
-    return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w1600';
+    id = url.replace('https://drive.google.com/uc?id=', '');
+  } else if (url.includes('drive.google.com/thumbnail?id=')) {
+    id = url.replace('https://drive.google.com/thumbnail?id=', '').replace(/&sz=.*/, '');
+  } else if (url.includes('drive.usercontent.google.com/download')) {
+    var m = url.match(/id=([^&]+)/);
+    if (m) id = m[1];
+  } else if (url.includes('lh3.googleusercontent.com/d/')) {
+    return url; // already correct format
   }
+  if (id) return 'https://lh3.googleusercontent.com/d/' + id;
   return url;
 }
 
