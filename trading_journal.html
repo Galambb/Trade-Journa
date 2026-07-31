@@ -740,14 +740,69 @@ body.dark .rg label.hr { background: #450a0a; }
 </div><!-- main -->
 
 <div class="toast" id="toast"></div>
+<div id="loading-bar" style="display:none; position:fixed; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#2563eb,#059669); z-index:9999; animation:loadpulse 1s infinite;"></div>
+<style>@keyframes loadpulse{0%{opacity:1}50%{opacity:0.4}100%{opacity:1}}</style>
 
 <script>
-// ── STORAGE ──
+// ── CONFIG ──
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLIE77sjOwFcnnIfP0BX9J5712sFTHiM61MsNEexDErcyAL_l_rqIC4o2EOd5zL1s7vA/exec';
+
+// ── LOCAL CACHE (for speed) ──
+var _tradesCache = null;
+
 function getTrades() {
-  try { return JSON.parse(localStorage.getItem('trades') || '[]'); } catch(e) { return []; }
+  if (_tradesCache !== null) return _tradesCache;
+  try { return JSON.parse(localStorage.getItem('trades_cache') || '[]'); } catch(e) { return []; }
 }
-function saveTrades(arr) {
-  localStorage.setItem('trades', JSON.stringify(arr));
+
+function setCache(arr) {
+  _tradesCache = arr;
+  try { localStorage.setItem('trades_cache', JSON.stringify(arr)); } catch(e) {}
+}
+
+// ── API CALLS ──
+async function apiPost(data) {
+  var res = await fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify(data)
+  });
+  return await res.json();
+}
+
+async function apiGet(params) {
+  var url = SCRIPT_URL + '?' + Object.entries(params).map(([k,v]) => k+'='+encodeURIComponent(v)).join('&');
+  var res = await fetch(url);
+  return await res.json();
+}
+
+async function loadTradesFromCloud() {
+  try {
+    showLoading(true);
+    var result = await apiGet({action: 'getTrades'});
+    if (result.trades) {
+      var trades = result.trades.map(t => ({
+        ...t,
+        id: Number(t.id),
+        yellowFlags: Number(t.yellowFlags) || 0,
+        redFlags: Number(t.redFlags) || 0,
+        entryPrice: t.entryPrice || null,
+        stopPrice: t.stopPrice || null,
+        targetPrice: t.targetPrice || null,
+        rr: t.rr || null,
+        screenshot: t.screenshotUrl || null
+      }));
+      setCache(trades);
+    }
+  } catch(e) {
+    toast('⚠️ שגיאה בטעינה מהענן — משתמש בנתונים מקומיים');
+  } finally {
+    showLoading(false);
+  }
+}
+
+function showLoading(show) {
+  var el = document.getElementById('loading-bar');
+  if (el) el.style.display = show ? 'block' : 'none';
 }
 
 // ── EXPORT / IMPORT / PRINT ──
@@ -792,14 +847,17 @@ function printJournal() {
   window.print();
 }
 
-// ── TABS ──
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
   event.target.classList.add('active');
-  if (name === 'journal') renderJournal();
-  if (name === 'stats') renderStats();
+  if (name === 'journal') {
+    loadTradesFromCloud().then(() => renderJournal());
+  }
+  if (name === 'stats') {
+    loadTradesFromCloud().then(() => renderStats());
+  }
 }
 
 // ── UTILS ──
@@ -939,7 +997,7 @@ function countFlags() {
 }
 
 // ── SAVE TRADE ──
-function saveTrade() {
+async function saveTrade() {
   var ticker = document.getElementById('ticker').value.toUpperCase().trim();
   var date = document.getElementById('trade-date').value;
   if (!ticker || !date) { toast('⚠️ מלא תאריך ומניה'); return; }
@@ -965,22 +1023,35 @@ function saveTrade() {
     rr: rr,
     analysis: document.getElementById('analysis').value,
     screenshot: screenshotData,
-    // Exit data
-    exitDate: null,
-    exitPrice: null,
-    exitNotes: '',
-    outcome: null,
-    actualRR: null
+    exitDate: null, exitPrice: null, exitNotes: '', outcome: null, actualRR: null
   };
 
-  var trades = getTrades();
-  trades.unshift(trade);
-  saveTrades(trades);
+  try {
+    showLoading(true);
+    document.getElementById('save-btn').disabled = true;
 
-  toast('✅ טרייד נשמר ביומן!');
+    // Save trade data to Sheets
+    var result = await apiPost({action: 'saveTrade', trade: trade});
+    if (result.error) throw new Error(result.error);
 
-  // Reset form
-  resetForm();
+    // Save screenshot to Drive if exists
+    if (screenshotData) {
+      await apiPost({action: 'saveScreenshot', id: trade.id, image: screenshotData});
+    }
+
+    // Update local cache
+    var trades = getTrades();
+    trades.unshift(trade);
+    setCache(trades);
+
+    toast('✅ טרייד נשמר בענן!');
+    resetForm();
+  } catch(e) {
+    toast('⚠️ שגיאה בשמירה: ' + e.message);
+  } finally {
+    showLoading(false);
+    document.getElementById('save-btn').disabled = false;
+  }
 }
 
 function resetForm() {
@@ -1081,7 +1152,7 @@ function toggleCard(id) {
   exp.classList.toggle('open');
 }
 
-function saveExit(id) {
+async function saveExit(id) {
   var trades = getTrades();
   var i = trades.findIndex(t => t.id === id);
   if (i < 0) return;
@@ -1094,18 +1165,38 @@ function saveExit(id) {
   if (exitPrice && t.entryPrice && t.stopPrice) {
     actualRR = parseFloat(((exitPrice - t.entryPrice) / (t.entryPrice - t.stopPrice)).toFixed(1));
   }
-  trades[i] = {...t, exitPrice, exitDate, outcome, exitNotes, actualRR};
-  saveTrades(trades);
-  renderJournal();
-  toast('✅ יציאה נשמרה');
+  var updated = {...t, exitPrice, exitDate, outcome, exitNotes, actualRR};
+
+  try {
+    showLoading(true);
+    var result = await apiPost({action: 'updateTrade', trade: updated});
+    if (result.error) throw new Error(result.error);
+    trades[i] = updated;
+    setCache(trades);
+    renderJournal();
+    toast('✅ יציאה נשמרה בענן');
+  } catch(e) {
+    toast('⚠️ שגיאה: ' + e.message);
+  } finally {
+    showLoading(false);
+  }
 }
 
-function deleteTrade(id) {
+async function deleteTrade(id) {
   if (!confirm('למחוק טרייד זה לצמיתות?')) return;
-  var trades = getTrades().filter(t => t.id !== id);
-  saveTrades(trades);
-  renderJournal();
-  toast('🗑️ נמחק');
+  try {
+    showLoading(true);
+    var result = await apiPost({action: 'deleteTrade', id: id});
+    if (result.error) throw new Error(result.error);
+    var trades = getTrades().filter(t => t.id !== id);
+    setCache(trades);
+    renderJournal();
+    toast('🗑️ נמחק');
+  } catch(e) {
+    toast('⚠️ שגיאה: ' + e.message);
+  } finally {
+    showLoading(false);
+  }
 }
 
 // ── RENDER STATS ──
@@ -1321,7 +1412,9 @@ updateTitle();
 updateDateDisplay();
 checkDraft();
 startDraftTimer();
-updateBadgeAndReminder();
+loadTradesFromCloud().then(() => {
+  updateBadgeAndReminder();
+});
 </script>
 </body>
 </html>
