@@ -420,26 +420,21 @@ body.dark .rg label.hr { background: #450a0a; }
 
 /* Print styles */
 @media print {
-  /* Default: journal print */
-  .app-header, .tabs, .journal-toolbar, .exit-form, .tab-btn, .save-btn, .iron { display: none !important; }
-  .view { display: block !important; }
-  #view-checklist, #view-stats { display: none !important; }
+  body { background: #fff; font-size: 11px; }
+  .app-header, .tabs, .journal-toolbar, .exit-form, .tab-btn, .save-btn, .draft-indicator, .draft-banner, .actions, .loading-bar { display: none !important; }
+
+  /* Show only the active view */
+  .view { display: none !important; }
+  .view.active { display: block !important; }
+
+  /* Journal specific */
   .tc-body { display: block !important; }
   .tc-expand { display: none !important; }
   .trade-card { break-inside: avoid; margin-bottom: 16px; }
-  body { background: #fff; font-size: 11px; }
 
-  /* Checklist print mode */
-  body.printing-checklist #view-checklist { display: block !important; }
-  body.printing-checklist #view-journal { display: none !important; }
-  body.printing-checklist #view-stats { display: none !important; }
-  body.printing-checklist .app-header { display: none !important; }
-  body.printing-checklist .save-btn { display: none !important; }
-  body.printing-checklist .draft-indicator { display: none !important; }
-  body.printing-checklist .draft-banner { display: none !important; }
-  body.printing-checklist .actions { display: none !important; }
-  body.printing-checklist .iron { display: block !important; }
-  body.printing-checklist .score-bar { position: static !important; }
+  /* Checklist specific */
+  #view-checklist.active .iron { display: block !important; }
+  #view-checklist.active .score-bar { position: static !important; }
 }
 
 @page { size: A4; margin: 12mm; }
@@ -771,24 +766,6 @@ function getTrades() {
 function setCache(arr) {
   _tradesCache = arr;
   try { localStorage.setItem('trades_cache', JSON.stringify(arr)); } catch(e) {}
-}
-
-async function compressImage(base64) {
-  return new Promise((resolve) => {
-    var img = new Image();
-    img.onload = function() {
-      var canvas = document.createElement('canvas');
-      var maxW = 1200;
-      var ratio = Math.min(maxW / img.width, 1);
-      canvas.width = Math.round(img.width * ratio);
-      canvas.height = Math.round(img.height * ratio);
-      var ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL('image/jpeg', 0.80));
-    };
-    img.onerror = function() { resolve(base64); };
-    img.src = base64;
-  });
 }
 
 // ── API CALLS ──
