@@ -476,7 +476,7 @@ body.dark .rg label.hr { background: #450a0a; }
 
   <!-- Meta -->
   <div class="meta">
-    <div class="mf"><label>תאריך</label><input type="date" id="trade-date" onchange="updateTitle(); updateDateDisplay()"><span id="date-display" style="font-size:11px; color:var(--ink-muted); white-space:nowrap;"></span></div>
+    <div class="mf"><label>תאריך</label><input type="date" id="trade-date" onchange="updateTitle()"></div>
     <div class="mf"><label>מניה</label><input type="text" id="ticker" placeholder="NVDA" oninput="updateTitle()" style="text-transform:uppercase;"></div>
     <div class="mf"><label>סיגנל</label>
       <select id="signal-type" onchange="onSignalChange()">
@@ -875,6 +875,11 @@ function updateDateDisplay() {
   if (el) el.textContent = d ? formatDate(d) : '';
 }
 
+function initDate() {
+  document.getElementById('trade-date').valueAsDate = new Date();
+  updateDateDisplay();
+}
+
 function updateTitle() {
   var t = document.getElementById('ticker').value.toUpperCase().trim();
   var d = document.getElementById('trade-date').value;
@@ -1066,6 +1071,7 @@ function resetForm() {
   document.getElementById('rr-display').textContent='R:R = —';
   document.getElementById('rr-display').className='rr';
   document.getElementById('trade-date').valueAsDate = new Date();
+  updateDateDisplay();
   document.getElementById('support-row').style.display='none';
   document.getElementById('dist-hint').textContent='';
   document.getElementById('pf1').checked=false;
@@ -1118,7 +1124,7 @@ function tradeCardHTML(t) {
       <div class="exit-form">
         <div class="exit-form-title">📝 עדכון יציאה</div>
         <div class="exit-row">
-          <div class="exit-field"><label>תאריך יציאה</label><input type="date" id="ex-date-${t.id}" value="${t.exitDate||''}"></div>
+          <div class="exit-field"><label>תאריך יציאה</label><input type="date" id="ex-date-${t.id}" value="${t.exitDate||''}" onchange="countFlags()"></div>
           <div class="exit-field"><label>מחיר יציאה $</label><input type="number" step="0.01" id="ex-price-${t.id}" value="${t.exitPrice||''}" placeholder="0.00"></div>
           <div class="exit-field"><label>תוצאה</label>
             <select id="ex-outcome-${t.id}">
@@ -1340,7 +1346,10 @@ function restoreDraft() {
     var draft = JSON.parse(localStorage.getItem(getDraftKey()));
     if (!draft) return;
     document.getElementById('ticker').value = draft.ticker || '';
-    if (draft.date) document.getElementById('trade-date').value = draft.date;
+    if (draft.date) {
+      document.getElementById('trade-date').value = draft.date;
+      updateDateDisplay();
+    }
     document.getElementById('signal-type').value = draft.signal || '';
     document.getElementById('trade-num').value = draft.tradeNum || '1';
     document.getElementById('distance').value = draft.distance || '';
@@ -1407,10 +1416,9 @@ function updateBadgeAndReminder() {
 }
 
 // ── INIT ──
-document.getElementById('trade-date').valueAsDate = new Date();
+initDate();
 countFlags();
 updateTitle();
-updateDateDisplay();
 checkDraft();
 startDraftTimer();
 loadTradesFromCloud().then(() => {
