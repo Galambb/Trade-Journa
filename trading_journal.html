@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>יומן מסחר</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&family=Noto+Sans+Hebrew:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f172a;
+  --ink-soft: #475569;
+  --ink-muted: #94a3b8;
+  --surface: #ffffff;
+  --bg: #f8fafc;
+  --bg2: #f1f5f9;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --go: #059669;
+  --go-bg: #ecfdf5;
+  --go-border: #a7f3d0;
+  --wait: #d97706;
+  --wait-bg: #fffbeb;
+  --wait-border: #fde68a;
+  --danger: #dc2626;
+  --danger-bg: #fef2f2;
+  --danger-border: #fecaca;
+  --accent: #2563eb;
+  --accent-bg: #eff6ff;
+  --accent-border: #bfdbfe;
+  --amber: #f59e0b;
+  --amber-bg: #fffbeb;
+  --purple: #7c3aed;
+  --purple-bg: #f5f3ff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+@page { size: A4; margin: 8mm 10mm; }
+
+body {
+  font-family: 'Noto Sans Hebrew', 'Rubik', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ── APP SHELL ── */
+.app-header {
+  background: var(--ink);
+  color: #fff;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.app-title {
+  font-family: 'Rubik', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.app-title span { color: var(--amber); }
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 3px;
+}
+.tab-btn {
+  padding: 5px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  color: rgba(255,255,255,0.7);
+  background: transparent;
+  transition: all 0.2s;
+}
+.tab-btn.active {
+  background: #fff;
+  color: var(--ink);
+}
+.tab-btn:hover:not(.active) { color: #fff; }
+
+/* ── MAIN CONTENT ── */
+.main { max-width: 760px; margin: 0 auto; padding: 16px; }
+
+/* ── VIEWS ── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ── SCORE BAR ── */
+.score-bar {
+  display: flex; align-items: center; gap: 16px; padding: 6px 14px;
+  border-radius: 8px; margin-bottom: 12px;
+  font-size: 12px; font-weight: 600;
+  background: var(--bg); border: 1.5px solid var(--border);
+  transition: all 0.3s; position: sticky; top: 52px; z-index: 10;
+}
+.score-bar.clean { background: var(--go-bg); border-color: var(--go-border); }
+.score-bar.warn { background: var(--wait-bg); border-color: var(--wait-border); }
+.score-bar.stop { background: var(--danger-bg); border-color: var(--danger-border); }
+.sb-flags { display: flex; gap: 14px; }
+.sb-y { color: var(--wait); } .sb-r { color: var(--danger); }
+.sb-v { margin-right: auto; padding: 3px 12px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+.sb-v.go { background: var(--go); color: #fff; }
+.sb-v.wait { background: var(--wait); color: #fff; }
+.sb-v.no { background: var(--danger); color: #fff; }
+
+/* ── SECTION ── */
+.section { background: var(--surface); border-radius: 10px; border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden; }
+.section-head {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; font-size: 12px; font-weight: 700;
+  border-bottom: 1px solid var(--border-light);
+}
+.section-head .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.section-head .num { font-size: 10px; color: var(--ink-muted); margin-right: auto; font-weight: 500; }
+.sh-pre { background: #ecfdf5; } .sh-pre .dot { background: var(--go); }
+.sh-mkt { background: var(--accent-bg); } .sh-mkt .dot { background: var(--accent); }
+.sh-sig { background: #f0fdf4; } .sh-sig .dot { background: var(--go); }
+.sh-plan { background: var(--purple-bg); } .sh-plan .dot { background: var(--purple); }
+.sh-score { background: var(--bg); } .sh-score .dot { background: var(--ink); }
+.sh-analysis { background: #f0f9ff; } .sh-analysis .dot { background: #0ea5e9; }
+
+.section-body { padding: 10px 14px; }
+
+/* ── CHECKLIST ITEMS ── */
+.cl { list-style: none; }
+.cl li {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 4px 0; border-bottom: 1px solid var(--border-light); font-size: 12px;
+}
+.cl li:last-child { border-bottom: none; }
+.cl input[type="checkbox"] { width: 15px; height: 15px; min-width: 15px; margin-top: 1px; cursor: pointer; accent-color: var(--go); }
+.cl-text { flex: 1; }
+.cl-text strong { font-weight: 600; }
+.hint { color: var(--ink-muted); font-size: 10.5px; }
+
+.rg { display: inline-flex; gap: 6px; flex-wrap: wrap; margin: 2px 0; }
+.rg label { display: flex; align-items: center; gap: 3px; font-size: 11px; cursor: pointer; color: var(--ink-soft); padding: 1px 6px; border-radius: 4px; transition: background 0.15s; }
+.rg label:hover { background: var(--bg); }
+.rg label.hy { background: var(--wait-bg); }
+.rg label.hr { background: var(--danger-bg); }
+.rg input[type="radio"] { cursor: pointer; accent-color: var(--accent); width: 12px; height: 12px; }
+
+/* ── META FIELDS ── */
+.meta { display: grid; grid-template-columns: 1.2fr 0.8fr 0.8fr 0.5fr; gap: 8px; margin-bottom: 10px; background: var(--surface); border-radius: 10px; border: 1px solid var(--border); padding: 10px 14px; }
+.mf { display: flex; align-items: center; gap: 5px; }
+.mf label { font-size: 10px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+.mf input, .mf select { flex: 1; border: none; border-bottom: 1.5px solid var(--border); padding: 2px; font-size: 12px; font-family: inherit; font-weight: 600; outline: none; background: transparent; direction: rtl; color: var(--ink); }
+.mf input:focus, .mf select:focus { border-color: var(--accent); }
+
+/* ── INLINE INPUT ── */
+.fi { border: none; border-bottom: 1.5px solid var(--border); padding: 1px 4px; font-size: 12px; font-family: inherit; outline: none; text-align: center; background: transparent; font-weight: 600; }
+.fi:focus { border-color: var(--accent); }
+.fi-p { width: 80px; direction: ltr; text-align: left; }
+.fi-s { width: 42px; }
+
+/* ── R:R DISPLAY ── */
+.rr { background: var(--bg); border: 1.5px solid var(--border); border-radius: 6px; padding: 6px 12px; margin-top: 6px; font-size: 12px; font-weight: 700; text-align: center; direction: ltr; transition: all 0.3s; }
+.rr.good { border-color: var(--go-border); background: var(--go-bg); color: var(--go); }
+.rr.ok { color: var(--ink-soft); }
+.rr.bad { border-color: var(--danger-border); background: var(--danger-bg); color: var(--danger); }
+
+/* ── STOP BOX ── */
+.stop-box { background: var(--danger-bg); border: 1px solid var(--danger-border); border-radius: 8px; padding: 8px 14px; margin-bottom: 10px; }
+.stop-box-title { font-size: 11px; font-weight: 700; color: var(--danger); margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+.stop-box-title::before { content: ""; width: 6px; height: 6px; background: var(--danger); border-radius: 50%; }
+.stop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 16px; }
+.si { font-size: 11px; color: var(--ink-soft); padding: 1.5px 10px 1.5px 0; position: relative; }
+.si::before { content: "×"; position: absolute; right: 0; color: var(--danger); font-weight: 700; font-size: 10px; }
+
+/* ── PRE-FILTER ── */
+.prefilter { background: var(--go-bg); border: 1.5px solid var(--go-border); border-radius: 8px; padding: 8px 14px; margin-bottom: 10px; }
+.pf-title { font-size: 11px; font-weight: 700; color: var(--go); margin-bottom: 6px; }
+.pf-items { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.pf-item { display: flex; align-items: flex-start; gap: 6px; font-size: 11px; }
+.pf-item input { accent-color: var(--go); margin-top: 2px; }
+.pf-result { margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--ink-muted); }
+
+/* ── BLOCKER ── */
+.blocker { display: none; background: var(--danger-bg); border: 2px solid var(--danger); border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; text-align: center; }
+.blocker.on { display: block; }
+.bl-title { color: var(--danger); font-size: 15px; font-weight: 800; }
+.bl-reason { color: var(--ink-soft); font-size: 11px; margin-top: 2px; }
+
+/* ── SCORE CARDS ── */
+.scores { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px; }
+.sc { border-radius: 8px; padding: 8px; text-align: center; transition: all 0.25s; opacity: 0.35; }
+.sc.on { opacity: 1; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transform: scale(1.03); border-width: 2.5px !important; }
+.sc-go { background: var(--go-bg); border: 1.5px solid var(--go-border); }
+.sc-wait { background: var(--wait-bg); border: 1.5px solid var(--wait-border); }
+.sc-no { background: var(--danger-bg); border: 1.5px solid var(--danger-border); }
+.sc-l { font-family: 'Rubik', sans-serif; font-size: 14px; font-weight: 800; letter-spacing: 1px; }
+.sc-go .sc-l { color: var(--go); } .sc-wait .sc-l { color: var(--wait); } .sc-no .sc-l { color: var(--danger); }
+.sc-d { font-size: 10px; color: var(--ink-muted); margin-top: 2px; }
+
+/* ── ANALYSIS ── */
+.analysis-ta {
+  width: 100%; border: none; font-size: 12px; font-family: inherit;
+  resize: vertical; min-height: 80px; outline: none; direction: rtl;
+  color: var(--ink); line-height: 1.6; background: transparent;
+}
+.analysis-ta::placeholder { color: var(--ink-muted); }
+.upload-area {
+  border: 1.5px dashed var(--border); border-radius: 8px; padding: 12px;
+  text-align: center; cursor: pointer; transition: all 0.2s; margin-top: 8px;
+  color: var(--ink-muted); font-size: 12px;
+}
+.upload-area:hover { border-color: #0ea5e9; color: #0ea5e9; background: #f0f9ff; }
+#screenshot-input { display: none; }
+.screenshot-preview { margin-top: 8px; display: none; border-radius: 8px; overflow: hidden; position: relative; border: 1px solid var(--border); }
+.screenshot-preview img { width: 100%; height: auto; display: block; }
+.remove-ss { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 4px; padding: 3px 8px; font-size: 11px; cursor: pointer; font-family: inherit; }
+
+/* ── SAVE BUTTON ── */
+.save-btn {
+  width: 100%; padding: 12px; background: var(--ink); color: #fff;
+  border: none; border-radius: 8px; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: 'Rubik', sans-serif; margin-top: 10px;
+  transition: all 0.2s; letter-spacing: 0.3px;
+}
+.save-btn:hover { background: #1e293b; transform: translateY(-1px); }
+.save-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ── IRON RULES ── */
+.iron { background: var(--ink); color: #fff; border-radius: 8px; padding: 10px 14px; margin-top: 10px; }
+.iron-title { font-size: 11px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.iron-title::after { content: ""; flex: 1; height: 1px; background: #334155; }
+.iron-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+.iron-item { font-size: 10.5px; color: #cbd5e1; padding: 2px 10px 2px 0; position: relative; }
+.iron-item::before { content: "→"; position: absolute; right: 0; color: var(--amber); font-size: 9px; }
+.hours-row { margin-top: 8px; padding-top: 8px; border-top: 1px solid #1e293b; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; }
+.hc { border-radius: 4px; padding: 4px 6px; text-align: center; }
+.hc .t { font-size: 10.5px; font-weight: 700; font-family: 'Rubik', monospace; }
+.hc .d { font-size: 8.5px; margin-top: 1px; }
+.h1 { background: #1e1214; } .h1 .t { color: #f87171; } .h1 .d { color: #fca5a5; }
+.h2 { background: #0d1f17; } .h2 .t { color: #4ade80; } .h2 .d { color: #86efac; }
+.h3 { background: #151922; } .h3 .t { color: #64748b; } .h3 .d { color: #475569; }
+.h4 { background: #17171f; } .h4 .t { color: #a5b4fc; } .h4 .d { color: #818cf8; }
+
+/* ── JOURNAL ── */
+.journal-empty { text-align: center; padding: 40px; color: var(--ink-muted); }
+.journal-empty .emoji { font-size: 40px; margin-bottom: 10px; }
+.trade-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  margin-bottom: 8px; overflow: hidden; transition: box-shadow 0.2s;
+}
+.trade-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.tc-header {
+  display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+  cursor: pointer;
+}
+.tc-ticker { font-family: 'Rubik', sans-serif; font-size: 15px; font-weight: 800; }
+.tc-date { font-size: 11px; color: var(--ink-muted); }
+.tc-signal { font-size: 10px; color: var(--ink-soft); background: var(--bg); padding: 2px 7px; border-radius: 4px; }
+.tc-verdict { margin-right: auto; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.tc-verdict.go { background: var(--go); color: #fff; }
+.tc-verdict.wait { background: var(--wait); color: #fff; }
+.tc-verdict.no { background: var(--danger); color: #fff; }
+.tc-outcome { padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.tc-outcome.win { background: var(--go-bg); color: var(--go); border: 1px solid var(--go-border); }
+.tc-outcome.loss { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger-border); }
+.tc-outcome.be { background: var(--bg); color: var(--ink-soft); border: 1px solid var(--border); }
+.tc-outcome.open { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--wait-border); }
+.tc-expand { color: var(--ink-muted); font-size: 12px; transition: transform 0.2s; }
+.tc-expand.open { transform: rotate(180deg); }
+
+.tc-body { display: none; border-top: 1px solid var(--border-light); padding: 12px 14px; }
+.tc-body.open { display: block; }
+.tc-prices { display: flex; gap: 16px; margin-bottom: 10px; }
+.tc-price-item { text-align: center; }
+.tc-price-item .label { font-size: 10px; color: var(--ink-muted); text-transform: uppercase; }
+.tc-price-item .value { font-size: 14px; font-weight: 700; direction: ltr; }
+.tc-price-item .value.entry { color: var(--accent); }
+.tc-price-item .value.stop { color: var(--danger); }
+.tc-price-item .value.target { color: var(--go); }
+.tc-price-item .value.rr { color: var(--ink); }
+
+.tc-analysis { font-size: 12px; color: var(--ink-soft); background: var(--bg); border-radius: 6px; padding: 8px 10px; margin-bottom: 10px; line-height: 1.6; white-space: pre-wrap; }
+.tc-screenshot { border-radius: 6px; overflow: hidden; margin-bottom: 10px; }
+.tc-screenshot img { width: 100%; height: auto; display: block; }
+
+/* EXIT FORM */
+.exit-form { background: var(--bg); border-radius: 8px; padding: 10px 12px; margin-top: 6px; }
+.exit-form-title { font-size: 11px; font-weight: 700; color: var(--ink-soft); margin-bottom: 8px; }
+.exit-row { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+.exit-field { display: flex; align-items: center; gap: 5px; font-size: 12px; }
+.exit-field label { color: var(--ink-muted); font-size: 10px; font-weight: 600; white-space: nowrap; }
+.exit-field input, .exit-field select { border: 1.5px solid var(--border); border-radius: 5px; padding: 4px 6px; font-size: 12px; font-family: inherit; outline: none; direction: ltr; }
+.exit-field input:focus, .exit-field select:focus { border-color: var(--accent); }
+.exit-notes { width: 100%; border: 1.5px solid var(--border); border-radius: 5px; padding: 5px 8px; font-size: 12px; font-family: inherit; outline: none; direction: rtl; resize: none; height: 50px; }
+.exit-notes:focus { border-color: var(--accent); }
+.exit-save-btn { background: var(--go); color: #fff; border: none; border-radius: 6px; padding: 6px 16px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 6px; }
+.exit-save-btn:hover { background: #047857; }
+.delete-btn { background: transparent; color: var(--ink-muted); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-size: 11px; cursor: pointer; font-family: inherit; margin-top: 6px; margin-right: 8px; }
+.delete-btn:hover { color: var(--danger); border-color: var(--danger); }
+
+/* ── STATS ── */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; }
+.stat-card .val { font-family: 'Rubik', sans-serif; font-size: 28px; font-weight: 800; }
+.stat-card .lbl { font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
+.stat-card.go-card .val { color: var(--go); }
+.stat-card.red-card .val { color: var(--danger); }
+.stat-card.blue-card .val { color: var(--accent); }
+
+.stat-section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+.stat-section h3 { font-size: 12px; font-weight: 700; margin-bottom: 10px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; }
+.stat-row .lbl { flex: 1; color: var(--ink-soft); }
+.stat-bar-wrap { flex: 2; background: var(--bg); border-radius: 4px; height: 8px; overflow: hidden; }
+.stat-bar { height: 100%; border-radius: 4px; background: var(--go); transition: width 0.5s; }
+.stat-row .pct { font-weight: 700; min-width: 40px; text-align: left; direction: ltr; }
+
+.no-data { text-align: center; padding: 30px; color: var(--ink-muted); font-size: 13px; }
+
+/* ── SEARCH & FILTER ── */
+.search-bar { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+.search-input { flex: 1; border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 12px; font-size: 12px; font-family: inherit; outline: none; direction: rtl; background: var(--surface); }
+.search-input:focus { border-color: var(--accent); }
+.filter-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.chip { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: var(--surface); color: var(--ink-soft); transition: all 0.15s; }
+.chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+.chip.active { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+.chip.win.active { border-color: var(--go); color: var(--go); background: var(--go-bg); }
+.chip.loss.active { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
+.chip.open-t.active { border-color: var(--wait); color: var(--wait); background: var(--wait-bg); }
+
+/* ── DRAFT BANNER ── */
+.draft-banner { display: none; background: var(--wait-bg); border: 1.5px solid var(--wait-border); border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; align-items: center; gap: 10px; }
+.draft-banner.show { display: flex; }
+.draft-banner-text { flex: 1; }
+.draft-banner-title { font-size: 12px; font-weight: 700; color: var(--wait); }
+.draft-banner-sub { font-size: 11px; color: var(--ink-muted); }
+.draft-restore-btn { padding: 4px 10px; border: 1.5px solid var(--wait-border); border-radius: 5px; background: transparent; color: var(--wait); font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.draft-dismiss-btn { padding: 4px 10px; border: 1.5px solid var(--border); border-radius: 5px; background: transparent; color: var(--ink-muted); font-size: 11px; cursor: pointer; font-family: inherit; }
+.draft-indicator { font-size: 10.5px; color: var(--ink-muted); display: flex; align-items: center; gap: 5px; margin-top: 8px; margin-bottom: -4px; }
+.draft-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--go); flex-shrink: 0; }
+
+/* ── REMINDER ── */
+.reminder-banner { display: none; background: var(--danger-bg); border: 1.5px solid var(--danger-border); border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; align-items: center; gap: 10px; }
+.reminder-banner.show { display: flex; }
+.reminder-text { flex: 1; }
+.reminder-title { font-size: 12px; font-weight: 700; color: var(--danger); }
+.reminder-sub { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+
+/* ── TAB BADGE ── */
+.tab-badge { display: none; background: var(--danger); color: #fff; font-size: 9px; font-weight: 800; border-radius: 10px; padding: 1px 5px; min-width: 15px; margin-right: 3px; line-height: 1.4; text-align: center; }
+.tab-badge.show { display: inline-block; }
+
+/* ── CUSTOM CHECKBOX (prefilter) ── */
+.pf-item { cursor: pointer; }
+.pf-item input[type="checkbox"] { display: none; }
+.pf-item .cb-box {
+  width: 16px; height: 16px; min-width: 16px; border-radius: 4px;
+  border: 2px solid var(--border); background: var(--surface);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s; flex-shrink: 0; margin-top: 1px;
+}
+.pf-item input[type="checkbox"]:checked ~ .cb-box {
+  background: var(--go); border-color: var(--go);
+}
+.pf-item input[type="checkbox"]:checked ~ .cb-box::after {
+  content: "✓"; color: #fff; font-size: 11px; font-weight: 800; line-height: 1;
+}
+body.dark .pf-item .cb-box { border-color: #475569; background: #0f172a; }
+
+/* ── CUSTOM RADIO BUTTONS ── */
+.rg input[type="radio"] { display: none; }
+.rg .rb {
+  width: 14px; height: 14px; min-width: 14px; border-radius: 50%;
+  border: 2px solid var(--ink-muted); background: transparent;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.rg input[type="radio"]:checked + .rb {
+  border-color: var(--accent); background: var(--accent);
+}
+.rg input[type="radio"]:checked + .rb::after {
+  content: ""; width: 5px; height: 5px; border-radius: 50%; background: #fff;
+}
+body.dark .rg .rb { border-color: #64748b; }
+body.dark .rg label { color: #cbd5e1; }
+body.dark .rg label:hover { background: #1e293b; }
+body.dark .rg label.hy { background: #451a03; }
+body.dark .rg label.hr { background: #450a0a; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; z-index: 1000;
+  opacity: 0; transition: opacity 0.3s; pointer-events: none;
+}
+.toast.show { opacity: 1; }
+
+.journal-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px; gap: 10px; flex-wrap: wrap;
+}
+.journal-count { font-size: 12px; color: var(--ink-muted); font-weight: 600; }
+.journal-actions { display: flex; gap: 6px; }
+.jbtn {
+  padding: 6px 12px; border: 1.5px solid var(--border); border-radius: 6px;
+  font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit;
+  background: var(--surface); color: var(--ink-soft); transition: all 0.15s;
+}
+.jbtn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+.jbtn-pdf:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-bg); }
+
+/* Print styles */
+@media print {
+  .app-header, .tabs, .journal-toolbar, .exit-form, .tab-btn, .save-btn, .iron { display: none !important; }
+  .view { display: block !important; }
+  #view-checklist, #view-stats { display: none !important; }
+  .tc-body { display: block !important; }
+  .tc-expand { display: none !important; }
+  .trade-card { break-inside: avoid; margin-bottom: 16px; }
+  body { background: #fff; font-size: 11px; }
+}
+
+@page { size: A4; margin: 12mm; }
+  .meta { grid-template-columns: 1fr 1fr; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .pf-items { grid-template-columns: 1fr; }
+  .tc-prices { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="app-title">TRADE <span>JOURNAL</span></div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showView('checklist')">צ׳קליסט</button>
+    <button class="tab-btn" onclick="showView('journal')"><span class="tab-badge" id="tab-badge"></span>יומן</button>
+    <button class="tab-btn" onclick="showView('stats')">סטטיסטיקות</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ══════════════════════════════════════
+     VIEW: CHECKLIST
+══════════════════════════════════════ -->
+<div id="view-checklist" class="view active">
+
+  <!-- Draft Restore Banner -->
+  <div class="draft-banner" id="draft-banner">
+    <div class="draft-banner-text">
+      <div class="draft-banner-title" id="draft-banner-title">נמצאה טיוטה שמורה</div>
+      <div class="draft-banner-sub" id="draft-banner-sub"></div>
+    </div>
+    <button class="draft-restore-btn" onclick="restoreDraft()">שחזר</button>
+    <button class="draft-dismiss-btn" onclick="dismissDraft()">מחק</button>
+  </div>
+
+  <!-- Score Bar -->
+  <div class="score-bar" id="sb">
+    <div class="sb-flags">
+      <span class="sb-y" id="yc">0 yellow</span>
+      <span class="sb-r" id="rc">0 red</span>
+    </div>
+    <span class="sb-v" id="sv">—</span>
+  </div>
+
+  <!-- Meta -->
+  <div class="meta">
+    <div class="mf"><label>תאריך</label><input type="date" id="trade-date" onchange="updateTitle(); updateDateDisplay()"><span id="date-display" style="font-size:11px; color:var(--ink-muted); white-space:nowrap;"></span></div>
+    <div class="mf"><label>מניה</label><input type="text" id="ticker" placeholder="NVDA" oninput="updateTitle()" style="text-transform:uppercase;"></div>
+    <div class="mf"><label>סיגנל</label>
+      <select id="signal-type" onchange="onSignalChange()">
+        <option value="">—</option>
+        <option value="breakout">פריצה</option>
+        <option value="support">תמיכה</option>
+        <option value="retest">Retest</option>
+        <option value="ma">ממוצע נע</option>
+        <option value="pullback">Pullback</option>
+        <option value="cup">Cup & Handle</option>
+        <option value="other">אחר</option>
+      </select>
+    </div>
+    <div class="mf"><label>טרייד #</label>
+      <select id="trade-num" onchange="countFlags()">
+        <option value="1">1</option><option value="2">2</option><option value="3">3+</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Blocker -->
+  <div class="blocker" id="blocker">
+    <div class="bl-title">STOP — לא נכנסים</div>
+    <div class="bl-reason" id="bl-reason"></div>
+  </div>
+
+  <!-- Stop Box -->
+  <div class="stop-box">
+    <div class="stop-box-title">עצירה מיידית</div>
+    <div class="stop-grid">
+      <div class="si">20 MA שטוח / יורד</div>
+      <div class="si">FOMC / CPI / PPI</div>
+      <div class="si">מחיר מתחת ל-20 MA</div>
+      <div class="si">ארנינגס בעוד יום-יומיים</div>
+      <div class="si">Extension 3+ ATR</div>
+      <div class="si">תמיכה שנשברה</div>
+      <div class="si">R:R מתחת ל-2:1</div>
+      <div class="si">2+ סטופים / 3+ טריידים</div>
+    </div>
+  </div>
+
+  <!-- Pre-filter -->
+  <div class="prefilter">
+    <div class="pf-title">פילטר מקדים — 30 שניות</div>
+    <div class="pf-items">
+      <label class="pf-item"><input type="checkbox" id="pf1" onchange="checkPF()"><span class="cb-box"></span> <span>20 MA עולה + מחיר מעליו / בנגיעה</span></label>
+      <label class="pf-item"><input type="checkbox" id="pf2" onchange="checkPF()"><span class="cb-box"></span> <span>20 MA לא משמש התנגדות</span></label>
+      <label class="pf-item"><input type="checkbox" id="pf3" onchange="checkPF()"><span class="cb-box"></span> <span>מניה ללא גאפים תכופים</span></label>
+    </div>
+    <div class="pf-result" id="pf-result">סמן את שלושת הפילטרים כדי להמשיך</div>
+  </div>
+
+  <!-- STEP 1: Market -->
+  <div class="section">
+    <div class="section-head sh-mkt"><span class="dot"></span><span>הקשר שוק</span><span class="num">01</span></div>
+    <div class="section-body">
+      <ul class="cl">
+        <li><div class="cl-text" style="padding: 3px 0;"><strong>SPY / QQQ</strong>
+          <div class="rg">
+            <label><input type="radio" name="spy" value="up" onchange="countFlags()"><span class="rb"></span> עולה</label>
+            <label><input type="radio" name="spy" value="down" onchange="countFlags()"><span class="rb"></span> יורד</label>
+            <label><input type="radio" name="spy" value="flat" onchange="countFlags()"><span class="rb"></span> דשדוש</label>
+          </div></div>
+        </li>
+        <li><div class="cl-text" style="padding: 3px 0;"><strong>אירועים — לוח כלכלי</strong>
+          <div class="rg">
+            <label><input type="radio" name="ev" value="clean" onchange="countFlags()"><span class="rb"></span> נקי</label>
+            <label id="lbl-opex"><input type="radio" name="ev" value="opex" onchange="countFlags()"><span class="rb"></span> OpEx ⚠️</label>
+            <label id="lbl-fomc"><input type="radio" name="ev" value="fomc" onchange="countFlags()"><span class="rb"></span> FOMC/CPI 🔴</label>
+            <label id="lbl-earn"><input type="radio" name="ev" value="earn" onchange="countFlags()"><span class="rb"></span> Earnings 🔴</label>
+          </div></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- STEP 2: Signal -->
+  <div class="section">
+    <div class="section-head sh-sig"><span class="dot"></span><span>סיגנל טכני</span><span class="num">02</span></div>
+    <div class="section-body">
+      <ul class="cl">
+        <li><div class="cl-text" style="padding: 3px 0;"><strong>מגמת המניה (1-3 חודשים)</strong>
+          <div class="rg">
+            <label><input type="radio" name="trend" value="up" onchange="countFlags()"><span class="rb"></span> עלייה ✅</label>
+            <label id="lbl-trend-down"><input type="radio" name="trend" value="down" onchange="countFlags()"><span class="rb"></span> ירידה ⚠️</label>
+            <label><input type="radio" name="trend" value="flat" onchange="countFlags()"><span class="rb"></span> דשדוש</label>
+          </div></div>
+        </li>
+        <li><div class="cl-text" style="padding: 3px 0;"><strong>מרחק מהסיגנל</strong>
+          <input type="number" class="fi fi-s" id="distance" step="0.1" oninput="countFlags()" placeholder="%">%
+          <span class="hint" id="dist-hint"></span></div>
+        </li>
+        <li><div class="cl-text" style="padding: 3px 0;"><strong>אופן כניסה</strong>
+          <div class="rg">
+            <label><input type="radio" name="entry" value="limit" onchange="countFlags()"><span class="rb"></span> Limit ✅</label>
+            <label><input type="radio" name="entry" value="stoplimit" onchange="countFlags()"><span class="rb"></span> Stop Limit ✅</label>
+            <label><input type="radio" name="entry" value="retest" onchange="countFlags()"><span class="rb"></span> Retest ✅</label>
+            <label id="lbl-market"><input type="radio" name="entry" value="market" onchange="countFlags()"><span class="rb"></span> Market</label>
+          </div></div>
+        </li>
+        <li><div class="cl-text" style="padding: 3px 0;"><strong>Volume</strong> <span class="hint">(מול ממוצע 20 יום)</span>
+          <div class="rg">
+            <label><input type="radio" name="vol" value="high" onchange="countFlags()"><span class="rb"></span> גבוה ×1.5+ ✅</label>
+            <label><input type="radio" name="vol" value="normal" onchange="countFlags()"><span class="rb"></span> רגיל</label>
+            <label id="lbl-lowvol"><input type="radio" name="vol" value="low" onchange="countFlags()"><span class="rb"></span> נמוך ⚠️</label>
+          </div></div>
+        </li>
+        <li><div class="cl-text" style="padding: 3px 0;"><strong>המניה היום</strong>
+          <div class="rg">
+            <label><input type="radio" name="color" value="green" onchange="countFlags()"><span class="rb"></span> ירוקה</label>
+            <label id="lbl-red"><input type="radio" name="color" value="red" onchange="countFlags()"><span class="rb"></span> אדומה</label>
+          </div></div>
+        </li>
+        <li id="support-row" style="display:none;"><div class="cl-text" style="padding: 3px 0;"><strong>תמיכה נבדקה</strong>
+          <div class="rg">
+            <label><input type="radio" name="support" value="23" onchange="countFlags()"><span class="rb"></span> 2-3 פעמים ✅</label>
+            <label id="lbl-sup4"><input type="radio" name="support" value="4plus" onchange="countFlags()"><span class="rb"></span> 4+ ⚠️</label>
+            <label id="lbl-supbroken"><input type="radio" name="support" value="broken" onchange="countFlags()"><span class="rb"></span> נשברה 🔴</label>
+          </div></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- STEP 3: Plan -->
+  <div class="section">
+    <div class="section-head sh-plan"><span class="dot"></span><span>תוכנית טרייד</span><span class="num">03</span></div>
+    <div class="section-body">
+      <ul class="cl">
+        <li><div class="cl-text" style="padding: 3px 0;"><strong>כניסה</strong> $<input type="number" step="0.01" class="fi fi-p" id="price-entry" oninput="calcRR()"></div></li>
+        <li><div class="cl-text" style="padding: 3px 0;"><strong>סטופ לוס</strong> $<input type="number" step="0.01" class="fi fi-p" id="price-stop" oninput="calcRR()"> <span class="hint">(רמה טכנית − ATR)</span></div></li>
+        <li><div class="cl-text" style="padding: 3px 0;"><strong>ATR מרווח מתחת לרמה?</strong>
+          <div class="rg">
+            <label><input type="radio" name="atr" value="yes" onchange="countFlags()"><span class="rb"></span> כן</label>
+            <label><input type="radio" name="atr" value="no" onchange="countFlags()"><span class="rb"></span> לא</label>
+          </div></div>
+        </li>
+        <li><div class="cl-text" style="padding: 3px 0;"><strong>יעד</strong> $<input type="number" step="0.01" class="fi fi-p" id="price-target" oninput="calcRR()">
+          <div class="rg" style="margin-top:3px;">
+            <label><input type="radio" name="tb" value="res"><span class="rb"></span> התנגדות / שיא</label>
+            <label><input type="radio" name="tb" value="rr"><span class="rb"></span> R:R 2:1</label>
+            <label id="lbl-feel"><input type="radio" name="tb" value="feel" onchange="countFlags()"><span class="rb"></span> תחושה ⚠️</label>
+          </div></div>
+        </li>
+      </ul>
+      <div class="rr" id="rr-display">R:R = —</div>
+    </div>
+  </div>
+
+  <!-- STEP 4: Score -->
+  <div class="section">
+    <div class="section-head sh-score"><span class="dot"></span><span>ציון סופי</span><span class="num">04</span></div>
+    <div class="section-body">
+      <div class="scores">
+        <div class="sc sc-go" id="score-go"><div class="sc-l">GO</div><div class="sc-d">0-2 צהובים · 0 אדומים</div></div>
+        <div class="sc sc-wait" id="score-wait"><div class="sc-l">WAIT</div><div class="sc-d">3 צהובים</div></div>
+        <div class="sc sc-no" id="score-no"><div class="sc-l">NO</div><div class="sc-d">4+ צהובים / אדום</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 5: Analysis -->
+  <div class="section">
+    <div class="section-head sh-analysis"><span class="dot"></span><span>ניתוח — למה אני נכנס לטרייד הזה?</span><span class="num">05</span></div>
+    <div class="section-body">
+      <textarea class="analysis-ta" id="analysis" placeholder="תאר מה אתה רואה בגרף ולמה זה טרייד טוב:
+• מה הסיגנל הטכני?
+• מה מגמת המניה והשוק?
+• מה מחזק את הכניסה? (Volume / Confluence / חוזק יחסי)
+• מה יכול להפריע?"></textarea>
+      <div class="upload-area" onclick="document.getElementById('screenshot-input').click()">
+        📷 העלה צילום מסך מטריידינגוויו
+        <input type="file" id="screenshot-input" accept="image/*" onchange="handleScreenshot(event)">
+      </div>
+      <div class="screenshot-preview" id="ss-preview">
+        <img id="ss-img" src="" alt="גרף">
+        <button class="remove-ss" onclick="removeScreenshot()">הסר</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="draft-indicator" id="draft-indicator" style="display:none;">
+    <span class="draft-dot"></span>
+    <span id="draft-time">טיוטה נשמרה אוטומטית</span>
+  </div>
+
+  <div style="display:flex; gap:8px; margin-top:10px;">
+    <button class="save-btn" id="save-btn" onclick="saveTrade()" style="flex:1; margin-top:0;">💾 שמור טרייד ביומן</button>
+    <button onclick="window.print()" style="padding:12px 16px; background:var(--bg); color:var(--ink-soft); border:1.5px solid var(--border); border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; white-space:nowrap; transition:all 0.15s;" onmouseover="this.style.borderColor='var(--ink-soft)'" onmouseout="this.style.borderColor='var(--border)'">🖨️ PDF</button>
+  </div>
+
+  <!-- Iron Rules -->
+  <div class="iron">
+    <div class="iron-title">כללי ברזל — אחרי כניסה</div>
+    <div class="iron-grid">
+      <div class="iron-item">אל תזיז את הסטופ למטה</div>
+      <div class="iron-item">תן לטרייד לעבוד</div>
+      <div class="iron-item">אל תוסיף לפוזיציה מפסידה</div>
+      <div class="iron-item">תעד ביומן · Cash is a position</div>
+    </div>
+    <div class="hours-row">
+      <div class="hc h1"><div class="t">16:30–17:00</div><div class="d">המתן</div></div>
+      <div class="hc h2"><div class="t">17:30–19:00</div><div class="d">מומלץ</div></div>
+      <div class="hc h3"><div class="t">19:00–21:30</div><div class="d">נמוך</div></div>
+      <div class="hc h4"><div class="t">21:30–23:00</div><div class="d">סגירה</div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     VIEW: JOURNAL
+══════════════════════════════════════ -->
+<div id="view-journal" class="view">
+  <div class="journal-toolbar">
+    <span class="journal-count" id="journal-count"></span>
+    <div class="journal-actions">
+      <button class="jbtn jbtn-export" onclick="exportJSON()">⬇️ גיבוי JSON</button>
+      <label class="jbtn jbtn-import">⬆️ שחזור JSON<input type="file" accept=".json" onchange="importJSON(event)" style="display:none;"></label>
+      <button class="jbtn jbtn-pdf" onclick="printJournal()">🖨️ הדפס PDF</button>
+    </div>
+  </div>
+
+  <!-- Reminder Banner -->
+  <div class="reminder-banner" id="reminder-banner">
+    <div class="reminder-text">
+      <div class="reminder-title" id="reminder-title">טריידים פתוחים ללא עדכון</div>
+      <div class="reminder-sub" id="reminder-sub"></div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <input type="text" class="search-input" id="search-input" placeholder="חפש מניה..." oninput="applyFilters()">
+  </div>
+
+  <!-- Filter Chips -->
+  <div class="filter-chips" id="filter-chips">
+    <span class="chip active" data-filter="all" onclick="toggleChip(this,'outcome')">הכל</span>
+    <span class="chip win" data-filter="win" onclick="toggleChip(this,'outcome')">רווחים ✅</span>
+    <span class="chip loss" data-filter="loss" onclick="toggleChip(this,'outcome')">הפסדים ❌</span>
+    <span class="chip open-t" data-filter="open" onclick="toggleChip(this,'outcome')">פתוחים</span>
+    <span style="width:1px; background:var(--border); margin: 0 4px; display:inline-block; height:20px; vertical-align:middle;"></span>
+    <span class="chip" data-filter="breakout" onclick="toggleChip(this,'signal')">פריצה</span>
+    <span class="chip" data-filter="support" onclick="toggleChip(this,'signal')">תמיכה</span>
+    <span class="chip" data-filter="retest" onclick="toggleChip(this,'signal')">Retest</span>
+    <span class="chip" data-filter="pullback" onclick="toggleChip(this,'signal')">Pullback</span>
+  </div>
+
+  <div id="journal-container"></div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     VIEW: STATS
+══════════════════════════════════════ -->
+<div id="view-stats" class="view">
+  <div id="stats-container"></div>
+</div>
+
+</div><!-- main -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STORAGE ──
+function getTrades() {
+  try { return JSON.parse(localStorage.getItem('trades') || '[]'); } catch(e) { return []; }
+}
+function saveTrades(arr) {
+  localStorage.setItem('trades', JSON.stringify(arr));
+}
+
+// ── EXPORT / IMPORT / PRINT ──
+function exportJSON() {
+  var trades = getTrades();
+  if (trades.length === 0) { toast('⚠️ אין טריידים לייצא'); return; }
+  var data = JSON.stringify({version:1, exportDate: new Date().toISOString(), trades: trades}, null, 2);
+  var blob = new Blob([data], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'trade_journal_backup_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('✅ גיבוי הורד בהצלחה');
+}
+
+function importJSON(event) {
+  var file = event.target.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      var trades = data.trades || data;
+      if (!Array.isArray(trades)) throw new Error('Invalid format');
+      if (!confirm('ייבוא ' + trades.length + ' טריידים? הנתונים הקיימים יישמרו ויתווספו.')) return;
+      var existing = getTrades();
+      var existingIds = new Set(existing.map(t => t.id));
+      var newTrades = trades.filter(t => !existingIds.has(t.id));
+      saveTrades([...newTrades, ...existing]);
+      renderJournal();
+      toast('✅ יובאו ' + newTrades.length + ' טריידים חדשים');
+    } catch(err) {
+      toast('⚠️ שגיאה בקובץ הגיבוי');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function printJournal() {
+  window.print();
+}
+
+// ── TABS ──
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'journal') renderJournal();
+  if (name === 'stats') renderStats();
+}
+
+// ── UTILS ──
+function rv(n) { var r = document.querySelector('input[name="'+n+'"]:checked'); return r ? r.value : ''; }
+function hl(id, t) { var el = document.getElementById(id); if (el) el.classList.add(t === 'r' ? 'hr' : 'hy'); }
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+function updateDateDisplay() {
+  var d = document.getElementById('trade-date').value;
+  var el = document.getElementById('date-display');
+  if (el) el.textContent = d ? formatDate(d) : '';
+}
+
+function updateTitle() {
+  var t = document.getElementById('ticker').value.toUpperCase().trim();
+  var d = document.getElementById('trade-date').value;
+  document.title = (t && d) ? t + ' · ' + d : 'יומן מסחר';
+}
+function signalLabel(s) {
+  return {breakout:'פריצה', support:'תמיכה', retest:'Retest', ma:'ממוצע נע', pullback:'Pullback', cup:'Cup & Handle', other:'אחר'}[s] || s;
+}
+
+// ── PRE-FILTER ──
+function checkPF() {
+  var p1 = document.getElementById('pf1').checked;
+  var p2 = document.getElementById('pf2').checked;
+  var p3 = document.getElementById('pf3').checked;
+  var el = document.getElementById('pf-result');
+  if (p1 && p2 && p3) { el.textContent = '✅ עבר פילטר — ממשיכים לצ׳קליסט'; el.style.color = 'var(--go)'; }
+  else { var m = []; if(!p1)m.push('20 MA'); if(!p2)m.push('התנגדות'); if(!p3)m.push('גאפים'); el.textContent = 'חסר: ' + m.join(', '); el.style.color = 'var(--danger)'; }
+}
+
+// ── SIGNAL CHANGE ──
+function onSignalChange() {
+  document.getElementById('support-row').style.display =
+    ['support','retest'].includes(document.getElementById('signal-type').value) ? 'flex' : 'none';
+  countFlags();
+}
+
+// ── SCREENSHOT ──
+var screenshotData = null;
+function handleScreenshot(e) {
+  var file = e.target.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    screenshotData = ev.target.result;
+    document.getElementById('ss-img').src = screenshotData;
+    document.getElementById('ss-preview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+function removeScreenshot() {
+  screenshotData = null;
+  document.getElementById('ss-img').src = '';
+  document.getElementById('ss-preview').style.display = 'none';
+  document.getElementById('screenshot-input').value = '';
+}
+
+// ── R:R ──
+function calcRR() {
+  var e = parseFloat(document.getElementById('price-entry').value);
+  var s = parseFloat(document.getElementById('price-stop').value);
+  var t = parseFloat(document.getElementById('price-target').value);
+  var el = document.getElementById('rr-display');
+  if (e && s && t && e > s && t > e) {
+    var rr = ((t-e)/(e-s)).toFixed(1);
+    el.textContent = 'Entry: $'+e.toFixed(2)+'  |  Stop: $'+s.toFixed(2)+'  |  Target: $'+t.toFixed(2)+'  |  R:R = '+rr+':1';
+    el.className = 'rr' + (rr>=2.5?' good':rr>=2?' ok':' bad');
+  } else if (e && s && s >= e) {
+    el.textContent = 'סטופ ($'+s.toFixed(2)+') גבוה מהכניסה — חייב להיות מתחת';
+    el.className = 'rr bad';
+  } else { el.textContent = 'R:R = —'; el.className = 'rr'; }
+  countFlags();
+}
+
+// ── COUNT FLAGS ──
+function countFlags() {
+  var y=0, r=0, reasons=[];
+  if (document.getElementById('trade-num').value==='3') { r++; reasons.push('3+ טריידים'); }
+  var ev=rv('ev');
+  if(ev==='opex') y++;
+  if(ev==='fomc') { r++; reasons.push('FOMC/CPI'); }
+  if(ev==='earn') { r++; reasons.push('ארנינגס'); }
+  var sig=document.getElementById('signal-type').value;
+  var trend=rv('trend');
+  if(trend==='down' && ['support','ma','pullback'].includes(sig)) y++;
+  var dist=parseFloat(document.getElementById('distance').value)||0;
+  var dh=document.getElementById('dist-hint');
+  if(dist>=5){r++;reasons.push('רדיפה 5%+');dh.textContent='🔴 רדיפה';}
+  else if(dist>=3){y++;dh.textContent='⚠️ שקול Retest';}
+  else if(dist>=2){dh.textContent='📝 שקול Retest';}
+  else{dh.textContent='';}
+  if(rv('entry')==='market' && dist>=2) y++;
+  if(rv('vol')==='low' && sig==='breakout') y++;
+  var spy=rv('spy'), col=rv('color');
+  if(spy==='down' && col==='red') y++;
+  if(spy==='up' && col==='red') y++;
+  var sup=rv('support');
+  if(sup==='4plus') y++;
+  if(sup==='broken'){r++;reasons.push('תמיכה שנשברה');}
+  if(rv('tb')==='feel') y++;
+  var pe=parseFloat(document.getElementById('price-entry').value);
+  var ps=parseFloat(document.getElementById('price-stop').value);
+  var pt=parseFloat(document.getElementById('price-target').value);
+  if(pe&&ps&&pt&&pe>ps&&pt>pe&&(pt-pe)/(pe-ps)<2.0){r++;reasons.push('R:R < 2:1');}
+
+  // Highlights
+  document.querySelectorAll('.hy,.hr').forEach(e=>e.classList.remove('hy','hr'));
+  if(ev==='opex')hl('lbl-opex','y'); if(ev==='fomc')hl('lbl-fomc','r'); if(ev==='earn')hl('lbl-earn','r');
+  if(trend==='down')hl('lbl-trend-down','y');
+  if(rv('vol')==='low')hl('lbl-lowvol','y');
+  if(col==='red')hl('lbl-red',(spy==='up'||spy==='down')?'y':'');
+  if(sup==='4plus')hl('lbl-sup4','y'); if(sup==='broken')hl('lbl-supbroken','r');
+  if(rv('entry')==='market'&&dist>=2)hl('lbl-market','y');
+  if(rv('tb')==='feel')hl('lbl-feel','y');
+
+  document.getElementById('yc').textContent = y+' yellow';
+  document.getElementById('rc').textContent = r+' red';
+  var bar=document.getElementById('sb');
+  bar.className='score-bar '+(r>0?'stop':y>=3?'warn':'clean');
+  var sv=document.getElementById('sv');
+  var sgo=document.getElementById('score-go'),swa=document.getElementById('score-wait'),sno=document.getElementById('score-no');
+  sgo.classList.remove('on');swa.classList.remove('on');sno.classList.remove('on');
+  var verdict;
+  if(r>0||y>=4){verdict='NO';sv.textContent='NO';sv.className='sb-v no';sno.classList.add('on');}
+  else if(y===3){verdict='WAIT';sv.textContent='WAIT';sv.className='sb-v wait';swa.classList.add('on');}
+  else{verdict=y>0?'GO ('+y+')':'GO';sv.textContent=verdict;sv.className='sb-v go';sgo.classList.add('on');}
+
+  var bl=document.getElementById('blocker');
+  if(r>0&&reasons.length>0){bl.classList.add('on');document.getElementById('bl-reason').textContent=reasons.join(' · ');}
+  else{bl.classList.remove('on');}
+
+  return {yellow:y, red:r, verdict: r>0||y>=4?'NO':y===3?'WAIT':'GO'};
+}
+
+// ── SAVE TRADE ──
+function saveTrade() {
+  var ticker = document.getElementById('ticker').value.toUpperCase().trim();
+  var date = document.getElementById('trade-date').value;
+  if (!ticker || !date) { toast('⚠️ מלא תאריך ומניה'); return; }
+
+  var flags = countFlags();
+  var pe = parseFloat(document.getElementById('price-entry').value) || null;
+  var ps = parseFloat(document.getElementById('price-stop').value) || null;
+  var pt = parseFloat(document.getElementById('price-target').value) || null;
+  var rr = (pe && ps && pt && pe > ps && pt > pe) ? parseFloat(((pt-pe)/(pe-ps)).toFixed(1)) : null;
+
+  var trade = {
+    id: Date.now(),
+    date: date,
+    ticker: ticker,
+    signal: document.getElementById('signal-type').value,
+    tradeNum: document.getElementById('trade-num').value,
+    yellowFlags: flags.yellow,
+    redFlags: flags.red,
+    verdict: flags.verdict,
+    entryPrice: pe,
+    stopPrice: ps,
+    targetPrice: pt,
+    rr: rr,
+    analysis: document.getElementById('analysis').value,
+    screenshot: screenshotData,
+    // Exit data
+    exitDate: null,
+    exitPrice: null,
+    exitNotes: '',
+    outcome: null,
+    actualRR: null
+  };
+
+  var trades = getTrades();
+  trades.unshift(trade);
+  saveTrades(trades);
+
+  toast('✅ טרייד נשמר ביומן!');
+
+  // Reset form
+  resetForm();
+}
+
+function resetForm() {
+  document.querySelectorAll('#view-checklist input').forEach(i => {
+    if(i.type==='checkbox'||i.type==='radio') i.checked=false;
+    else if(i.type!=='date') i.value='';
+  });
+  document.getElementById('signal-type').value='';
+  document.getElementById('trade-num').value='1';
+  document.getElementById('analysis').value='';
+  document.getElementById('rr-display').textContent='R:R = —';
+  document.getElementById('rr-display').className='rr';
+  document.getElementById('trade-date').valueAsDate = new Date();
+  document.getElementById('support-row').style.display='none';
+  document.getElementById('dist-hint').textContent='';
+  document.getElementById('pf1').checked=false;
+  document.getElementById('pf2').checked=false;
+  document.getElementById('pf3').checked=false;
+  document.getElementById('pf-result').textContent='סמן את שלושת הפילטרים כדי להמשיך';
+  document.getElementById('pf-result').style.color='var(--ink-muted)';
+  removeScreenshot();
+  dismissDraft();
+  countFlags();
+  updateTitle();
+}
+
+// ── RENDER JOURNAL ──
+function renderJournal() {
+  var trades = getTrades();
+  var countEl = document.getElementById('journal-count');
+  if (countEl) countEl.textContent = trades.length + ' טריידים';
+  updateBadgeAndReminder();
+  applyFilters();
+}
+
+function tradeCardHTML(t) {
+  var outcomeLabel = t.outcome ? {win:'רווח ✅', loss:'הפסד ❌', be:'B/E'}[t.outcome] : 'פתוח';
+  var outcomeClass = t.outcome || 'open';
+  var sigLabel = signalLabel(t.signal);
+  var rrText = t.rr ? t.rr+'R' : '—';
+  var actualRRText = t.actualRR ? t.actualRR+'R' : '';
+
+  return `<div class="trade-card" id="card-${t.id}">
+    <div class="tc-header" onclick="toggleCard(${t.id})">
+      <div class="tc-ticker">${t.ticker}</div>
+      <div class="tc-date">${formatDate(t.date)}</div>
+      <div class="tc-signal">${sigLabel}</div>
+      <div class="tc-verdict ${t.verdict.toLowerCase().replace(' ','')}">${t.verdict}</div>
+      <div class="tc-outcome ${outcomeClass}">${outcomeLabel}${actualRRText?' · '+actualRRText:''}</div>
+      <div class="tc-expand" id="expand-${t.id}">▼</div>
+    </div>
+    <div class="tc-body" id="body-${t.id}">
+      <div class="tc-prices">
+        <div class="tc-price-item"><div class="label">כניסה</div><div class="value entry">$${t.entryPrice||'—'}</div></div>
+        <div class="tc-price-item"><div class="label">סטופ</div><div class="value stop">$${t.stopPrice||'—'}</div></div>
+        <div class="tc-price-item"><div class="label">יעד</div><div class="value target">$${t.targetPrice||'—'}</div></div>
+        <div class="tc-price-item"><div class="label">R:R תוכנן</div><div class="value rr">${rrText}</div></div>
+        ${t.exitPrice?`<div class="tc-price-item"><div class="label">יציאה</div><div class="value ${t.outcome==='win'?'entry':'stop'}">$${t.exitPrice}</div></div>`:''}
+      </div>
+      ${t.analysis?`<div class="tc-analysis">${escHTML(t.analysis)}</div>`:''}
+      ${t.screenshot?`<div class="tc-screenshot"><img src="${t.screenshot}" alt="גרף"></div>`:''}
+      ${t.exitNotes?`<div class="tc-analysis" style="background:#f0fdf4;color:var(--go);">${escHTML(t.exitNotes)}</div>`:''}
+      <div class="exit-form">
+        <div class="exit-form-title">📝 עדכון יציאה</div>
+        <div class="exit-row">
+          <div class="exit-field"><label>תאריך יציאה</label><input type="date" id="ex-date-${t.id}" value="${t.exitDate||''}"></div>
+          <div class="exit-field"><label>מחיר יציאה $</label><input type="number" step="0.01" id="ex-price-${t.id}" value="${t.exitPrice||''}" placeholder="0.00"></div>
+          <div class="exit-field"><label>תוצאה</label>
+            <select id="ex-outcome-${t.id}">
+              <option value="">—</option>
+              <option value="win" ${t.outcome==='win'?'selected':''}>רווח</option>
+              <option value="loss" ${t.outcome==='loss'?'selected':''}>הפסד</option>
+              <option value="be" ${t.outcome==='be'?'selected':''}>B/E</option>
+            </select>
+          </div>
+        </div>
+        <textarea class="exit-notes" id="ex-notes-${t.id}" placeholder="מה קרה? מה למדת?">${t.exitNotes||''}</textarea>
+        <button class="exit-save-btn" onclick="saveExit(${t.id})">שמור יציאה</button>
+        <button class="delete-btn" onclick="deleteTrade(${t.id})">מחק טרייד</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function escHTML(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+
+function formatDate(d) {
+  if (!d) return '';
+  var parts = d.split('-');
+  if (parts.length !== 3) return d;
+  return parts[2] + '/' + parts[1] + '/' + parts[0];
+}
+
+function toggleCard(id) {
+  var body = document.getElementById('body-'+id);
+  var exp = document.getElementById('expand-'+id);
+  body.classList.toggle('open');
+  exp.classList.toggle('open');
+}
+
+function saveExit(id) {
+  var trades = getTrades();
+  var i = trades.findIndex(t => t.id === id);
+  if (i < 0) return;
+  var t = trades[i];
+  var exitPrice = parseFloat(document.getElementById('ex-price-'+id).value) || null;
+  var exitDate = document.getElementById('ex-date-'+id).value || null;
+  var outcome = document.getElementById('ex-outcome-'+id).value || null;
+  var exitNotes = document.getElementById('ex-notes-'+id).value || '';
+  var actualRR = null;
+  if (exitPrice && t.entryPrice && t.stopPrice) {
+    actualRR = parseFloat(((exitPrice - t.entryPrice) / (t.entryPrice - t.stopPrice)).toFixed(1));
+  }
+  trades[i] = {...t, exitPrice, exitDate, outcome, exitNotes, actualRR};
+  saveTrades(trades);
+  renderJournal();
+  toast('✅ יציאה נשמרה');
+}
+
+function deleteTrade(id) {
+  if (!confirm('למחוק טרייד זה לצמיתות?')) return;
+  var trades = getTrades().filter(t => t.id !== id);
+  saveTrades(trades);
+  renderJournal();
+  toast('🗑️ נמחק');
+}
+
+// ── RENDER STATS ──
+function renderStats() {
+  var trades = getTrades();
+  var closed = trades.filter(t => t.outcome);
+  var wins = closed.filter(t => t.outcome==='win');
+  var losses = closed.filter(t => t.outcome==='loss');
+  var winRate = closed.length > 0 ? Math.round((wins.length/closed.length)*100) : 0;
+  var avgRR = closed.filter(t=>t.actualRR!==null).reduce((a,t)=>a+(t.actualRR||0),0) / (closed.filter(t=>t.actualRR!==null).length||1);
+  var container = document.getElementById('stats-container');
+
+  if (trades.length === 0) {
+    container.innerHTML = '<div class="no-data">אין עדיין טריידים מתועדים.<br>שמור טריידים ביומן כדי לראות סטטיסטיקות.</div>';
+    return;
+  }
+
+  // Signal breakdown
+  var sigMap = {};
+  closed.forEach(t => {
+    var s = signalLabel(t.signal) || 'אחר';
+    if (!sigMap[s]) sigMap[s] = {win:0,total:0};
+    sigMap[s].total++;
+    if(t.outcome==='win') sigMap[s].win++;
+  });
+  var sigRows = Object.entries(sigMap).sort((a,b)=>b[1].total-a[1].total).map(([sig,d]) => {
+    var pct = d.total > 0 ? Math.round((d.win/d.total)*100) : 0;
+    return `<div class="stat-row"><div class="lbl">${sig} (${d.total})</div><div class="stat-bar-wrap"><div class="stat-bar" style="width:${pct}%;background:${pct>=50?'var(--go)':'var(--danger)'}"></div></div><div class="pct">${pct}%</div></div>`;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-card go-card"><div class="val">${winRate}%</div><div class="lbl">Win Rate (${closed.length} סגורים)</div></div>
+      <div class="stat-card blue-card"><div class="val">${isNaN(avgRR)?'—':avgRR.toFixed(1)+'R'}</div><div class="lbl">R:R ממוצע בפועל</div></div>
+      <div class="stat-card"><div class="val">${trades.length}</div><div class="lbl">סה״כ טריידים (${trades.filter(t=>!t.outcome).length} פתוחים)</div></div>
+    </div>
+    <div class="stats-grid" style="margin-bottom:16px;">
+      <div class="stat-card go-card"><div class="val">${wins.length}</div><div class="lbl">רווחים</div></div>
+      <div class="stat-card red-card"><div class="val">${losses.length}</div><div class="lbl">הפסדים</div></div>
+      <div class="stat-card"><div class="val">${closed.filter(t=>t.outcome==='be').length}</div><div class="lbl">B/E</div></div>
+    </div>
+    ${sigRows ? `<div class="stat-section"><h3>Win Rate לפי סיגנל</h3>${sigRows}</div>` : ''}
+  `;
+}
+
+// ── SEARCH & FILTER ──
+var activeOutcome = 'all';
+var activeSignal = null;
+
+function toggleChip(el, type) {
+  if (type === 'outcome') {
+    document.querySelectorAll('.chip[data-filter]').forEach(c => {
+      if (!['breakout','support','retest','pullback'].includes(c.dataset.filter)) c.classList.remove('active');
+    });
+    el.classList.add('active');
+    activeOutcome = el.dataset.filter;
+  } else {
+    if (el.classList.contains('active')) { el.classList.remove('active'); activeSignal = null; }
+    else {
+      document.querySelectorAll('.chip[data-filter="breakout"], .chip[data-filter="support"], .chip[data-filter="retest"], .chip[data-filter="pullback"]').forEach(c => c.classList.remove('active'));
+      el.classList.add('active'); activeSignal = el.dataset.filter;
+    }
+  }
+  applyFilters();
+}
+
+function applyFilters() {
+  var trades = getTrades();
+  var q = (document.getElementById('search-input').value || '').toUpperCase().trim();
+  var filtered = trades.filter(t => {
+    if (q && !t.ticker.toUpperCase().includes(q)) return false;
+    if (activeOutcome === 'win' && t.outcome !== 'win') return false;
+    if (activeOutcome === 'loss' && t.outcome !== 'loss') return false;
+    if (activeOutcome === 'open' && t.outcome) return false;
+    if (activeSignal && t.signal !== activeSignal) return false;
+    return true;
+  });
+  var countEl = document.getElementById('journal-count');
+  if (countEl) countEl.textContent = filtered.length + ' מתוך ' + trades.length + ' טריידים';
+  var container = document.getElementById('journal-container');
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="journal-empty"><div class="emoji">🔍</div><div>לא נמצאו טריידים</div></div>';
+  } else {
+    container.innerHTML = filtered.map(t => tradeCardHTML(t)).join('');
+  }
+}
+
+// ── DRAFT ──
+var draftTimer = null;
+
+function getDraftKey() { return 'trade_draft'; }
+
+function saveDraft() {
+  var ticker = document.getElementById('ticker').value;
+  if (!ticker) return; // no draft if empty
+  var draft = {
+    savedAt: new Date().toISOString(),
+    ticker: ticker,
+    date: document.getElementById('trade-date').value,
+    signal: document.getElementById('signal-type').value,
+    tradeNum: document.getElementById('trade-num').value,
+    distance: document.getElementById('distance').value,
+    entryPrice: document.getElementById('price-entry').value,
+    stopPrice: document.getElementById('price-stop').value,
+    targetPrice: document.getElementById('price-target').value,
+    analysis: document.getElementById('analysis').value,
+    pf1: document.getElementById('pf1').checked,
+    pf2: document.getElementById('pf2').checked,
+    pf3: document.getElementById('pf3').checked,
+    radios: {}
+  };
+  ['spy','ev','trend','entry','vol','color','support','atr','tb'].forEach(n => { draft.radios[n] = rv(n); });
+  localStorage.setItem(getDraftKey(), JSON.stringify(draft));
+  var ind = document.getElementById('draft-indicator');
+  var time = document.getElementById('draft-time');
+  if (ind && time) {
+    var now = new Date();
+    time.textContent = 'טיוטה נשמרה אוטומטית · ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+    ind.style.display = 'flex';
+  }
+}
+
+function checkDraft() {
+  try {
+    var raw = localStorage.getItem(getDraftKey());
+    if (!raw) return;
+    var draft = JSON.parse(raw);
+    if (!draft.ticker) return;
+    var savedAt = new Date(draft.savedAt);
+    var timeStr = savedAt.getHours().toString().padStart(2,'0') + ':' + savedAt.getMinutes().toString().padStart(2,'0');
+    var el = document.getElementById('draft-banner');
+    document.getElementById('draft-banner-title').textContent = 'נמצאה טיוטה שמורה — ' + draft.ticker;
+    document.getElementById('draft-banner-sub').textContent = 'נשמרה ב-' + timeStr;
+    if (el) el.classList.add('show');
+  } catch(e) {}
+}
+
+function restoreDraft() {
+  try {
+    var draft = JSON.parse(localStorage.getItem(getDraftKey()));
+    if (!draft) return;
+    document.getElementById('ticker').value = draft.ticker || '';
+    if (draft.date) document.getElementById('trade-date').value = draft.date;
+    document.getElementById('signal-type').value = draft.signal || '';
+    document.getElementById('trade-num').value = draft.tradeNum || '1';
+    document.getElementById('distance').value = draft.distance || '';
+    document.getElementById('price-entry').value = draft.entryPrice || '';
+    document.getElementById('price-stop').value = draft.stopPrice || '';
+    document.getElementById('price-target').value = draft.targetPrice || '';
+    document.getElementById('analysis').value = draft.analysis || '';
+    document.getElementById('pf1').checked = draft.pf1 || false;
+    document.getElementById('pf2').checked = draft.pf2 || false;
+    document.getElementById('pf3').checked = draft.pf3 || false;
+    if (draft.radios) {
+      Object.entries(draft.radios).forEach(([n, v]) => {
+        if (v) { var r = document.querySelector('input[name="'+n+'"][value="'+v+'"]'); if (r) r.checked = true; }
+      });
+    }
+    onSignalChange();
+    checkPF();
+    calcRR();
+    countFlags();
+    dismissDraft();
+    toast('✅ טיוטה שוחזרה');
+  } catch(e) { toast('⚠️ שגיאה בשחזור'); }
+}
+
+function dismissDraft() {
+  localStorage.removeItem(getDraftKey());
+  var el = document.getElementById('draft-banner');
+  if (el) el.classList.remove('show');
+}
+
+function startDraftTimer() {
+  if (draftTimer) clearInterval(draftTimer);
+  draftTimer = setInterval(saveDraft, 30000);
+  document.getElementById('view-checklist').addEventListener('input', saveDraft);
+  document.getElementById('view-checklist').addEventListener('change', saveDraft);
+}
+
+// ── REMINDER & BADGE ──
+function updateBadgeAndReminder() {
+  var trades = getTrades();
+  var now = new Date();
+  var stale = trades.filter(t => {
+    if (t.outcome) return false;
+    var d = new Date(t.date);
+    var diff = (now - d) / (1000 * 60 * 60 * 24);
+    return diff >= 3;
+  });
+  var badge = document.getElementById('tab-badge');
+  if (badge) {
+    if (stale.length > 0) { badge.textContent = stale.length; badge.classList.add('show'); }
+    else { badge.classList.remove('show'); }
+  }
+  var banner = document.getElementById('reminder-banner');
+  if (banner) {
+    if (stale.length > 0) {
+      banner.classList.add('show');
+      document.getElementById('reminder-title').textContent = stale.length + ' טריידים פתוחים ללא עדכון';
+      document.getElementById('reminder-sub').textContent = stale.slice(0,3).map(t => {
+        var days = Math.floor((now - new Date(t.date)) / (1000*60*60*24));
+        return t.ticker + ' · ' + days + ' ימים · ' + formatDate(t.date);
+      }).join(' · ');
+    } else { banner.classList.remove('show'); }
+  }
+}
+
+// ── INIT ──
+document.getElementById('trade-date').valueAsDate = new Date();
+countFlags();
+updateTitle();
+updateDateDisplay();
+checkDraft();
+startDraftTimer();
+updateBadgeAndReminder();
+</script>
+</body>
+</html>
