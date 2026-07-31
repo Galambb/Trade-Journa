@@ -1062,8 +1062,7 @@ async function saveTrade() {
 
     // Save screenshot to Drive if exists
     if (screenshotData) {
-      var compressed = await compressImage(screenshotData);
-      await apiPost({action: 'saveScreenshot', id: trade.id, image: compressed});
+      await apiPost({action: 'saveScreenshot', id: trade.id, image: screenshotData});
     }
 
     // Update local cache
