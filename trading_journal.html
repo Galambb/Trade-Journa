@@ -420,6 +420,7 @@ body.dark .rg label.hr { background: #450a0a; }
 
 /* Print styles */
 @media print {
+  /* Default: journal print */
   .app-header, .tabs, .journal-toolbar, .exit-form, .tab-btn, .save-btn, .iron { display: none !important; }
   .view { display: block !important; }
   #view-checklist, #view-stats { display: none !important; }
@@ -427,6 +428,18 @@ body.dark .rg label.hr { background: #450a0a; }
   .tc-expand { display: none !important; }
   .trade-card { break-inside: avoid; margin-bottom: 16px; }
   body { background: #fff; font-size: 11px; }
+
+  /* Checklist print mode */
+  body.printing-checklist #view-checklist { display: block !important; }
+  body.printing-checklist #view-journal { display: none !important; }
+  body.printing-checklist #view-stats { display: none !important; }
+  body.printing-checklist .app-header { display: none !important; }
+  body.printing-checklist .save-btn { display: none !important; }
+  body.printing-checklist .draft-indicator { display: none !important; }
+  body.printing-checklist .draft-banner { display: none !important; }
+  body.printing-checklist .actions { display: none !important; }
+  body.printing-checklist .iron { display: block !important; }
+  body.printing-checklist .score-bar { position: static !important; }
 }
 
 @page { size: A4; margin: 12mm; }
@@ -665,7 +678,7 @@ body.dark .rg label.hr { background: #450a0a; }
 
   <div style="display:flex; gap:8px; margin-top:10px;">
     <button class="save-btn" id="save-btn" onclick="saveTrade()" style="flex:1; margin-top:0;">💾 שמור טרייד ביומן</button>
-    <button onclick="window.print()" style="padding:12px 16px; background:var(--bg); color:var(--ink-soft); border:1.5px solid var(--border); border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; white-space:nowrap; transition:all 0.15s;" onmouseover="this.style.borderColor='var(--ink-soft)'" onmouseout="this.style.borderColor='var(--border)'">🖨️ PDF</button>
+    <button onclick="printChecklist()" style="padding:12px 16px; background:var(--bg); color:var(--ink-soft); border:1.5px solid var(--border); border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; white-space:nowrap; transition:all 0.15s;" onmouseover="this.style.borderColor='var(--ink-soft)'" onmouseout="this.style.borderColor='var(--border)'">🖨️ PDF</button>
   </div>
 
   <!-- Iron Rules -->
@@ -824,6 +837,12 @@ async function loadTradesFromCloud() {
 function showLoading(show) {
   var el = document.getElementById('loading-bar');
   if (el) el.style.display = show ? 'block' : 'none';
+}
+
+function printChecklist() {
+  document.body.classList.add('printing-checklist');
+  window.print();
+  document.body.classList.remove('printing-checklist');
 }
 
 // ── EXPORT / IMPORT / PRINT ──
