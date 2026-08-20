@@ -1268,7 +1268,8 @@ function countFlags() {
 
   var tickerFilled = document.getElementById('ticker').value.trim().length > 0;
   var entryFilled = document.getElementById('price-entry').value.trim().length > 0;
-  var isEmpty = !tickerFilled && !entryFilled && y===0 && r===0;
+  var hasBasicInfo = tickerFilled && entryFilled;
+  var isEmpty = !hasBasicInfo && r===0;
 
   var verdict;
   if (isEmpty) {
