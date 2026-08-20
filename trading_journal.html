@@ -24,9 +24,9 @@
   --danger: #b91c1c;
   --danger-bg: #fdf2f1;
   --danger-border: #f0c9c4;
-  --accent: #9d9571;
-  --accent-bg: #f5f3ea;
-  --accent-border: #e0dbc4;
+  --accent: #7c8a99;
+  --accent-bg: #eef1f3;
+  --accent-border: #d3dade;
   --amber: #b45309;
   --amber-bg: #fef8ec;
   --purple: #8b5a3c;
@@ -122,12 +122,14 @@ body {
 .score-bar.clean { background: var(--go-bg); border-color: var(--go-border); }
 .score-bar.warn { background: var(--wait-bg); border-color: var(--wait-border); }
 .score-bar.stop { background: var(--danger-bg); border-color: var(--danger-border); }
+.score-bar.empty { background: var(--bg); border-color: var(--border); }
 .sb-flags { display: flex; gap: 14px; }
 .sb-y { color: var(--wait); } .sb-r { color: var(--danger); }
 .sb-v { margin-right: auto; padding: 4px 14px; border-radius: 6px; font-size: 13px; font-weight: 800; letter-spacing: 0.3px; }
 .sb-v.go { background: var(--go); color: #fff; }
 .sb-v.wait { background: var(--wait); color: #fff; }
 .sb-v.no { background: var(--danger); color: #fff; }
+.sb-v.empty { background: var(--ink-muted); color: #fff; }
 
 /* ── SECTION ── */
 .section { background: var(--surface); border-radius: 14px; border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden; }
@@ -297,9 +299,9 @@ body {
   border: none; border-radius: 10px; font-size: 14px; font-weight: 700;
   cursor: pointer; font-family: 'Rubik', sans-serif;
   transition: all 0.2s; letter-spacing: 0.3px;
-  box-shadow: 0 1px 2px rgba(157,149,113,0.18), 0 2px 8px rgba(157,149,113,0.18);
+  box-shadow: 0 1px 2px rgba(124,138,153,0.18), 0 2px 8px rgba(124,138,153,0.18);
 }
-.save-btn:hover { background: #857f60; transform: translateY(-1px); }
+.save-btn:hover { background: #66727e; transform: translateY(-1px); }
 .save-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
 .pdf-btn {
@@ -1260,20 +1262,33 @@ function countFlags() {
   document.getElementById('yc').textContent = y+' yellow';
   document.getElementById('rc').textContent = r+' red';
   var bar=document.getElementById('sb');
-  bar.className='score-bar '+(r>0?'stop':y>=3?'warn':'clean');
   var sv=document.getElementById('sv');
   var sgo=document.getElementById('score-go'),swa=document.getElementById('score-wait'),sno=document.getElementById('score-no');
   sgo.classList.remove('on');swa.classList.remove('on');sno.classList.remove('on');
+
+  var tickerFilled = document.getElementById('ticker').value.trim().length > 0;
+  var entryFilled = document.getElementById('price-entry').value.trim().length > 0;
+  var isEmpty = !tickerFilled && !entryFilled;
+
   var verdict;
-  if(r>0||y>=4){verdict='NO';sv.textContent='NO';sv.className='sb-v no';sno.classList.add('on');}
-  else if(y===3){verdict='WAIT';sv.textContent='WAIT';sv.className='sb-v wait';swa.classList.add('on');}
-  else{verdict=y>0?'GO ('+y+')':'GO';sv.textContent=verdict;sv.className='sb-v go';sgo.classList.add('on');}
+  if (isEmpty) {
+    verdict = '—';
+    bar.className = 'score-bar empty';
+    sv.textContent = 'ממתין למילוי';
+    sv.className = 'sb-v empty';
+  } else if(r>0||y>=4){
+    verdict='NO'; bar.className='score-bar stop'; sv.textContent='NO';sv.className='sb-v no';sno.classList.add('on');
+  } else if(y===3){
+    verdict='WAIT'; bar.className='score-bar warn'; sv.textContent='WAIT';sv.className='sb-v wait';swa.classList.add('on');
+  } else{
+    verdict=y>0?'GO ('+y+')':'GO'; bar.className='score-bar clean'; sv.textContent=verdict;sv.className='sb-v go';sgo.classList.add('on');
+  }
 
   var bl=document.getElementById('blocker');
   if(r>0&&reasons.length>0){bl.classList.add('on');document.getElementById('bl-reason').textContent=reasons.join(' · ');}
   else{bl.classList.remove('on');}
 
-  return {yellow:y, red:r, verdict: r>0||y>=4?'NO':y===3?'WAIT':'GO'};
+  return {yellow:y, red:r, verdict: verdict};
 }
 
 // ── SAVE TRADE ──
