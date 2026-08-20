@@ -129,7 +129,7 @@ body {
 .sb-v.go { background: var(--go); color: #fff; }
 .sb-v.wait { background: var(--wait); color: #fff; }
 .sb-v.no { background: var(--danger); color: #fff; }
-.sb-v.empty { background: var(--ink-muted); color: #fff; }
+.sb-v.empty { background: transparent; color: var(--ink-muted); font-weight: 600; padding: 4px 0; }
 
 /* ── SECTION ── */
 .section { background: var(--surface); border-radius: 14px; border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden; }
@@ -1268,7 +1268,7 @@ function countFlags() {
 
   var tickerFilled = document.getElementById('ticker').value.trim().length > 0;
   var entryFilled = document.getElementById('price-entry').value.trim().length > 0;
-  var isEmpty = !tickerFilled && !entryFilled;
+  var isEmpty = !tickerFilled && !entryFilled && y===0 && r===0;
 
   var verdict;
   if (isEmpty) {
