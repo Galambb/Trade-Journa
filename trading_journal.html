@@ -7,30 +7,42 @@
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&family=Noto+Sans+Hebrew:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink: #0f172a;
-  --ink-soft: #475569;
-  --ink-muted: #94a3b8;
+  --ink: #292524;
+  --ink-soft: #57534e;
+  --ink-muted: #a8a29e;
   --surface: #ffffff;
-  --bg: #f8fafc;
-  --bg2: #f1f5f9;
-  --border: #e2e8f0;
-  --border-light: #f1f5f9;
+  --bg: #faf8f5;
+  --bg2: #f3f0ea;
+  --border: #e7e2d9;
+  --border-light: #f0ece4;
   --go: #059669;
   --go-bg: #ecfdf5;
   --go-border: #a7f3d0;
-  --wait: #d97706;
-  --wait-bg: #fffbeb;
-  --wait-border: #fde68a;
-  --danger: #dc2626;
-  --danger-bg: #fef2f2;
-  --danger-border: #fecaca;
-  --accent: #2563eb;
-  --accent-bg: #eff6ff;
-  --accent-border: #bfdbfe;
-  --amber: #f59e0b;
-  --amber-bg: #fffbeb;
-  --purple: #7c3aed;
-  --purple-bg: #f5f3ff;
+  --wait: #b45309;
+  --wait-bg: #fef8ec;
+  --wait-border: #f3d9a8;
+  --danger: #b91c1c;
+  --danger-bg: #fdf2f1;
+  --danger-border: #f0c9c4;
+  --accent: #9d9571;
+  --accent-bg: #f5f3ea;
+  --accent-border: #e0dbc4;
+  --amber: #b45309;
+  --amber-bg: #fef8ec;
+  --purple: #8b5a3c;
+  --purple-bg: #f6efe8;
+}
+
+/* Per-tab accent theming — checklist (default) uses root --accent above */
+body.tab-journal {
+  --accent: #6f9573;
+  --accent-bg: #eef4ef;
+  --accent-border: #cddccf;
+}
+body.tab-stats {
+  --accent: #5f8580;
+  --accent-bg: #eaf1f0;
+  --accent-border: #c6dad7;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -47,8 +59,8 @@ body {
 
 /* ── APP SHELL ── */
 .app-header {
-  background: var(--ink);
-  color: #fff;
+  background: var(--surface);
+  color: var(--ink);
   padding: 12px 20px;
   display: flex;
   align-items: center;
@@ -56,19 +68,21 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.04);
+  border-bottom: 1px solid var(--border-light);
 }
 .app-title {
   font-family: 'Rubik', sans-serif;
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: -0.6px;
+  color: var(--accent);
 }
-.app-title span { color: var(--amber); }
 
 .tabs {
   display: flex;
   gap: 4px;
-  background: rgba(255,255,255,0.1);
+  background: var(--bg);
   border-radius: 8px;
   padding: 3px;
 }
@@ -80,15 +94,15 @@ body {
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
-  color: rgba(255,255,255,0.7);
+  color: var(--ink-muted);
   background: transparent;
   transition: all 0.2s;
 }
 .tab-btn.active {
-  background: #fff;
-  color: var(--ink);
+  background: var(--accent);
+  color: #fff;
 }
-.tab-btn:hover:not(.active) { color: #fff; }
+.tab-btn:hover:not(.active) { color: var(--ink); }
 
 /* ── MAIN CONTENT ── */
 .main { max-width: 760px; margin: 0 auto; padding: 16px; }
@@ -110,26 +124,27 @@ body {
 .score-bar.stop { background: var(--danger-bg); border-color: var(--danger-border); }
 .sb-flags { display: flex; gap: 14px; }
 .sb-y { color: var(--wait); } .sb-r { color: var(--danger); }
-.sb-v { margin-right: auto; padding: 3px 12px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+.sb-v { margin-right: auto; padding: 4px 14px; border-radius: 6px; font-size: 13px; font-weight: 800; letter-spacing: 0.3px; }
 .sb-v.go { background: var(--go); color: #fff; }
 .sb-v.wait { background: var(--wait); color: #fff; }
 .sb-v.no { background: var(--danger); color: #fff; }
 
 /* ── SECTION ── */
-.section { background: var(--surface); border-radius: 10px; border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden; }
+.section { background: var(--surface); border-radius: 14px; border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden; }
 .section-head {
   display: flex; align-items: center; gap: 8px;
-  padding: 8px 14px; font-size: 12px; font-weight: 700;
+  padding: 9px 14px; font-size: 12.5px; font-weight: 800;
+  letter-spacing: 0.1px;
   border-bottom: 1px solid var(--border-light);
 }
 .section-head .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .section-head .num { font-size: 10px; color: var(--ink-muted); margin-right: auto; font-weight: 500; }
-.sh-pre { background: #ecfdf5; } .sh-pre .dot { background: var(--go); }
-.sh-mkt { background: var(--accent-bg); } .sh-mkt .dot { background: var(--accent); }
-.sh-sig { background: #f0fdf4; } .sh-sig .dot { background: var(--go); }
-.sh-plan { background: var(--purple-bg); } .sh-plan .dot { background: var(--purple); }
-.sh-score { background: var(--bg); } .sh-score .dot { background: var(--ink); }
-.sh-analysis { background: #f0f9ff; } .sh-analysis .dot { background: #0ea5e9; }
+.sh-pre { background: var(--surface); } .sh-pre .dot { background: var(--go); }
+.sh-mkt { background: var(--surface); } .sh-mkt .dot { background: var(--accent); }
+.sh-sig { background: var(--surface); } .sh-sig .dot { background: var(--go); }
+.sh-plan { background: var(--surface); } .sh-plan .dot { background: var(--purple); }
+.sh-score { background: var(--surface); } .sh-score .dot { background: var(--ink); }
+.sh-analysis { background: var(--surface); } .sh-analysis .dot { background: #0ea5e9; }
 
 .section-body { padding: 10px 14px; }
 
@@ -153,7 +168,7 @@ body {
 .rg input[type="radio"] { cursor: pointer; accent-color: var(--accent); width: 12px; height: 12px; }
 
 /* ── META FIELDS ── */
-.meta { display: grid; grid-template-columns: 1.2fr 0.8fr 0.8fr 0.5fr; gap: 8px; margin-bottom: 10px; background: var(--surface); border-radius: 10px; border: 1px solid var(--border); padding: 10px 14px; }
+.meta { display: grid; grid-template-columns: 1fr 0.8fr 0.9fr 0.9fr 0.5fr; gap: 8px; margin-bottom: 10px; background: var(--surface); border-radius: 14px; border: 1px solid var(--border); padding: 10px 14px; align-items: center; }
 .mf { display: flex; align-items: center; gap: 5px; }
 .mf label { font-size: 10px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
 .mf input, .mf select { flex: 1; border: none; border-bottom: 1.5px solid var(--border); padding: 2px; font-size: 12px; font-family: inherit; font-weight: 600; outline: none; background: transparent; direction: rtl; color: var(--ink); }
@@ -172,7 +187,59 @@ body {
 .rr.bad { border-color: var(--danger-border); background: var(--danger-bg); color: var(--danger); }
 
 /* ── STOP BOX ── */
-.stop-box { background: var(--danger-bg); border: 1px solid var(--danger-border); border-radius: 8px; padding: 8px 14px; margin-bottom: 10px; }
+.stop-box { background: var(--danger-bg); border: 1px solid var(--danger-border); border-radius: 14px; padding: 8px 14px; margin-bottom: 10px; }
+
+/* ── EVENT INDICATOR ── */
+.event-indicator {
+  display: flex; align-items: center; gap: 12px;
+  border-radius: 14px; padding: 10px 14px; margin-bottom: 8px;
+  background: var(--go-bg); border: 1px solid var(--go-border);
+  transition: all 0.2s;
+}
+.event-indicator.warn { background: var(--wait-bg); border-color: var(--wait-border); }
+.event-indicator.danger { background: var(--danger-bg); border-color: var(--danger-border); }
+.ei-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--go); flex-shrink: 0; }
+.event-indicator.warn .ei-dot { background: var(--wait); }
+.event-indicator.danger .ei-dot { background: var(--danger); }
+.ei-text { flex: 1; }
+.ei-title { font-size: 13px; font-weight: 700; color: var(--go); }
+.event-indicator.warn .ei-title { color: var(--wait); }
+.event-indicator.danger .ei-title { color: var(--danger); }
+.ei-sub { font-size: 11px; color: var(--ink-muted); margin-top: 1px; }
+.ei-icon { font-size: 18px; font-weight: 700; color: var(--go); }
+.event-indicator.warn .ei-icon { color: var(--wait); }
+.event-indicator.danger .ei-icon { color: var(--danger); }
+
+.cpi-toggle {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 8px 14px; margin-bottom: 10px;
+}
+.cpi-toggle-row { display: flex; align-items: center; justify-content: space-between; }
+.cpi-label { font-size: 12px; font-weight: 600; color: var(--ink-soft); }
+.cpi-btns { display: flex; gap: 6px; }
+.cpi-btn {
+  padding: 5px 14px; border-radius: 6px; border: 1.5px solid var(--border);
+  background: var(--surface); color: var(--ink-muted); font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all 0.15s;
+}
+.cpi-btn.on-go { border-color: var(--go); background: var(--go-bg); color: var(--go); }
+.cpi-btn.on-danger { border-color: var(--danger); background: var(--danger-bg); color: var(--danger); }
+.cpi-link { display: inline-block; margin-top: 6px; font-size: 11px; color: var(--accent); text-decoration: none; }
+.cpi-link:hover { text-decoration: underline; }
+
+/* ── EARNINGS TOGGLE ── */
+.earnings-toggle-wrap { display: flex; flex-direction: row; align-items: center; gap: 6px; white-space: nowrap; }
+.earnings-toggle-wrap label { white-space: nowrap; }
+.earn-toggle {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 8px; border-radius: 6px; border: 1.5px solid var(--go-border);
+  background: var(--go-bg); color: var(--go); font-size: 11px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; flex-shrink: 0;
+}
+.earn-toggle.on {
+  border-color: var(--danger-border); background: var(--danger-bg); color: var(--danger);
+}
+.earn-icon { font-size: 12px; }
 .stop-box-title { font-size: 11px; font-weight: 700; color: var(--danger); margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
 .stop-box-title::before { content: ""; width: 6px; height: 6px; background: var(--danger); border-radius: 50%; }
 .stop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 16px; }
@@ -180,15 +247,17 @@ body {
 .si::before { content: "×"; position: absolute; right: 0; color: var(--danger); font-weight: 700; font-size: 10px; }
 
 /* ── PRE-FILTER ── */
-.prefilter { background: var(--go-bg); border: 1.5px solid var(--go-border); border-radius: 8px; padding: 8px 14px; margin-bottom: 10px; }
-.pf-title { font-size: 11px; font-weight: 700; color: var(--go); margin-bottom: 6px; }
+.prefilter { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 8px 14px; margin-bottom: 10px; transition: all 0.2s; }
+.prefilter.all-checked { background: var(--go-bg); border-color: var(--go-border); }
+.pf-title { font-size: 11px; font-weight: 700; color: var(--ink-soft); margin-bottom: 6px; transition: color 0.2s; }
+.prefilter.all-checked .pf-title { color: var(--go); }
 .pf-items { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
 .pf-item { display: flex; align-items: flex-start; gap: 6px; font-size: 11px; }
 .pf-item input { accent-color: var(--go); margin-top: 2px; }
 .pf-result { margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--ink-muted); }
 
 /* ── BLOCKER ── */
-.blocker { display: none; background: var(--danger-bg); border: 2px solid var(--danger); border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; text-align: center; }
+.blocker { display: none; background: var(--danger-bg); border: 1.5px solid var(--danger); border-radius: 14px; padding: 10px 14px; margin-bottom: 10px; text-align: center; }
 .blocker.on { display: block; }
 .bl-title { color: var(--danger); font-size: 15px; font-weight: 800; }
 .bl-reason { color: var(--ink-soft); font-size: 11px; margin-top: 2px; }
@@ -200,7 +269,7 @@ body {
 .sc-go { background: var(--go-bg); border: 1.5px solid var(--go-border); }
 .sc-wait { background: var(--wait-bg); border: 1.5px solid var(--wait-border); }
 .sc-no { background: var(--danger-bg); border: 1.5px solid var(--danger-border); }
-.sc-l { font-family: 'Rubik', sans-serif; font-size: 14px; font-weight: 800; letter-spacing: 1px; }
+.sc-l { font-family: 'Rubik', sans-serif; font-size: 18px; font-weight: 900; letter-spacing: 1.5px; }
 .sc-go .sc-l { color: var(--go); } .sc-wait .sc-l { color: var(--wait); } .sc-no .sc-l { color: var(--danger); }
 .sc-d { font-size: 10px; color: var(--ink-muted); margin-top: 2px; }
 
@@ -224,35 +293,42 @@ body {
 
 /* ── SAVE BUTTON ── */
 .save-btn {
-  width: 100%; padding: 12px; background: var(--ink); color: #fff;
-  border: none; border-radius: 8px; font-size: 14px; font-weight: 700;
-  cursor: pointer; font-family: 'Rubik', sans-serif; margin-top: 10px;
+  padding: 11px 28px; background: var(--accent); color: #fff;
+  border: none; border-radius: 10px; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: 'Rubik', sans-serif;
   transition: all 0.2s; letter-spacing: 0.3px;
+  box-shadow: 0 1px 2px rgba(157,149,113,0.18), 0 2px 8px rgba(157,149,113,0.18);
 }
-.save-btn:hover { background: #1e293b; transform: translateY(-1px); }
+.save-btn:hover { background: #857f60; transform: translateY(-1px); }
 .save-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
+.pdf-btn {
+  padding: 11px 22px; background: var(--accent-bg); color: var(--accent);
+  border: 1px solid var(--accent-border); border-radius: 10px; font-size: 13px; font-weight: 700;
+  cursor: pointer; font-family: 'Rubik', sans-serif; white-space: nowrap; transition: all 0.15s;
+}
+.pdf-btn:hover { background: var(--accent-border); }
+.checklist-actions-row { display: flex; gap: 10px; margin-top: 14px; justify-content: center; }
+
 /* ── IRON RULES ── */
-.iron { background: var(--ink); color: #fff; border-radius: 8px; padding: 10px 14px; margin-top: 10px; }
-.iron-title { font-size: 11px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-.iron-title::after { content: ""; flex: 1; height: 1px; background: #334155; }
+.iron { background: var(--surface); color: var(--ink); border-radius: 14px; padding: 10px 14px; margin-top: 10px; border: 1px solid var(--border); }
+.iron-title { font-size: 11px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; color: var(--ink-soft); }
+.iron-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 .iron-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
-.iron-item { font-size: 10.5px; color: #cbd5e1; padding: 2px 10px 2px 0; position: relative; }
-.iron-item::before { content: "→"; position: absolute; right: 0; color: var(--amber); font-size: 9px; }
-.hours-row { margin-top: 8px; padding-top: 8px; border-top: 1px solid #1e293b; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; }
-.hc { border-radius: 4px; padding: 4px 6px; text-align: center; }
-.hc .t { font-size: 10.5px; font-weight: 700; font-family: 'Rubik', monospace; }
-.hc .d { font-size: 8.5px; margin-top: 1px; }
-.h1 { background: #1e1214; } .h1 .t { color: #f87171; } .h1 .d { color: #fca5a5; }
-.h2 { background: #0d1f17; } .h2 .t { color: #4ade80; } .h2 .d { color: #86efac; }
-.h3 { background: #151922; } .h3 .t { color: #64748b; } .h3 .d { color: #475569; }
-.h4 { background: #17171f; } .h4 .t { color: #a5b4fc; } .h4 .d { color: #818cf8; }
+.iron-item { font-size: 10.5px; color: var(--ink-soft); padding: 2px 10px 2px 0; position: relative; }
+.iron-item::before { content: "→"; position: absolute; right: 0; color: var(--accent); font-size: 9px; }
+.hours-row { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-light); display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; }
+.hc { border-radius: 6px; padding: 5px 6px; text-align: center; background: var(--bg); border: 1px solid var(--border-light); }
+.hc .t { font-size: 10.5px; font-weight: 700; font-family: 'Rubik', monospace; color: var(--ink-soft); }
+.hc .d { font-size: 8.5px; margin-top: 1px; color: var(--ink-muted); }
+.h2 { background: var(--go-bg); border-color: var(--go-border); }
+.h2 .t { color: var(--go); } .h2 .d { color: var(--go); }
 
 /* ── JOURNAL ── */
 .journal-empty { text-align: center; padding: 40px; color: var(--ink-muted); }
 .journal-empty .emoji { font-size: 40px; margin-bottom: 10px; }
 .trade-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
   margin-bottom: 8px; overflow: hidden; transition: box-shadow 0.2s;
 }
 .trade-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
@@ -260,7 +336,7 @@ body {
   display: flex; align-items: center; gap: 10px; padding: 10px 14px;
   cursor: pointer;
 }
-.tc-ticker { font-family: 'Rubik', sans-serif; font-size: 15px; font-weight: 800; }
+.tc-ticker { font-family: 'Rubik', sans-serif; font-size: 18px; font-weight: 900; letter-spacing: -0.3px; }
 .tc-date { font-size: 11px; color: var(--ink-muted); }
 .tc-signal { font-size: 10px; color: var(--ink-soft); background: var(--bg); padding: 2px 7px; border-radius: 4px; }
 .tc-verdict { margin-right: auto; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; }
@@ -280,7 +356,7 @@ body {
 .tc-prices { display: flex; gap: 16px; margin-bottom: 10px; }
 .tc-price-item { text-align: center; }
 .tc-price-item .label { font-size: 10px; color: var(--ink-muted); text-transform: uppercase; }
-.tc-price-item .value { font-size: 14px; font-weight: 700; direction: ltr; }
+.tc-price-item .value { font-family: 'Rubik', monospace; font-size: 16px; font-weight: 800; direction: ltr; }
 .tc-price-item .value.entry { color: var(--accent); }
 .tc-price-item .value.stop { color: var(--danger); }
 .tc-price-item .value.target { color: var(--go); }
@@ -307,14 +383,14 @@ body {
 
 /* ── STATS ── */
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; text-align: center; }
 .stat-card .val { font-family: 'Rubik', sans-serif; font-size: 28px; font-weight: 800; }
 .stat-card .lbl { font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
 .stat-card.go-card .val { color: var(--go); }
 .stat-card.red-card .val { color: var(--danger); }
 .stat-card.blue-card .val { color: var(--accent); }
 
-.stat-section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+.stat-section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
 .stat-section h3 { font-size: 12px; font-weight: 700; margin-bottom: 10px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.5px; }
 .stat-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; }
 .stat-row .lbl { flex: 1; color: var(--ink-soft); }
@@ -337,7 +413,7 @@ body {
 .chip.open-t.active { border-color: var(--wait); color: var(--wait); background: var(--wait-bg); }
 
 /* ── DRAFT BANNER ── */
-.draft-banner { display: none; background: var(--wait-bg); border: 1.5px solid var(--wait-border); border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; align-items: center; gap: 10px; }
+.draft-banner { display: none; background: var(--wait-bg); border: 1px solid var(--wait-border); border-radius: 12px; padding: 8px 12px; margin-bottom: 10px; align-items: center; gap: 10px; }
 .draft-banner.show { display: flex; }
 .draft-banner-text { flex: 1; }
 .draft-banner-title { font-size: 12px; font-weight: 700; color: var(--wait); }
@@ -348,7 +424,7 @@ body {
 .draft-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--go); flex-shrink: 0; }
 
 /* ── REMINDER ── */
-.reminder-banner { display: none; background: var(--danger-bg); border: 1.5px solid var(--danger-border); border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; align-items: center; gap: 10px; }
+.reminder-banner { display: none; background: var(--danger-bg); border: 1px solid var(--danger-border); border-radius: 12px; padding: 8px 12px; margin-bottom: 10px; align-items: center; gap: 10px; }
 .reminder-banner.show { display: flex; }
 .reminder-text { flex: 1; }
 .reminder-title { font-size: 12px; font-weight: 700; color: var(--danger); }
@@ -373,7 +449,6 @@ body {
 .pf-item input[type="checkbox"]:checked ~ .cb-box::after {
   content: "✓"; color: #fff; font-size: 11px; font-weight: 800; line-height: 1;
 }
-body.dark .pf-item .cb-box { border-color: #475569; background: #0f172a; }
 
 /* ── CUSTOM RADIO BUTTONS ── */
 .rg input[type="radio"] { display: none; }
@@ -389,11 +464,6 @@ body.dark .pf-item .cb-box { border-color: #475569; background: #0f172a; }
 .rg input[type="radio"]:checked + .rb::after {
   content: ""; width: 5px; height: 5px; border-radius: 50%; background: #fff;
 }
-body.dark .rg .rb { border-color: #64748b; }
-body.dark .rg label { color: #cbd5e1; }
-body.dark .rg label:hover { background: #1e293b; }
-body.dark .rg label.hy { background: #451a03; }
-body.dark .rg label.hr { background: #450a0a; }
 
 /* ── TOAST ── */
 .toast {
@@ -417,6 +487,48 @@ body.dark .rg label.hr { background: #450a0a; }
 }
 .jbtn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
 .jbtn-pdf:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-bg); }
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .main { padding: 10px; }
+  body { font-size: 12.5px; }
+
+  .app-header { padding: 10px 12px; }
+  .app-title { font-size: 14px; }
+  .tab-btn { padding: 5px 10px; font-size: 11px; }
+
+  .meta { grid-template-columns: 1fr 1fr; }
+  .earnings-toggle-wrap { grid-column: 1 / -1; flex-direction: row; justify-content: space-between; }
+
+  .score-bar { flex-wrap: wrap; gap: 8px 14px; }
+  .sb-v { margin-right: 0; }
+
+  .event-indicator { flex-wrap: wrap; }
+
+  .stop-grid { grid-template-columns: 1fr; }
+  .pf-items { grid-template-columns: 1fr; }
+
+  .scores { grid-template-columns: 1fr; gap: 6px; }
+  .sc { padding: 10px; }
+
+  .iron-grid { grid-template-columns: 1fr; }
+  .hours-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .stat-card .val { font-size: 22px; }
+
+  .tc-header { flex-wrap: wrap; gap: 6px; }
+  .tc-prices { flex-wrap: wrap; gap: 10px; }
+  .exit-row { flex-direction: column; align-items: stretch; }
+
+  .journal-toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
+  .journal-actions { justify-content: center; flex-wrap: wrap; }
+
+  .filter-chips { gap: 5px; }
+
+  .checklist-actions-row { flex-direction: column; }
+  .save-btn, .pdf-btn { width: 100%; text-align: center; }
+}
 
 /* Print styles */
 @media print {
@@ -484,8 +596,15 @@ body.dark .rg label.hr { background: #450a0a; }
 
   <!-- Meta -->
   <div class="meta">
-    <div class="mf"><label>תאריך</label><input type="date" id="trade-date" onchange="updateTitle()"></div>
+    <div class="mf"><label>תאריך</label><input type="date" id="trade-date" onchange="updateTitle(); updateEventIndicator()"></div>
     <div class="mf"><label>מניה</label><input type="text" id="ticker" placeholder="NVDA" oninput="updateTitle()" style="text-transform:uppercase;"></div>
+    <div class="mf earnings-toggle-wrap">
+      <label>דיווח תוצאות</label>
+      <button type="button" class="earn-toggle" id="earn-toggle" onclick="toggleEarnings()">
+        <span class="earn-icon" id="earn-icon">✓</span>
+        <span id="earn-text">אין השבוע</span>
+      </button>
+    </div>
     <div class="mf"><label>סיגנל</label>
       <select id="signal-type" onchange="onSignalChange()">
         <option value="">—</option>
@@ -505,6 +624,27 @@ body.dark .rg label.hr { background: #450a0a; }
     </div>
   </div>
 
+  <!-- Event Indicator -->
+  <div class="event-indicator" id="event-indicator">
+    <div class="ei-dot" id="ei-dot"></div>
+    <div class="ei-text">
+      <div class="ei-title" id="ei-title">בודק...</div>
+      <div class="ei-sub" id="ei-sub"></div>
+    </div>
+    <div class="ei-icon" id="ei-icon"></div>
+  </div>
+
+  <div class="cpi-toggle">
+    <div class="cpi-toggle-row">
+      <span class="cpi-label">CPI / PPI היום?</span>
+      <div class="cpi-btns">
+        <button class="cpi-btn" id="cpi-no" onclick="setCpiToday(false)">לא</button>
+        <button class="cpi-btn" id="cpi-yes" onclick="setCpiToday(true)">כן</button>
+      </div>
+    </div>
+    <a href="https://www.bls.gov/schedule/news_release/cpi.htm" target="_blank" rel="noopener" class="cpi-link">בדוק בלוח BLS הרשמי →</a>
+  </div>
+
   <!-- Blocker -->
   <div class="blocker" id="blocker">
     <div class="bl-title">STOP — לא נכנסים</div>
@@ -515,10 +655,8 @@ body.dark .rg label.hr { background: #450a0a; }
   <div class="stop-box">
     <div class="stop-box-title">עצירה מיידית</div>
     <div class="stop-grid">
-      <div class="si">20 MA שטוח / יורד</div>
-      <div class="si">FOMC / CPI / PPI</div>
-      <div class="si">מחיר מתחת ל-20 MA</div>
-      <div class="si">ארנינגס בעוד יום-יומיים</div>
+      <div class="si">20 MA משמש כהתנגדות (מחיר מתחתיו)</div>
+      <div class="si">נגיעה ראשונה ב-MA בלי אישור Volume</div>
       <div class="si">Extension 3+ ATR</div>
       <div class="si">תמיכה שנשברה</div>
       <div class="si">R:R מתחת ל-2:1</div>
@@ -530,8 +668,8 @@ body.dark .rg label.hr { background: #450a0a; }
   <div class="prefilter">
     <div class="pf-title">פילטר מקדים — 30 שניות</div>
     <div class="pf-items">
-      <label class="pf-item"><input type="checkbox" id="pf1" onchange="checkPF()"><span class="cb-box"></span> <span>20 MA עולה + מחיר מעליו / בנגיעה</span></label>
-      <label class="pf-item"><input type="checkbox" id="pf2" onchange="checkPF()"><span class="cb-box"></span> <span>20 MA לא משמש התנגדות</span></label>
+      <label class="pf-item"><input type="checkbox" id="pf1" onchange="checkPF()"><span class="cb-box"></span> <span>20 MA לא משמש כהתנגדות (מחיר מעליו / נוגע בו)</span></label>
+      <label class="pf-item"><input type="checkbox" id="pf2" onchange="checkPF()"><span class="cb-box"></span> <span>אם זו נגיעה ראשונה אחרי שינוי כיוון — יש Volume + נר סגירה חזק</span></label>
       <label class="pf-item"><input type="checkbox" id="pf3" onchange="checkPF()"><span class="cb-box"></span> <span>מניה ללא גאפים תכופים</span></label>
     </div>
     <div class="pf-result" id="pf-result">סמן את שלושת הפילטרים כדי להמשיך</div>
@@ -547,14 +685,6 @@ body.dark .rg label.hr { background: #450a0a; }
             <label><input type="radio" name="spy" value="up" onchange="countFlags()"><span class="rb"></span> עולה</label>
             <label><input type="radio" name="spy" value="down" onchange="countFlags()"><span class="rb"></span> יורד</label>
             <label><input type="radio" name="spy" value="flat" onchange="countFlags()"><span class="rb"></span> דשדוש</label>
-          </div></div>
-        </li>
-        <li><div class="cl-text" style="padding: 3px 0;"><strong>אירועים — לוח כלכלי</strong>
-          <div class="rg">
-            <label><input type="radio" name="ev" value="clean" onchange="countFlags()"><span class="rb"></span> נקי</label>
-            <label id="lbl-opex"><input type="radio" name="ev" value="opex" onchange="countFlags()"><span class="rb"></span> OpEx ⚠️</label>
-            <label id="lbl-fomc"><input type="radio" name="ev" value="fomc" onchange="countFlags()"><span class="rb"></span> FOMC/CPI 🔴</label>
-            <label id="lbl-earn"><input type="radio" name="ev" value="earn" onchange="countFlags()"><span class="rb"></span> Earnings 🔴</label>
           </div></div>
         </li>
       </ul>
@@ -671,9 +801,9 @@ body.dark .rg label.hr { background: #450a0a; }
     <span id="draft-time">טיוטה נשמרה אוטומטית</span>
   </div>
 
-  <div style="display:flex; gap:8px; margin-top:10px;">
-    <button class="save-btn" id="save-btn" onclick="saveTrade()" style="flex:1; margin-top:0;">💾 שמור טרייד ביומן</button>
-    <button onclick="printChecklist()" style="padding:12px 16px; background:var(--bg); color:var(--ink-soft); border:1.5px solid var(--border); border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; white-space:nowrap; transition:all 0.15s;" onmouseover="this.style.borderColor='var(--ink-soft)'" onmouseout="this.style.borderColor='var(--border)'">🖨️ PDF</button>
+  <div class="checklist-actions-row">
+    <button class="save-btn" id="save-btn" onclick="saveTrade()">💾 שמור טרייד ביומן</button>
+    <button class="pdf-btn" onclick="printChecklist()">🖨️ שמירה כ-PDF</button>
   </div>
 
   <!-- Iron Rules -->
@@ -869,6 +999,8 @@ function showView(name) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
   event.target.classList.add('active');
+  document.body.classList.remove('tab-checklist','tab-journal','tab-stats');
+  document.body.classList.add('tab-' + name);
   if (name === 'journal') {
     loadTradesFromCloud().then(() => renderJournal());
   }
@@ -891,6 +1023,117 @@ function updateDateDisplay() {
   if (el) el.textContent = d ? formatDate(d) : '';
 }
 
+// ── EVENT CALENDAR ──
+var FOMC_DATES_2026 = [
+  '2026-01-27','2026-01-28',
+  '2026-03-17','2026-03-18',
+  '2026-04-28','2026-04-29',
+  '2026-06-16','2026-06-17',
+  '2026-07-28','2026-07-29',
+  '2026-09-15','2026-09-16',
+  '2026-10-27','2026-10-28',
+  '2026-12-08','2026-12-09'
+];
+
+function isOpExToday(dateStr) {
+  var d = new Date(dateStr + 'T12:00:00');
+  if (d.getDay() !== 5) return false; // must be Friday
+  var count = 0;
+  var check = new Date(d.getFullYear(), d.getMonth(), 1);
+  while (check <= d) {
+    if (check.getDay() === 5) count++;
+    check.setDate(check.getDate() + 1);
+  }
+  return count === 3;
+}
+
+function getWeekRange(dateStr) {
+  var d = new Date(dateStr + 'T12:00:00');
+  var day = d.getDay(); // 0=Sunday
+  var start = new Date(d); start.setDate(d.getDate() - day);
+  var end = new Date(start); end.setDate(start.getDate() + 6);
+  return {start: start, end: end};
+}
+
+function fomcThisWeek(dateStr) {
+  var range = getWeekRange(dateStr);
+  return FOMC_DATES_2026.some(f => {
+    var fd = new Date(f + 'T12:00:00');
+    return fd >= range.start && fd <= range.end;
+  });
+}
+
+function getSelectedDate() {
+  var el = document.getElementById('trade-date');
+  return el && el.value ? el.value : new Date().toISOString().slice(0,10);
+}
+
+function updateEventIndicator() {
+  var dateStr = getSelectedDate();
+  var indicator = document.getElementById('event-indicator');
+  var title = document.getElementById('ei-title');
+  var sub = document.getElementById('ei-sub');
+  var icon = document.getElementById('ei-icon');
+  var cpiToday = document.getElementById('cpi-yes').classList.contains('on-danger');
+
+  var isFomcToday = FOMC_DATES_2026.includes(dateStr);
+  var isFomcWeek = !isFomcToday && fomcThisWeek(dateStr);
+  var isOpEx = isOpExToday(dateStr);
+
+  indicator.className = 'event-indicator';
+
+  if (isFomcToday || cpiToday) {
+    indicator.classList.add('danger');
+    title.textContent = isFomcToday ? 'FOMC היום' : 'CPI/PPI היום';
+    sub.textContent = 'אין כניסות חדשות';
+    icon.textContent = '✕';
+  } else if (isFomcWeek) {
+    indicator.classList.add('warn');
+    title.textContent = 'FOMC השבוע';
+    sub.textContent = 'שים לב לתאריך המדויק לפני כניסה';
+    icon.textContent = '!';
+  } else if (isOpEx) {
+    indicator.classList.add('warn');
+    title.textContent = 'OpEx היום';
+    sub.textContent = 'תנודתיות מוגברת — זהירות';
+    icon.textContent = '!';
+  } else {
+    title.textContent = 'נקי';
+    sub.textContent = 'אין FOMC · אין OpEx היום';
+    icon.textContent = '✓';
+  }
+
+  countFlags();
+}
+
+function toggleEarnings() {
+  var btn = document.getElementById('earn-toggle');
+  var icon = document.getElementById('earn-icon');
+  var text = document.getElementById('earn-text');
+  var isOn = btn.classList.toggle('on');
+  if (isOn) {
+    icon.textContent = '✕';
+    text.textContent = 'יש השבוע';
+  } else {
+    icon.textContent = '✓';
+    text.textContent = 'אין השבוע';
+  }
+  countFlags();
+}
+
+function setCpiToday(val) {
+  var yesBtn = document.getElementById('cpi-yes');
+  var noBtn = document.getElementById('cpi-no');
+  if (val) {
+    yesBtn.classList.add('on-danger');
+    noBtn.classList.remove('on-go');
+  } else {
+    yesBtn.classList.remove('on-danger');
+    noBtn.classList.add('on-go');
+  }
+  updateEventIndicator();
+}
+
 function initDate() {
   document.getElementById('trade-date').valueAsDate = new Date();
   updateDateDisplay();
@@ -911,8 +1154,15 @@ function checkPF() {
   var p2 = document.getElementById('pf2').checked;
   var p3 = document.getElementById('pf3').checked;
   var el = document.getElementById('pf-result');
-  if (p1 && p2 && p3) { el.textContent = '✅ עבר פילטר — ממשיכים לצ׳קליסט'; el.style.color = 'var(--go)'; }
-  else { var m = []; if(!p1)m.push('20 MA'); if(!p2)m.push('התנגדות'); if(!p3)m.push('גאפים'); el.textContent = 'חסר: ' + m.join(', '); el.style.color = 'var(--danger)'; }
+  var container = document.querySelector('.prefilter');
+  if (p1 && p2 && p3) {
+    el.textContent = '✅ עבר פילטר — ממשיכים לצ׳קליסט'; el.style.color = 'var(--go)';
+    if (container) container.classList.add('all-checked');
+  } else {
+    var m = []; if(!p1)m.push('התנגדות MA'); if(!p2)m.push('אישור נגיעה'); if(!p3)m.push('גאפים');
+    el.textContent = 'חסר: ' + m.join(', '); el.style.color = 'var(--danger)';
+    if (container) container.classList.remove('all-checked');
+  }
 }
 
 // ── SIGNAL CHANGE ──
@@ -962,10 +1212,19 @@ function calcRR() {
 function countFlags() {
   var y=0, r=0, reasons=[];
   if (document.getElementById('trade-num').value==='3') { r++; reasons.push('3+ טריידים'); }
-  var ev=rv('ev');
-  if(ev==='opex') y++;
-  if(ev==='fomc') { r++; reasons.push('FOMC/CPI'); }
-  if(ev==='earn') { r++; reasons.push('ארנינגס'); }
+
+  // Auto-detected events (FOMC / OpEx / CPI-PPI toggle / Earnings toggle)
+  var dateStr = getSelectedDate();
+  var isFomcToday = FOMC_DATES_2026.includes(dateStr);
+  var isOpEx = isOpExToday(dateStr);
+  var cpiToday = document.getElementById('cpi-yes') && document.getElementById('cpi-yes').classList.contains('on-danger');
+  var earningsToday = document.getElementById('earn-toggle') && document.getElementById('earn-toggle').classList.contains('on');
+
+  if (isOpEx) y++;
+  if (isFomcToday) { r++; reasons.push('FOMC'); }
+  if (cpiToday) { r++; reasons.push('CPI/PPI'); }
+  if (earningsToday) { r++; reasons.push('ארנינגס'); }
+
   var sig=document.getElementById('signal-type').value;
   var trend=rv('trend');
   if(trend==='down' && ['support','ma','pullback'].includes(sig)) y++;
@@ -991,7 +1250,6 @@ function countFlags() {
 
   // Highlights
   document.querySelectorAll('.hy,.hr').forEach(e=>e.classList.remove('hy','hr'));
-  if(ev==='opex')hl('lbl-opex','y'); if(ev==='fomc')hl('lbl-fomc','r'); if(ev==='earn')hl('lbl-earn','r');
   if(trend==='down')hl('lbl-trend-down','y');
   if(rv('vol')==='low')hl('lbl-lowvol','y');
   if(col==='red')hl('lbl-red',(spy==='up'||spy==='down')?'y':'');
@@ -1097,8 +1355,15 @@ function resetForm() {
   document.getElementById('pf-result').style.color='var(--ink-muted)';
   removeScreenshot();
   dismissDraft();
+  document.getElementById('cpi-yes').classList.remove('on-danger');
+  document.getElementById('cpi-no').classList.remove('on-go');
+  var earnBtn = document.getElementById('earn-toggle');
+  earnBtn.classList.remove('on');
+  document.getElementById('earn-icon').textContent = '✓';
+  document.getElementById('earn-text').textContent = 'אין השבוע';
   countFlags();
   updateTitle();
+  updateEventIndicator();
 }
 
 // ── RENDER JOURNAL ──
@@ -1348,9 +1613,11 @@ function saveDraft() {
     pf1: document.getElementById('pf1').checked,
     pf2: document.getElementById('pf2').checked,
     pf3: document.getElementById('pf3').checked,
+    earningsOn: document.getElementById('earn-toggle').classList.contains('on'),
+    cpiOn: document.getElementById('cpi-yes').classList.contains('on-danger'),
     radios: {}
   };
-  ['spy','ev','trend','entry','vol','color','support','atr','tb'].forEach(n => { draft.radios[n] = rv(n); });
+  ['spy','trend','entry','vol','color','support','atr','tb'].forEach(n => { draft.radios[n] = rv(n); });
   localStorage.setItem(getDraftKey(), JSON.stringify(draft));
   var ind = document.getElementById('draft-indicator');
   var time = document.getElementById('draft-time');
@@ -1395,6 +1662,12 @@ function restoreDraft() {
     document.getElementById('pf1').checked = draft.pf1 || false;
     document.getElementById('pf2').checked = draft.pf2 || false;
     document.getElementById('pf3').checked = draft.pf3 || false;
+    if (draft.earningsOn) {
+      document.getElementById('earn-toggle').classList.add('on');
+      document.getElementById('earn-icon').textContent = '✕';
+      document.getElementById('earn-text').textContent = 'יש השבוע';
+    }
+    if (draft.cpiOn) { setCpiToday(true); }
     if (draft.radios) {
       Object.entries(draft.radios).forEach(([n, v]) => {
         if (v) { var r = document.querySelector('input[name="'+n+'"][value="'+v+'"]'); if (r) r.checked = true; }
@@ -1403,6 +1676,7 @@ function restoreDraft() {
     onSignalChange();
     checkPF();
     calcRR();
+    updateEventIndicator();
     countFlags();
     dismissDraft();
     toast('✅ טיוטה שוחזרה');
@@ -1454,6 +1728,7 @@ function updateBadgeAndReminder() {
 initDate();
 countFlags();
 updateTitle();
+updateEventIndicator();
 checkDraft();
 startDraftTimer();
 loadTradesFromCloud().then(() => {
