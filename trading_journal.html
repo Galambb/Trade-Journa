@@ -269,32 +269,94 @@ body {
 
 /* ── R:R DISPLAY ── */
 .rr-prominent {
-  background: var(--surface); border: 1.5px solid var(--border); border-radius: 8px;
-  padding: 9px 12px; margin-top: 0; text-align: center; direction: ltr;
+  min-height: 38px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 12px; margin-top: 0; text-align: center; direction: ltr;
+  display: flex; align-items: center; justify-content: center;
   font-family: 'Rubik', monospace; font-size: 14px; font-weight: 800; transition: all 0.3s;
 }
-.plan-result-grid { display:grid; grid-template-columns: 1fr 1fr; gap:16px; align-items:start; margin-top: 12px; }
-@media (max-width: 640px){ .plan-result-grid{ grid-template-columns:1fr; } }
+.plan-result-grid {
+  display:grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap:16px;
+  align-items:start;
+  margin-top: 14px;
+}
+.plan-result-grid > .plan-field { grid-column: span 6; }
+@media (max-width: 640px){
+  .plan-result-grid{ grid-template-columns:1fr; }
+  .plan-result-grid > .plan-field { grid-column: auto; }
+}
 .rr-prominent.good { border-color: var(--go); background: var(--go-bg); color: var(--go); }
 .rr-prominent.ok { border-color: var(--border-strong); color: var(--ink-soft); }
 .rr-prominent.bad { border-color: var(--danger); background: var(--danger-bg); color: var(--danger); }
 
 /* ── PLAN ROW (Entry/Stop/Target) ── */
-.plan-row { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; margin-bottom: 12px; align-items: start; }
+.plan-row { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; margin-bottom: 14px; align-items: start; }
 .plan-row > .plan-field { grid-column: span 6; }
 .plan-row.plan-row-three > .plan-field { grid-column: span 4; }
 .plan-row-single { grid-template-columns: repeat(12, minmax(0, 1fr)); }
 .plan-row-single > .plan-field { grid-column: span 6; }
-.plan-field label { display: block; font-size: 10px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
-.plan-field .hint { display: block; margin-top: 3px; }
+.plan-field { min-width: 0; }
+.plan-field label { display: block; font-size: 10px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 6px; }
+.plan-field .hint { display: block; margin-top: 5px; }
+.plan-field--choice .rg {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 5px 8px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: var(--bg);
+}
 
-/* ── POSITION SIZING EQUATION ── */
-.equation-strip { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin: 14px 0; }
-.eq-label { font-size: 11px; font-weight: 700; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 8px; }
-.eq-row { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: end; gap: 10px; }
-.eq-item { flex: 1; min-width: 0; }
-.eq-item label { display: block; font-size: 9.5px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.2px; margin-bottom: 3px; white-space: nowrap; }
-.eq-arrow { color: var(--ink-muted); font-size: 14px; font-weight: 700; padding-bottom: 8px; flex-shrink: 0; }
+/* ── POSITION SIZING ── */
+.equation-strip {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin: 14px 0;
+}
+.eq-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 12px;
+}
+.risk-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(220px, .75fr);
+  gap: 22px;
+  align-items: stretch;
+}
+.risk-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.eq-row { display: contents; }
+.eq-item { min-width: 0; }
+.eq-item label { display: block; font-size: 9.5px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.2px; margin-bottom: 4px; white-space: nowrap; }
+.eq-arrow { display: none; }
+.risk-summary {
+  border-right: 1px solid var(--border);
+  padding-right: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+.risk-summary-item { display: flex; flex-direction: column; gap: 3px; }
+.risk-summary-label { font-size: 10px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: .2px; }
+.risk-summary-value { font-family: 'Rubik', monospace; font-size: 18px; font-weight: 800; color: var(--ink); direction: ltr; text-align: right; }
+.risk-summary .sizing-default-btn { margin-top: 2px; text-align: right; width: auto; }
+@media (max-width: 700px) {
+  .risk-layout { grid-template-columns: 1fr; gap: 14px; }
+  .risk-summary { border-right: 0; border-top: 1px solid var(--border); padding-right: 0; padding-top: 12px; }
+}
 .sizing-input-prefixed { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: 6px; background: var(--surface); direction: ltr; }
 .sizing-input-prefixed span { padding: 0 0 0 6px; font-size: 13px; font-weight: 700; color: var(--ink-muted); font-family: 'Rubik', monospace; }
 .sizing-input-prefixed input { border: none; padding: 5px 8px 5px 0; width: 100%; font-size: 13px; font-weight: 700; font-family: 'Rubik', monospace; text-align: center; background: transparent; }
@@ -302,9 +364,9 @@ body {
 .sizing-input-prefixed:focus-within { border-color: var(--accent); }
 .eq-readonly .sizing-value { margin: 0; }
 .eq-highlight .sizing-value { border-color: var(--ink-muted); background: var(--surface); }
-.eq-total { margin-top: 8px; font-size: 11px; font-weight: 600; color: var(--ink-soft); text-align: center; }
+.eq-total { margin-top: 0; font-size: 11px; font-weight: 600; color: var(--ink-soft); text-align: right; }
 .eq-total span { font-weight: 800; color: var(--ink); font-family: 'Rubik', monospace; }
-.sizing-default-btn { display: block; margin-top: 8px; background: none; border: none; padding: 0; font-size: 10px; color: var(--ink-muted); cursor: pointer; font-family: inherit; text-decoration: underline; text-underline-offset: 2px; text-align: center; width: 100%; }
+.sizing-default-btn { display: block; margin-top: 0; background: none; border: none; padding: 0; font-size: 10px; color: var(--ink-muted); cursor: pointer; font-family: inherit; text-decoration: underline; text-underline-offset: 2px; text-align: right; width: auto; }
 .sizing-default-btn:hover { color: var(--accent); }
 .sizing-value { background: var(--surface); border: 1.5px solid var(--border-light); border-radius: 6px; padding: 5px 8px; font-size: 13px; font-weight: 800; font-family: 'Rubik', monospace; direction: ltr; text-align: center; color: var(--ink); }
 .sizing-value-lg { color: var(--ink); font-size: 17px; font-weight: 900; }
@@ -313,9 +375,23 @@ body {
 
 /* ── STATUS CARD (unified market status) ── */
 .status-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 10px; overflow: hidden; }
-.status-top-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 14px 14px; }
-.status-top-grid .status-row { border:1px solid var(--border-light); border-radius:10px; min-height:96px; padding:14px 16px; }
-.status-top-grid .status-row ~ .status-row { border-top:1px solid var(--border-light); }
+.status-top-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  padding:0 14px 14px;
+}
+.status-top-grid > .event-indicator,
+.status-top-grid > .cpi-toggle {
+  min-height:112px;
+  padding:16px 18px;
+  border:1px solid var(--border-light);
+  border-radius:10px;
+  background: var(--surface);
+}
+.status-top-grid > .event-indicator.warn { border-color: var(--wait-border); background: #fffdf8; }
+.status-top-grid > .event-indicator.danger { border-color: var(--danger-border); background: #fffafa; }
+.status-top-grid > .cpi-toggle { display:flex; flex-direction:column; justify-content:center; }
 @media (max-width:700px){ .status-top-grid{ grid-template-columns:1fr; } }
 .status-card-title { font-size: 11px; font-weight: 700; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.4px; padding: 12px 16px 8px; }
 .status-row { padding: 12px 16px; }
@@ -327,12 +403,15 @@ body {
 
 /* ── EVENT INDICATOR ── */
 .event-indicator {
-  display: grid; grid-template-columns: auto 1fr; align-items: start; gap: 10px;
-  background: var(--go-bg);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 10px;
+  background: var(--surface);
   transition: all 0.2s;
 }
-.event-indicator.warn { background: var(--wait-bg); }
-.event-indicator.danger { background: var(--danger-bg); }
+.event-indicator.warn { background: #fffdf8; }
+.event-indicator.danger { background: #fffafa; }
 .ei-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--go); flex-shrink: 0; }
 .event-indicator.warn .ei-dot { background: var(--wait); }
 .event-indicator.danger .ei-dot { background: var(--danger); }
@@ -345,7 +424,7 @@ body {
 .event-indicator.warn .ei-icon { color: var(--wait); }
 .event-indicator.danger .ei-icon { color: var(--danger); }
 
-.cpi-toggle-row { display: flex; align-items: center; justify-content: space-between; }
+.cpi-toggle-row { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
 .cpi-label { font-size: 12px; font-weight: 600; color: var(--ink-soft); }
 .cpi-btns { display: flex; gap: 6px; }
 .cpi-btn {
@@ -951,7 +1030,7 @@ body {
             <div class="sizing-input-prefixed"><span>$</span><input type="number" step="0.01" id="price-stop" oninput="calcRR()"></div>
             <span class="hint">רמה טכנית − ATR</span>
           </div>
-          <div class="plan-field">
+          <div class="plan-field plan-field--choice">
             <label>ATR מרווח מתחת לרמה?</label>
             <div class="rg">
               <label><input type="radio" name="atr" value="yes" onchange="countFlags()"><span class="rb"></span> כן</label>
@@ -960,30 +1039,37 @@ body {
           </div>
         </div>
 
-        <!-- Position Sizing Equation -->
+        <!-- Position Sizing -->
         <div class="equation-strip" id="sizing-box">
           <div class="eq-label">סיכון לפוזיציה</div>
-          <div class="eq-row">
-            <div class="eq-item">
-              <label>Max Risk</label>
-              <div class="sizing-input-prefixed eq-input">
-                <span>$</span>
-                <input type="number" step="1" id="max-risk" placeholder="100" oninput="onMaxRiskInput()">
+          <div class="risk-layout">
+            <div class="risk-fields">
+              <div class="eq-row">
+                <div class="eq-item">
+                  <label>Max Risk</label>
+                  <div class="sizing-input-prefixed eq-input">
+                    <span>$</span>
+                    <input type="number" step="1" id="max-risk" placeholder="100" oninput="onMaxRiskInput()">
+                  </div>
+                </div>
+                <div class="eq-item eq-readonly">
+                  <label>Risk / Share</label>
+                  <div class="sizing-value" id="risk-per-share">—</div>
+                </div>
+                <div class="eq-item eq-readonly eq-highlight">
+                  <label>Position Size</label>
+                  <div class="sizing-value sizing-value-lg" id="position-size">— <span class="sizing-unit">מניות</span></div>
+                </div>
               </div>
             </div>
-            <div class="eq-arrow">→</div>
-            <div class="eq-item eq-readonly">
-              <label>Risk / Share</label>
-              <div class="sizing-value" id="risk-per-share">—</div>
-            </div>
-            <div class="eq-arrow">→</div>
-            <div class="eq-item eq-readonly eq-highlight">
-              <label>Position Size</label>
-              <div class="sizing-value sizing-value-lg" id="position-size">— <span class="sizing-unit">מניות</span></div>
+            <div class="risk-summary">
+              <div class="risk-summary-item">
+                <span class="risk-summary-label">סה"כ סיכון בפועל</span>
+                <span class="risk-summary-value" id="total-risk-display">—</span>
+              </div>
+              <button type="button" class="sizing-default-btn" id="sizing-default-btn" onclick="resetToDefaultRisk()">ברירת מחדל: <span id="default-risk-display">$100</span> ✎</button>
             </div>
           </div>
-          <div class="eq-total">סה"כ סיכון בפועל: <span id="total-risk-display">—</span></div>
-          <button type="button" class="sizing-default-btn" id="sizing-default-btn" onclick="resetToDefaultRisk()">ברירת מחדל: <span id="default-risk-display">$100</span> ✎</button>
           <div class="sizing-warning" id="sizing-warning" style="display:none;"></div>
         </div>
 
