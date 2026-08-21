@@ -555,25 +555,93 @@ body {
 .sc-go .sc-l { color: var(--go); } .sc-wait .sc-l { color: var(--wait); } .sc-no .sc-l { color: var(--danger); }
 .sc-d { font-size: 10px; color: var(--ink-muted); margin-top: 2px; }
 
-/* ── ANALYSIS ── */
+/* ── TRADE DOCUMENTATION ── */
+.documentation-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+  gap: 18px;
+  align-items: stretch;
+}
+.documentation-copy,
+.documentation-chart {
+  min-width: 0;
+}
+.documentation-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.documentation-helper {
+  font-size: 10.5px;
+  color: var(--ink-muted);
+  margin-bottom: 8px;
+}
 .analysis-prompts { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
 .prompt-tag { font-size: 10px; font-weight: 600; color: var(--ink-muted); background: var(--bg); border: 1px solid var(--border-light); border-radius: 20px; padding: 2px 10px; }
 .analysis-ta {
-  width: 100%; border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 10px;
-  font-size: 12px; font-family: inherit; resize: vertical; min-height: 50px; outline: none;
-  direction: rtl; color: var(--ink); line-height: 1.6; background: var(--surface);
+  width: 100%; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 12px;
+  font-size: 12px; font-family: inherit; resize: vertical; min-height: 146px; outline: none;
+  direction: rtl; color: var(--ink); line-height: 1.7; background: var(--surface);
 }
 .analysis-ta:focus { border-color: var(--accent); }
 .analysis-ta::placeholder { color: var(--ink-muted); }
-.attach-btn {
-  display: inline-flex; align-items: center; gap: 5px; margin-top: 8px;
-  background: none; border: none; padding: 0; font-size: 11px; color: var(--ink-muted);
-  cursor: pointer; font-family: inherit; text-decoration: underline; text-underline-offset: 2px;
+.chart-upload-shell {
+  min-height: 214px;
+  border: 1.5px dashed var(--border-strong, var(--border));
+  border-radius: 10px;
+  background: var(--bg);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
-.attach-btn:hover { color: var(--accent); }
-.screenshot-preview { margin-top: 8px; display: none; border-radius: 8px; overflow: hidden; position: relative; border: 1px solid var(--border); }
-.screenshot-preview img { width: 100%; height: auto; display: block; }
-.remove-ss { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 4px; padding: 3px 8px; font-size: 11px; cursor: pointer; font-family: inherit; }
+.attach-btn {
+  width: 100%; min-height: 168px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  background: transparent; border: none; padding: 16px; font-size: 12px; color: var(--ink-soft);
+  cursor: pointer; font-family: inherit; text-decoration: none; border-radius: 8px;
+}
+.attach-btn::before {
+  content: "＋";
+  width: 34px; height: 34px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); color: var(--accent); background: var(--surface);
+  font-size: 18px; font-weight: 500;
+}
+.attach-btn:hover { background: var(--surface); color: var(--accent); }
+.chart-upload-note { text-align: center; font-size: 10px; color: var(--ink-muted); margin-top: 6px; }
+.screenshot-preview {
+  margin: 0; display: none; border-radius: 8px; overflow: hidden; position: relative;
+  border: 1px solid var(--border); background: #0f172a;
+}
+.screenshot-preview img {
+  width: 100%; height: 194px; object-fit: contain; display: block; background: #0f172a;
+}
+.screenshot-preview-actions {
+  position: absolute; left: 8px; right: 8px; bottom: 8px;
+  display: flex; gap: 6px; justify-content: flex-start;
+}
+.replace-ss,
+.remove-ss {
+  position: static;
+  background: rgba(255,255,255,0.94); color: var(--ink-soft);
+  border: 1px solid rgba(226,232,240,0.95); border-radius: 6px;
+  padding: 5px 10px; font-size: 10.5px; cursor: pointer; font-family: inherit;
+  backdrop-filter: blur(4px);
+}
+.remove-ss { color: var(--danger); }
+.replace-ss:hover { color: var(--accent); }
+.remove-ss:hover { border-color: var(--danger-border); background: var(--danger-bg); }
+
+@media (max-width: 760px) {
+  .documentation-grid { grid-template-columns: 1fr; }
+  .analysis-ta { min-height: 110px; }
+  .chart-upload-shell { min-height: 190px; }
+  .attach-btn { min-height: 145px; }
+  .screenshot-preview img { height: auto; max-height: 320px; }
+}
 
 /* ── DECISION CONNECTOR ── */
 .decision-section { margin-bottom: 0; }
@@ -841,6 +909,118 @@ body {
   .save-btn { width: 100%; text-align: center; }
 }
 
+
+/* ── V6 TRADE PLAN: PLAN + RISK SUMMARY ── */
+.plan-risk-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(290px, .95fr);
+  gap: 16px;
+  align-items: stretch;
+}
+.plan-panel, .risk-panel {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  min-width: 0;
+}
+.plan-panel { background: var(--surface); }
+.risk-panel { background: var(--bg); }
+.plan-panel-title {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: .45px;
+  margin-bottom: 12px;
+}
+.plan-core-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.atr-inline {
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-light);
+}
+.atr-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink-muted);
+  margin-bottom: 5px;
+}
+.target-options { margin-top: 7px; gap: 7px 10px; }
+.rr-result-wrap { min-width: 0; }
+.rr-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  margin-bottom: 3px;
+}
+.rr-result-wrap .rr-prominent {
+  margin-top: 0;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+.risk-summary-grid-v6 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+.risk-summary-item-v6 label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  margin-bottom: 4px;
+}
+.risk-summary-item-v6 .sizing-value,
+.risk-summary-item-v6 .sizing-input-prefixed { min-height: 40px; }
+.risk-pos-item-v6 .sizing-value-lg {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 24px;
+  background: var(--surface);
+  border-color: var(--accent-border);
+}
+.risk-total-row-v6 {
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+.risk-total-row-v6 span {
+  font-family: 'Rubik', monospace;
+  font-weight: 800;
+  color: var(--ink);
+}
+.risk-panel .sizing-default-btn {
+  margin-top: 6px;
+  width: auto;
+  text-align: right;
+}
+@media (max-width: 900px) {
+  .plan-risk-layout { grid-template-columns: 1fr; }
+  .risk-summary-grid-v6 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .risk-total-row-v6 { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .plan-core-grid, .risk-summary-grid-v6 { grid-template-columns: 1fr; }
+  .risk-total-row-v6 { grid-column: auto; }
+}
+
 /* Print styles */
 @media print {
   body { background: #fff; font-size: 11px; }
@@ -1093,82 +1273,73 @@ body {
       <div class="section-head sh-plan"><span class="dot"></span><span>תוכנית טרייד</span><span class="num">03</span></div>
       <div class="section-body">
 
-        <div class="plan-row plan-row-three">
-          <div class="plan-field">
-            <label>כניסה</label>
-            <div class="sizing-input-prefixed"><span>$</span><input type="number" step="0.01" id="price-entry" oninput="calcRR()"></div>
-          </div>
-          <div class="plan-field">
-            <label>סטופ לוס</label>
-            <div class="sizing-input-prefixed"><span>$</span><input type="number" step="0.01" id="price-stop" oninput="calcRR()"></div>
-            <span class="hint">רמה טכנית − ATR</span>
-          </div>
-          <div class="plan-field plan-field--choice plan-field--atr">
-            <label>ATR מרווח מתחת לרמה?</label>
-            <div class="rg">
-              <label><input type="radio" name="atr" value="yes" onchange="countFlags()"><span class="rb"></span> כן</label>
-              <label><input type="radio" name="atr" value="no" onchange="countFlags()"><span class="rb"></span> לא</label>
+        <div class="plan-risk-layout">
+          <div class="plan-panel">
+            <div class="plan-panel-title">Plan</div>
+            <div class="plan-core-grid">
+              <div class="plan-field">
+                <label>כניסה</label>
+                <div class="sizing-input-prefixed"><span>$</span><input type="number" step="0.01" id="price-entry" oninput="calcRR()"></div>
+              </div>
+
+              <div class="plan-field stop-field">
+                <label>סטופ לוס</label>
+                <div class="sizing-input-prefixed"><span>$</span><input type="number" step="0.01" id="price-stop" oninput="calcRR()"></div>
+                <span class="hint">רמה טכנית − ATR</span>
+                <div class="atr-inline">
+                  <span class="atr-label">ATR מרווח מתחת לרמה?</span>
+                  <div class="rg">
+                    <label><input type="radio" name="atr" value="yes" onchange="countFlags()"><span class="rb"></span> כן</label>
+                    <label><input type="radio" name="atr" value="no" onchange="countFlags()"><span class="rb"></span> לא</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="plan-field target-field">
+                <label>יעד</label>
+                <div class="sizing-input-prefixed"><span>$</span><input type="number" step="0.01" id="price-target" oninput="calcRR()"></div>
+                <div class="rg target-options">
+                  <label><input type="radio" name="tb" value="res"><span class="rb"></span> התנגדות / שיא</label>
+                  <label><input type="radio" name="tb" value="rr"><span class="rb"></span> R:R 2:1</label>
+                  <label id="lbl-feel"><input type="radio" name="tb" value="feel" onchange="countFlags()"><span class="rb"></span> תחושה ⚠️</label>
+                </div>
+              </div>
+
+              <div class="rr-result-wrap">
+                <div class="rr-label">R:R</div>
+                <div class="rr-prominent" id="rr-display">R:R = —</div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Position Sizing -->
-        <div class="equation-strip" id="sizing-box">
-          <div class="eq-label">ניהול סיכון</div>
-          <div class="risk-layout">
-            <div class="risk-input-panel">
-              <div class="eq-item">
+          <div class="risk-panel" id="sizing-box">
+            <div class="plan-panel-title">Risk Summary</div>
+            <div class="risk-summary-grid-v6">
+              <div class="risk-summary-item-v6">
                 <label>Max Risk</label>
                 <div class="sizing-input-prefixed eq-input">
                   <span>$</span>
                   <input type="number" step="1" id="max-risk" placeholder="100" oninput="onMaxRiskInput()">
                 </div>
+                <button type="button" class="sizing-default-btn" id="sizing-default-btn" onclick="resetToDefaultRisk()">Risk default: <span id="default-risk-display">$100</span> · שנה</button>
               </div>
-              <button type="button" class="sizing-default-btn" id="sizing-default-btn" onclick="resetToDefaultRisk()">Risk default: <span id="default-risk-display">$100</span> · שנה</button>
-            </div>
 
-            <div class="risk-output-grid">
-              <div class="eq-item eq-readonly">
+              <div class="risk-summary-item-v6">
                 <label>Risk / Share</label>
                 <div class="sizing-value" id="risk-per-share">—</div>
               </div>
-              <div class="eq-item eq-readonly eq-highlight">
+
+              <div class="risk-summary-item-v6 risk-pos-item-v6">
                 <label>Position Size</label>
                 <div class="sizing-value sizing-value-lg" id="position-size">— <span class="sizing-unit">מניות</span></div>
               </div>
-              <div class="risk-summary">
-                <div class="risk-summary-item">
-                  <span class="risk-summary-label">סה"כ סיכון בפועל</span>
-                  <span class="risk-summary-value" id="total-risk-display">—</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="sizing-warning" id="sizing-warning" style="display:none;"></div>
-        </div>
 
-        <div class="plan-result-grid">
-          <div class="plan-field">
-            <label>יעד</label>
-            <div class="sizing-input-prefixed"><span>$</span><input type="number" step="0.01" id="price-target" oninput="calcRR()"></div>
-            <div class="rg" style="margin-top:5px;">
-              <label><input type="radio" name="tb" value="res"><span class="rb"></span> התנגדות / שיא</label>
-              <label><input type="radio" name="tb" value="rr"><span class="rb"></span> R:R 2:1</label>
-              <label id="lbl-feel"><input type="radio" name="tb" value="feel" onchange="countFlags()"><span class="rb"></span> תחושה ⚠️</label>
+              <div class="risk-total-row-v6">סה"כ סיכון בפועל: <span id="total-risk-display">—</span></div>
             </div>
-          </div>
-          <div class="plan-field">
-            <label>R:R</label>
-            <div class="rr-prominent" id="rr-display">R:R = —</div>
+            <div class="sizing-warning" id="sizing-warning" style="display:none;"></div>
           </div>
         </div>
-
-
-        <div class="invalidation-block">
-          <label class="invalidation-label" for="invalidation">מה יגרום לי לבטל את הטרייד לפני הכניסה?</label>
-          <textarea class="invalidation-input" id="invalidation" rows="2" placeholder="לדוגמה: איבוד VWAP לפני הפריצה / שבירת התמיכה / אין אישור Volume"></textarea>
-          <div class="invalidation-hint">תנאי ביטול מתוכנן מראש — אינו משנה אוטומטית את הציון.</div>
-        </div>      </div>
+      </div>
     </div>
   </div>
 
@@ -1199,25 +1370,41 @@ body {
 
     <div class="decision-connector"><div class="decision-connector-line"></div></div>
 
-    <!-- Analysis -->
+    <!-- Trade Documentation -->
     <div class="section decision-section">
-      <div class="section-head sh-analysis"><span class="dot"></span><span>למה הטרייד הזה מוצדק?</span><span class="num">05</span></div>
+      <div class="section-head sh-analysis"><span class="dot"></span><span>תיעוד הטרייד</span><span class="num">05</span></div>
       <div class="section-body">
-        <div class="analysis-prompts">
-          <span class="prompt-tag">סיגנל</span>
-          <span class="prompt-tag">שוק</span>
-          <span class="prompt-tag">נפח</span>
-          <span class="prompt-tag">חיזוק</span>
-        </div>
-        <textarea class="analysis-ta" id="analysis" placeholder="כתוב במשפט-שניים למה הטרייד הזה טוב"></textarea>
+        <div class="documentation-grid">
+          <div class="documentation-copy">
+            <span class="documentation-label">למה אני לוקח את הטרייד?</span>
+            <div class="documentation-helper">הסבר קצר וממוקד — מה ראית, למה עכשיו, ומה מחזק את הכניסה.</div>
+            <div class="analysis-prompts">
+              <span class="prompt-tag">סיגנל</span>
+              <span class="prompt-tag">שוק</span>
+              <span class="prompt-tag">נפח</span>
+              <span class="prompt-tag">חיזוק</span>
+            </div>
+            <textarea class="analysis-ta" id="analysis" placeholder="כתוב במשפט-שניים למה הטרייד הזה טוב"></textarea>
+          </div>
 
-        <button type="button" class="attach-btn" onclick="document.getElementById('screenshot-input').click()" id="attach-btn">
-          📎 צרף צילום מסך
-        </button>
-        <input type="file" id="screenshot-input" accept="image/*" onchange="handleScreenshot(event)" style="display:none;">
-        <div class="screenshot-preview" id="ss-preview">
-          <img id="ss-img" src="" alt="גרף">
-          <button class="remove-ss" onclick="removeScreenshot()">הסר</button>
+          <div class="documentation-chart">
+            <span class="documentation-label">גרף</span>
+            <div class="documentation-helper">צרף צילום מסך של הגרף הרלוונטי לטרייד.</div>
+            <div class="chart-upload-shell">
+              <button type="button" class="attach-btn" onclick="document.getElementById('screenshot-input').click()" id="attach-btn">
+                צרף צילום מסך
+              </button>
+              <input type="file" id="screenshot-input" accept="image/*" onchange="handleScreenshot(event)" style="display:none;">
+              <div class="screenshot-preview" id="ss-preview">
+                <img id="ss-img" src="" alt="גרף">
+                <div class="screenshot-preview-actions">
+                  <button type="button" class="replace-ss" onclick="document.getElementById('screenshot-input').click()">החלף צילום</button>
+                  <button type="button" class="remove-ss" onclick="removeScreenshot()">הסר</button>
+                </div>
+              </div>
+            </div>
+            <div class="chart-upload-note">צילום מסך הוא אופציונלי</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1380,7 +1567,6 @@ async function loadTradesFromCloud() {
         stopPrice: t.stopPrice || null,
         targetPrice: t.targetPrice || null,
         rr: t.rr || null,
-        invalidation: t.invalidation || '',
         failedRules: t.failedRules || '',
         overrideReason: t.overrideReason || '',
         screenshot: fixScreenshotUrl(t.screenshotUrl)
@@ -1799,18 +1985,21 @@ function updateDynamicSafety(blockerReasons, violationReasons) {
   var title = document.getElementById('stop-box-title');
   var list = document.getElementById('dynamic-stop-list');
   if (!box || !title || !list) return;
+  var row = box.closest('.stop-box');
   box.classList.remove('safe','blocked');
   var items = [];
   if (blockerReasons && blockerReasons.length) {
+    if (row) row.style.display = '';
     box.classList.add('blocked');
     title.textContent = 'המסחר חסום';
     items = blockerReasons;
   } else if (violationReasons && violationReasons.length) {
+    if (row) row.style.display = '';
     title.textContent = 'עצירה מיידית · ' + violationReasons.length + ' תנאים נכשלו';
     items = violationReasons;
   } else {
-    box.classList.add('safe');
-    title.textContent = 'אין תנאי עצירה פעילים';
+    if (row) row.style.display = 'none';
+    title.textContent = '';
   }
   list.innerHTML = items.map(function(x){ return '<div class="dynamic-stop-item">' + escHTML(String(x)) + '</div>'; }).join('');
 }
@@ -1980,7 +2169,6 @@ async function executeSaveTrade(overrideInfo, forcedVerdict) {
     maxRisk: parseFloat(document.getElementById('max-risk').value) || null,
     riskPerShare: sizing.riskPerShare,
     positionSize: sizing.positionSize,
-    invalidation: document.getElementById('invalidation').value.trim(),
     analysis: document.getElementById('analysis').value,
     screenshot: screenshotData,
     override: overrideInfo ? true : false,
@@ -2025,7 +2213,6 @@ function resetForm() {
   document.getElementById('signal-type').value='';
   document.getElementById('trade-num').value='1';
   document.getElementById('analysis').value='';
-  document.getElementById('invalidation').value='';
   document.getElementById('rr-display').textContent='R:R = —';
   document.getElementById('rr-display').className='rr-prominent';
   document.getElementById('trade-date').valueAsDate = new Date();
@@ -2093,7 +2280,6 @@ function tradeCardHTML(t) {
       </div>
       ${isOverride?`<div class="tc-analysis" style="background:var(--danger-bg);color:var(--danger);"><strong>⚠️ Override:</strong> ${escHTML(t.failedRules||'')}<br>${escHTML(t.overrideReason||'')}</div>`:''}
       ${(!isOverride && t.failedRules)?`<div class="tc-rule-note"><strong>NO TRADE · סיבות:</strong> ${escHTML(t.failedRules||'')}</div>`:''}
-      ${t.invalidation?`<div class="tc-invalidation"><strong>תנאי ביטול:</strong> ${escHTML(t.invalidation)}</div>`:''}
       ${t.analysis?`<div class="tc-analysis">${escHTML(t.analysis)}</div>`:''}
       ${t.screenshot?`<div class="tc-screenshot"><img src="${t.screenshot}" alt="גרף"></div>`:''}
       ${t.exitNotes?`<div class="tc-analysis" style="background:#f0fdf4;color:var(--go);">${escHTML(t.exitNotes)}</div>`:''}
@@ -2306,7 +2492,6 @@ function saveDraft() {
     targetPrice: document.getElementById('price-target').value,
     maxRisk: document.getElementById('max-risk').value,
     analysis: document.getElementById('analysis').value,
-    invalidation: document.getElementById('invalidation').value,
     pf1: document.getElementById('pf1').checked,
     pf2: document.getElementById('pf2').checked,
     pf3: document.getElementById('pf3').checked,
@@ -2357,7 +2542,6 @@ function restoreDraft() {
     document.getElementById('price-target').value = draft.targetPrice || '';
     document.getElementById('max-risk').value = draft.maxRisk || getDefaultRisk();
     document.getElementById('analysis').value = draft.analysis || '';
-    document.getElementById('invalidation').value = draft.invalidation || '';
     document.getElementById('pf1').checked = draft.pf1 || false;
     document.getElementById('pf2').checked = draft.pf2 || false;
     document.getElementById('pf3').checked = draft.pf3 || false;
