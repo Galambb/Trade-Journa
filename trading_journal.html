@@ -139,6 +139,37 @@ body {
 .sb-v.no { background: var(--danger); color: #fff; }
 .sb-v.empty { background: transparent; color: var(--ink-muted); font-weight: 600; padding: 4px 0; }
 
+.sb-v { max-width: 62%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── PHASE 2 FLOW STATES ── */
+.stop-box-inner.safe { background: var(--go-bg); border-color: var(--go-border); }
+.stop-box-inner.safe .stop-box-title { color: var(--go); }
+.stop-box-inner.safe .stop-box-title::before { background: var(--go); }
+.stop-box-inner.blocked { background: #fffafa; border-color: var(--danger-border); }
+.dynamic-stop-list:empty { display:none; }
+.dynamic-stop-list { display:grid; grid-template-columns:1fr 1fr; gap:3px 18px; }
+.dynamic-stop-item { font-size:11px; color:var(--ink-soft); padding:2px 12px 2px 0; position:relative; }
+.dynamic-stop-item::before { content:"×"; position:absolute; right:0; color:var(--danger); font-weight:800; }
+.invalidation-block { margin-top:10px; padding-top:10px; border-top:1px solid var(--border-light); }
+.invalidation-label { display:block; font-size:11px; font-weight:700; color:var(--ink-soft); margin-bottom:5px; }
+.invalidation-input { width:100%; border:1.5px solid var(--border); border-radius:8px; padding:8px 10px; font-size:12px; font-family:inherit; color:var(--ink); background:var(--surface); resize:vertical; min-height:46px; outline:none; direction:rtl; }
+.invalidation-input:focus { border-color:var(--accent); }
+.invalidation-hint { margin-top:4px; font-size:10px; color:var(--ink-muted); }
+.sc-d { min-height:16px; }
+.override-action-btn { display:none; padding:10px 18px; border-radius:9px; border:1.5px solid var(--wait-border); background:var(--wait-bg); color:var(--wait); font-size:12px; font-weight:800; cursor:pointer; font-family:inherit; }
+.override-action-btn:hover { border-color:var(--wait); }
+.checklist-actions-row.has-override { flex-direction:row; justify-content:center; flex-wrap:wrap; }
+.tc-rule-note { font-size:11px; color:var(--danger); background:var(--danger-bg); border:1px solid var(--danger-border); border-radius:6px; padding:7px 9px; margin-bottom:8px; }
+.tc-invalidation { font-size:11px; color:var(--ink-soft); background:var(--bg); border-radius:6px; padding:7px 9px; margin-bottom:8px; }
+.tc-invalidation strong { color:var(--ink); }
+@media (max-width:640px) {
+  .dynamic-stop-list { grid-template-columns:1fr; }
+  .sb-v { max-width:100%; }
+  .checklist-actions-row.has-override { flex-direction:column; }
+  .override-action-btn { width:100%; }
+}
+
+
 /* ── SECTION ── */
 .section { background: var(--surface); border-radius: 14px; border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden; }
 
@@ -944,17 +975,11 @@ body {
 
       <!-- Stop Box -->
       <div class="status-row stop-box">
-        <div class="stop-box-inner">
-        <div class="stop-box-title">עצירה מיידית</div>
-        <div class="stop-grid">
-          <div class="si">20 MA משמש כהתנגדות (מחיר מתחתיו)</div>
-          <div class="si">נגיעה ראשונה ב-MA בלי אישור Volume</div>
-          <div class="si">Extension 3+ ATR</div>
-          <div class="si">תמיכה שנשברה</div>
-          <div class="si">R:R מתחת ל-2:1</div>
-          <div class="si">2+ סטופים / 3+ טריידים</div>
+        <div class="stop-box-inner safe" id="stop-box-inner">
+          <div class="stop-box-title" id="stop-box-title">אין תנאי עצירה פעילים</div>
+          <div class="dynamic-stop-list" id="dynamic-stop-list"></div>
         </div>
-        </div>
+      </div>
       </div>
 
       <!-- Pre-filter -->
@@ -1137,7 +1162,13 @@ body {
             <div class="rr-prominent" id="rr-display">R:R = —</div>
           </div>
         </div>
-      </div>
+
+
+        <div class="invalidation-block">
+          <label class="invalidation-label" for="invalidation">מה יגרום לי לבטל את הטרייד לפני הכניסה?</label>
+          <textarea class="invalidation-input" id="invalidation" rows="2" placeholder="לדוגמה: איבוד VWAP לפני הפריצה / שבירת התמיכה / אין אישור Volume"></textarea>
+          <div class="invalidation-hint">תנאי ביטול מתוכנן מראש — אינו משנה אוטומטית את הציון.</div>
+        </div>      </div>
     </div>
   </div>
 
@@ -1152,15 +1183,15 @@ body {
         <div class="scores">
           <div class="sc sc-go" id="score-go">
             <div class="sc-l"><span class="sc-icon">✓</span> GO</div>
-            <div class="sc-d">מוכן לכניסה</div>
+            <div class="sc-d" id="score-go-reason">מוכן לכניסה</div>
           </div>
           <div class="sc sc-wait" id="score-wait">
             <div class="sc-l"><span class="sc-icon">⏳</span> WAIT</div>
-            <div class="sc-d">חסר אישור</div>
+            <div class="sc-d" id="score-wait-reason">חסר אישור</div>
           </div>
           <div class="sc sc-no" id="score-no">
             <div class="sc-l"><span class="sc-icon">✕</span> NO</div>
-            <div class="sc-d">לא עומד בתנאים</div>
+            <div class="sc-d" id="score-no-reason">לא עומד בתנאים</div>
           </div>
         </div>
       </div>
@@ -1197,8 +1228,9 @@ body {
     <span id="draft-time">טיוטה נשמרה אוטומטית</span>
   </div>
 
-  <div class="checklist-actions-row">
+  <div class="checklist-actions-row" id="checklist-actions-row">
     <button class="save-btn" id="save-btn" onclick="saveTrade()">שמור טרייד ביומן</button>
+    <button class="override-action-btn" id="override-action-btn" type="button" onclick="openCurrentOverride()">Override והמשך</button>
     <button class="pdf-link" onclick="printChecklist()">הפק PDF</button>
   </div>
 
@@ -1348,6 +1380,9 @@ async function loadTradesFromCloud() {
         stopPrice: t.stopPrice || null,
         targetPrice: t.targetPrice || null,
         rr: t.rr || null,
+        invalidation: t.invalidation || '',
+        failedRules: t.failedRules || '',
+        overrideReason: t.overrideReason || '',
         screenshot: fixScreenshotUrl(t.screenshotUrl)
       }));
       setCache(trades);
@@ -1730,7 +1765,7 @@ async function confirmOverride() {
   if (!reason) { toast('⚠️ חובה לכתוב סיבה'); return; }
   var rules = pendingViolationRules;
   closeOverrideModal();
-  await executeSaveTrade({ reason: reason, rules: rules });
+  await executeSaveTrade({ reason: reason, rules: rules }, 'GO');
 }
 
 // ── HARD GATE ──
@@ -1748,8 +1783,8 @@ function applyGate(blockerReasons) {
     g4.classList.add('gate-disabled');
     msg.style.display = 'block';
     reasonsEl.textContent = blockerReasons.join(' · ');
-    if (saveBtn) saveBtn.disabled = true;
-    if (actionsRow) actionsRow.classList.add('gate-disabled');
+    if (saveBtn) saveBtn.disabled = false;
+    if (actionsRow) actionsRow.classList.remove('gate-disabled');
   } else {
     g3.classList.remove('gate-disabled');
     g4.classList.remove('gate-disabled');
@@ -1759,47 +1794,105 @@ function applyGate(blockerReasons) {
   }
 }
 
+function updateDynamicSafety(blockerReasons, violationReasons) {
+  var box = document.getElementById('stop-box-inner');
+  var title = document.getElementById('stop-box-title');
+  var list = document.getElementById('dynamic-stop-list');
+  if (!box || !title || !list) return;
+  box.classList.remove('safe','blocked');
+  var items = [];
+  if (blockerReasons && blockerReasons.length) {
+    box.classList.add('blocked');
+    title.textContent = 'המסחר חסום';
+    items = blockerReasons;
+  } else if (violationReasons && violationReasons.length) {
+    title.textContent = 'עצירה מיידית · ' + violationReasons.length + ' תנאים נכשלו';
+    items = violationReasons;
+  } else {
+    box.classList.add('safe');
+    title.textContent = 'אין תנאי עצירה פעילים';
+  }
+  list.innerHTML = items.map(function(x){ return '<div class="dynamic-stop-item">' + escHTML(String(x)) + '</div>'; }).join('');
+}
+
+function updateDecisionReasons(verdict, warningReasons, blockerReasons, violationReasons, yellowCount) {
+  var go = document.getElementById('score-go-reason');
+  var wait = document.getElementById('score-wait-reason');
+  var no = document.getElementById('score-no-reason');
+  if (go) go.textContent = 'התנאים המרכזיים עברו';
+  if (wait) wait.textContent = warningReasons && warningReasons.length ? warningReasons.slice(0,2).join(' · ') : 'חסר אישור';
+  if (no) {
+    if (blockerReasons && blockerReasons.length) no.textContent = blockerReasons[0];
+    else if (violationReasons && violationReasons.length) no.textContent = violationReasons.slice(0,2).join(' · ');
+    else if (yellowCount >= 4) no.textContent = yellowCount + ' אזהרות פעילות';
+    else no.textContent = 'לא עומד בתנאים';
+  }
+  if (verdict && String(verdict).indexOf('GO') === 0 && go && warningReasons && warningReasons.length) {
+    go.textContent = 'תקין · ' + warningReasons[0];
+  }
+}
+
+function updateSaveActions(flags) {
+  var saveBtn = document.getElementById('save-btn');
+  var overrideBtn = document.getElementById('override-action-btn');
+  var row = document.getElementById('checklist-actions-row');
+  if (!saveBtn || !overrideBtn) return;
+  var isNo = flags && flags.verdict === 'NO';
+  var blocked = flags && flags.blockerReasons && flags.blockerReasons.length > 0;
+  var overridable = flags && flags.violationReasons && flags.violationReasons.length > 0 && !blocked;
+  saveBtn.textContent = (isNo || blocked) ? 'שמור כ-NO TRADE' : 'שמור טרייד ביומן';
+  overrideBtn.style.display = overridable ? 'inline-flex' : 'none';
+  if (row) row.classList.toggle('has-override', overridable);
+}
+
+function openCurrentOverride() {
+  var flags = countFlags();
+  if (!flags.violationReasons || !flags.violationReasons.length) {
+    toast('אין כרגע כלל שמאפשר Override');
+    return;
+  }
+  openOverrideModal(flags.violationReasons);
+}
+
 // ── COUNT FLAGS ──
 function countFlags() {
-  var y=0, r=0, reasons=[], blockerReasons=[], violationReasons=[];
+  var y=0, r=0, reasons=[], blockerReasons=[], violationReasons=[], warningReasons=[];
   if (document.getElementById('trade-num').value==='3') { r++; reasons.push('3+ טריידים'); violationReasons.push('3+ טריידים היום'); }
 
-  // Auto-detected events (FOMC / OpEx / CPI-PPI toggle / Earnings toggle)
   var dateStr = getSelectedDate();
   var isFomcToday = FOMC_DATES_2026.includes(dateStr);
   var isOpEx = isOpExToday(dateStr);
   var cpiToday = document.getElementById('cpi-yes') && document.getElementById('cpi-yes').classList.contains('on-danger');
   var earningsToday = document.getElementById('earn-toggle') && document.getElementById('earn-toggle').classList.contains('on');
 
-  if (isOpEx) y++;
+  if (isOpEx) { y++; warningReasons.push('OpEx — תנודתיות מוגברת'); }
   if (isFomcToday) { r++; reasons.push('FOMC'); blockerReasons.push('FOMC היום'); }
   if (cpiToday) { r++; reasons.push('CPI/PPI'); blockerReasons.push('CPI/PPI היום'); }
   if (earningsToday) { r++; reasons.push('ארנינגס'); blockerReasons.push('דיווח תוצאות השבוע'); }
 
   var sig=document.getElementById('signal-type').value;
   var trend=rv('trend');
-  if(trend==='down' && ['support','ma','pullback'].includes(sig)) y++;
+  if(trend==='down' && ['support','ma','pullback'].includes(sig)) { y++; warningReasons.push('מגמת המניה נגד הסיגנל'); }
   var dist=parseFloat(document.getElementById('distance').value)||0;
   var dh=document.getElementById('dist-hint');
   if(dist>=5){r++;reasons.push('רדיפה 5%+');violationReasons.push('רדיפה — 5%+ מהסיגנל');dh.textContent='🔴 רדיפה';}
-  else if(dist>=3){y++;dh.textContent='⚠️ שקול Retest';}
+  else if(dist>=3){y++;warningReasons.push('מרחק מהסיגנל — שקול Retest');dh.textContent='⚠️ שקול Retest';}
   else if(dist>=2){dh.textContent='📝 שקול Retest';}
   else{dh.textContent='';}
-  if(rv('entry')==='market' && dist>=2) y++;
-  if(rv('vol')==='low' && sig==='breakout') y++;
+  if(rv('entry')==='market' && dist>=2) { y++; warningReasons.push('כניסת Market רחוקה מהסיגנל'); }
+  if(rv('vol')==='low' && sig==='breakout') { y++; warningReasons.push('Volume נמוך לפריצה'); }
   var spy=rv('spy'), col=rv('color');
-  if(spy==='down' && col==='red') y++;
-  if(spy==='up' && col==='red') y++;
+  if(spy==='down' && col==='red') { y++; warningReasons.push('מניה אדומה בשוק יורד'); }
+  if(spy==='up' && col==='red') { y++; warningReasons.push('המניה לא מיושרת עם השוק'); }
   var sup=rv('support');
-  if(sup==='4plus') y++;
+  if(sup==='4plus') { y++; warningReasons.push('תמיכה נבדקה 4+ פעמים'); }
   if(sup==='broken'){r++;reasons.push('תמיכה שנשברה');violationReasons.push('תמיכה שנשברה');}
-  if(rv('tb')==='feel') y++;
+  if(rv('tb')==='feel') { y++; warningReasons.push('היעד מבוסס תחושה'); }
   var pe=parseFloat(document.getElementById('price-entry').value);
   var ps=parseFloat(document.getElementById('price-stop').value);
   var pt=parseFloat(document.getElementById('price-target').value);
   if(pe&&ps&&pt&&pe>ps&&pt>pe&&(pt-pe)/(pe-ps)<2.0){r++;reasons.push('R:R < 2:1');violationReasons.push('R:R מתחת ל-2:1');}
 
-  // Highlights
   document.querySelectorAll('.hy,.hr').forEach(e=>e.classList.remove('hy','hr'));
   if(trend==='down')hl('lbl-trend-down','y');
   if(rv('vol')==='low')hl('lbl-lowvol','y');
@@ -1822,25 +1915,27 @@ function countFlags() {
 
   var verdict;
   if (isEmpty) {
-    verdict = '—';
-    bar.className = 'score-bar empty';
-    sv.textContent = 'ממתין למילוי';
-    sv.className = 'sb-v empty';
+    verdict = '—'; bar.className = 'score-bar empty'; sv.textContent = 'ממתין לנתונים'; sv.className = 'sb-v empty';
+  } else if(blockerReasons.length>0){
+    verdict='NO'; bar.className='score-bar stop'; sv.textContent='המסחר חסום';sv.className='sb-v no';sno.classList.add('on');
   } else if(r>0||y>=4){
-    verdict='NO'; bar.className='score-bar stop'; sv.textContent='NO';sv.className='sb-v no';sno.classList.add('on');
+    verdict='NO'; bar.className='score-bar stop'; sv.textContent = violationReasons.length ? 'NO · ' + violationReasons[0] : 'NO · ' + y + ' אזהרות'; sv.className='sb-v no';sno.classList.add('on');
   } else if(y===3){
-    verdict='WAIT'; bar.className='score-bar warn'; sv.textContent='WAIT';sv.className='sb-v wait';swa.classList.add('on');
+    verdict='WAIT'; bar.className='score-bar warn'; sv.textContent='WAIT · ' + (warningReasons[0] || 'חסר אישור'); sv.className='sb-v wait';swa.classList.add('on');
   } else{
-    verdict=y>0?'GO ('+y+')':'GO'; bar.className='score-bar clean'; sv.textContent=verdict;sv.className='sb-v go';sgo.classList.add('on');
+    verdict=y>0?'GO ('+y+')':'GO'; bar.className='score-bar clean'; sv.textContent = y>0 ? 'GO · ' + y + ' אזהרות' : 'GO · התנאים תקינים'; sv.className='sb-v go';sgo.classList.add('on');
   }
 
   var bl=document.getElementById('blocker');
-  if(r>0&&reasons.length>0){bl.classList.add('on');document.getElementById('bl-reason').textContent=reasons.join(' · ');}
+  if(blockerReasons.length>0){bl.classList.add('on');document.getElementById('bl-reason').textContent=blockerReasons.join(' · ');}
   else{bl.classList.remove('on');}
 
+  updateDynamicSafety(blockerReasons, violationReasons);
+  updateDecisionReasons(verdict, warningReasons, blockerReasons, violationReasons, y);
   applyGate(blockerReasons);
-
-  return {yellow:y, red:r, verdict: verdict, blockerReasons: blockerReasons, violationReasons: violationReasons};
+  var result = {yellow:y, red:r, verdict: verdict, blockerReasons: blockerReasons, violationReasons: violationReasons, warningReasons: warningReasons};
+  updateSaveActions(result);
+  return result;
 }
 
 // ── SAVE TRADE ──
@@ -1851,20 +1946,15 @@ async function saveTrade() {
 
   var flags = countFlags();
 
-  if (flags.blockerReasons.length > 0) {
-    toast('🔒 חסום — ' + flags.blockerReasons.join(' · '));
+  if (flags.blockerReasons.length > 0 || flags.verdict === 'NO') {
+    await executeSaveTrade(null, 'NO');
     return;
   }
 
-  if (flags.violationReasons.length > 0) {
-    openOverrideModal(flags.violationReasons);
-    return;
-  }
-
-  await executeSaveTrade(null);
+  await executeSaveTrade(null, null);
 }
 
-async function executeSaveTrade(overrideInfo) {
+async function executeSaveTrade(overrideInfo, forcedVerdict) {
   var ticker = document.getElementById('ticker').value.toUpperCase().trim();
   var date = document.getElementById('trade-date').value;
   var flags = countFlags();
@@ -1882,7 +1972,7 @@ async function executeSaveTrade(overrideInfo) {
     tradeNum: document.getElementById('trade-num').value,
     yellowFlags: flags.yellow,
     redFlags: flags.red,
-    verdict: overrideInfo ? 'GO' : flags.verdict,
+    verdict: forcedVerdict || (overrideInfo ? 'GO' : flags.verdict),
     entryPrice: pe,
     stopPrice: ps,
     targetPrice: pt,
@@ -1890,11 +1980,12 @@ async function executeSaveTrade(overrideInfo) {
     maxRisk: parseFloat(document.getElementById('max-risk').value) || null,
     riskPerShare: sizing.riskPerShare,
     positionSize: sizing.positionSize,
+    invalidation: document.getElementById('invalidation').value.trim(),
     analysis: document.getElementById('analysis').value,
     screenshot: screenshotData,
     override: overrideInfo ? true : false,
     overrideReason: overrideInfo ? overrideInfo.reason : '',
-    failedRules: overrideInfo ? overrideInfo.rules.join(' · ') : '',
+    failedRules: overrideInfo ? overrideInfo.rules.join(' · ') : flags.blockerReasons.concat(flags.violationReasons).join(' · '),
     exitDate: null, exitPrice: null, exitNotes: '', outcome: null, actualRR: null
   };
 
@@ -1916,7 +2007,7 @@ async function executeSaveTrade(overrideInfo) {
     trades.unshift(trade);
     setCache(trades);
 
-    toast(overrideInfo ? '✅ נשמר עם Override' : '✅ טרייד נשמר בענן!');
+    toast(overrideInfo ? '✅ נשמר עם Override' : ((forcedVerdict === 'NO') ? '✅ NO TRADE נשמר ביומן' : '✅ טרייד נשמר בענן!'));
     resetForm();
   } catch(e) {
     toast('⚠️ שגיאה בשמירה: ' + e.message);
@@ -1934,6 +2025,7 @@ function resetForm() {
   document.getElementById('signal-type').value='';
   document.getElementById('trade-num').value='1';
   document.getElementById('analysis').value='';
+  document.getElementById('invalidation').value='';
   document.getElementById('rr-display').textContent='R:R = —';
   document.getElementById('rr-display').className='rr-prominent';
   document.getElementById('trade-date').valueAsDate = new Date();
@@ -2000,6 +2092,8 @@ function tradeCardHTML(t) {
         ${t.exitPrice?`<div class="tc-price-item"><div class="label">יציאה</div><div class="value ${t.outcome==='win'?'entry':'stop'}">$${t.exitPrice}</div></div>`:''}
       </div>
       ${isOverride?`<div class="tc-analysis" style="background:var(--danger-bg);color:var(--danger);"><strong>⚠️ Override:</strong> ${escHTML(t.failedRules||'')}<br>${escHTML(t.overrideReason||'')}</div>`:''}
+      ${(!isOverride && t.failedRules)?`<div class="tc-rule-note"><strong>NO TRADE · סיבות:</strong> ${escHTML(t.failedRules||'')}</div>`:''}
+      ${t.invalidation?`<div class="tc-invalidation"><strong>תנאי ביטול:</strong> ${escHTML(t.invalidation)}</div>`:''}
       ${t.analysis?`<div class="tc-analysis">${escHTML(t.analysis)}</div>`:''}
       ${t.screenshot?`<div class="tc-screenshot"><img src="${t.screenshot}" alt="גרף"></div>`:''}
       ${t.exitNotes?`<div class="tc-analysis" style="background:#f0fdf4;color:var(--go);">${escHTML(t.exitNotes)}</div>`:''}
@@ -2212,6 +2306,7 @@ function saveDraft() {
     targetPrice: document.getElementById('price-target').value,
     maxRisk: document.getElementById('max-risk').value,
     analysis: document.getElementById('analysis').value,
+    invalidation: document.getElementById('invalidation').value,
     pf1: document.getElementById('pf1').checked,
     pf2: document.getElementById('pf2').checked,
     pf3: document.getElementById('pf3').checked,
@@ -2262,6 +2357,7 @@ function restoreDraft() {
     document.getElementById('price-target').value = draft.targetPrice || '';
     document.getElementById('max-risk').value = draft.maxRisk || getDefaultRisk();
     document.getElementById('analysis').value = draft.analysis || '';
+    document.getElementById('invalidation').value = draft.invalidation || '';
     document.getElementById('pf1').checked = draft.pf1 || false;
     document.getElementById('pf2').checked = draft.pf2 || false;
     document.getElementById('pf3').checked = draft.pf3 || false;
