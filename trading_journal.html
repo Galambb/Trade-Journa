@@ -248,47 +248,93 @@ body {
 .technical-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 14px 16px;
-  align-items: start;
+  column-gap: 0;
+  row-gap: 0;
+  align-items: stretch;
 }
 .technical-group-label {
   grid-column: 1 / -1;
   font-size: 9.5px;
   font-weight: 800;
   color: var(--ink-muted);
-  text-transform: uppercase;
-  letter-spacing: .7px;
-  padding-top: 2px;
-  padding-bottom: 2px;
+  letter-spacing: .2px;
+  padding: 6px 0 7px;
   border-bottom: 1px solid var(--border-light);
+  margin-bottom: 0;
+}
+.technical-group-label:not(:first-child) {
+  margin-top: 6px;
+  border-top: 1px solid var(--border-light);
 }
 .technical-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
+  padding: 14px 18px 16px;
+  justify-content: flex-start;
 }
 .technical-field > label {
-  font-size: 11px; font-weight: 700; color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+  min-height: 18px;
 }
 .tf-hint { font-size: 10px; font-weight: 500; color: var(--ink-muted); }
-.tf-input-row { display: flex; align-items: center; gap: 4px; }
-.technical-field { grid-column: span 4; }
+.tf-input-row { display: flex; align-items: center; gap: 4px; min-height: 28px; }
+
+/* Structure = 3 equal RTL columns */
+.technical-field--structure { grid-column: span 4; }
+.technical-field--structure + .technical-field--structure { border-inline-end: 1px solid var(--border-light); }
+
+/* Confirmation = 2 equal RTL columns */
+.technical-field--confirm-wide { grid-column: span 6; }
+.technical-field--confirm-wide + .technical-field--confirm-wide { border-inline-end: 1px solid var(--border-light); }
+
 .technical-field--wide { grid-column: span 6; }
 .technical-field--half { grid-column: span 4; }
-.technical-field--full { grid-column: span 12; }
-.technical-field--structure-wide { grid-column: span 4; }
-.technical-field--confirm-wide { grid-column: span 6; }
-.technical-field .rg { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0; }
+.technical-field--full {
+  grid-column: span 12;
+  border-top: 1px solid var(--border-light);
+  padding-top: 12px;
+}
+.technical-field .rg {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin: 0;
+}
+.technical-field--structure .rg { align-content: flex-start; }
+.technical-field--confirm-wide .rg { gap: 8px 14px; }
+
+/* Distance field should visually occupy its column, not collapse to a tiny inline control */
+.technical-field--distance .tf-input-row {
+  width: min(140px, 100%);
+}
+.technical-field--distance .fi-s {
+  width: 100%;
+  min-width: 0;
+}
 
 @media (max-width: 900px) {
   .technical-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-  .technical-field { grid-column: span 3; }
-  .technical-field--wide, .technical-field--half, .technical-field--full { grid-column: span 6; }
+  .technical-field--structure { grid-column: span 3; }
+  .technical-field--structure:nth-of-type(4) { grid-column: span 6; }
+  .technical-field--confirm-wide,
+  .technical-field--wide,
+  .technical-field--half,
+  .technical-field--full { grid-column: span 6; }
+  .technical-field { border-inline-end: none !important; border-top: 1px solid var(--border-light); }
 }
 @media (max-width: 600px) {
   .technical-grid { grid-template-columns: 1fr; }
-  .technical-field, .technical-field--wide, .technical-field--half, .technical-field--full { grid-column: auto; }
+  .technical-field--structure,
+  .technical-field--confirm-wide,
+  .technical-field--wide,
+  .technical-field--half,
+  .technical-field--full { grid-column: auto; }
+  .technical-field { padding: 12px 4px; }
 }
 
 .rg { display: inline-flex; gap: 6px; flex-wrap: wrap; margin: 2px 0; }
@@ -910,7 +956,7 @@ body {
 }
 
 
-/* ── V7 TRADE PLAN — HUMAN FLOW: PLAN → RISK → REWARD ── */
+/* ── V7.1 TRADE PLAN — COMPACT HUMAN FLOW: PLAN → RISK → REWARD ── */
 .trade-plan-flow {
   display: flex;
   flex-direction: column;
@@ -919,7 +965,7 @@ body {
 }
 
 .trade-plan-stage {
-  padding: 16px 0;
+  padding: 12px 0;
 }
 
 .trade-plan-stage:first-child { padding-top: 2px; }
@@ -929,7 +975,7 @@ body {
   font-size: 11px;
   font-weight: 800;
   color: var(--ink-muted);
-  margin-bottom: 12px;
+  margin-bottom: 9px;
   text-align: right;
 }
 
@@ -937,7 +983,7 @@ body {
 .plan-reward-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 14px;
   align-items: start;
 }
 
@@ -946,37 +992,37 @@ body {
 
 .plan-field label,
 .rr-label,
-.risk-input-block > label,
-.risk-metric > label {
+.risk-metric > label,
+.risk-input-metric > label {
   display: block;
   font-size: 11px;
   font-weight: 700;
   color: var(--ink-muted);
-  margin-bottom: 6px;
+  margin-bottom: 5px;
   text-align: right;
   text-transform: none;
   letter-spacing: 0;
 }
 
 .trade-plan-flow .sizing-input-prefixed {
-  min-height: 44px;
+  min-height: 42px;
   border-radius: 8px;
 }
 
-.trade-plan-flow .sizing-input-prefixed input { min-height: 42px; }
+.trade-plan-flow .sizing-input-prefixed input { min-height: 40px; }
 
 .stop-field .hint {
-  display: block;
-  margin-top: 5px;
+  display: inline-block;
+  margin-top: 4px;
   text-align: right;
 }
 
 .atr-inline {
-  margin-top: 8px;
+  margin-top: 5px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -988,47 +1034,56 @@ body {
 }
 .atr-inline .rg { margin: 0; }
 
-/* Risk stage: one user input, three outputs */
-.risk-input-row {
-  display: grid;
-  grid-template-columns: minmax(220px, 0.8fr) 1.2fr;
-  gap: 18px;
-  align-items: end;
-  margin-bottom: 14px;
-}
-
-.risk-input-block { min-width: 0; max-width: 360px; }
-
-.risk-input-block .sizing-default-btn {
-  margin-top: 6px;
-  width: auto;
-  text-align: right;
-  font-size: 10px;
-}
-
+/* Risk stage: one compact row — one input + three calculated outputs */
 .risk-metrics-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  align-items: stretch;
+}
+
+.risk-input-metric,
+.risk-metric {
+  min-width: 0;
+  min-height: 84px;
+  border-radius: 9px;
+  padding: 9px 10px;
+}
+
+.risk-input-metric {
+  background: transparent;
+  border: 1px solid var(--border-light);
+}
+
+.risk-input-metric .sizing-input-prefixed {
+  min-height: 38px;
+}
+.risk-input-metric .sizing-input-prefixed input { min-height: 36px; }
+
+.risk-input-metric .sizing-default-btn {
+  margin-top: 4px;
+  width: auto;
+  text-align: right;
+  font-size: 9.5px;
 }
 
 .risk-metric {
-  min-width: 0;
   background: var(--bg);
   border: 1px solid var(--border-light);
-  border-radius: 9px;
-  padding: 11px 12px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.risk-metric > label { text-align: center; margin-bottom: 4px; }
+.risk-metric > label { text-align: center; margin-bottom: 3px; }
 .risk-metric .sizing-value {
   border: 0;
   background: transparent;
   padding: 0;
   min-height: auto;
   font-family: 'Rubik', monospace;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 800;
   text-align: center;
 }
@@ -1042,39 +1097,39 @@ body {
   display: flex;
   justify-content: center;
   align-items: baseline;
-  gap: 6px;
-  font-size: 27px;
+  gap: 5px;
+  font-size: 24px;
   line-height: 1.1;
   color: var(--ink);
 }
 
 .risk-metric .sizing-unit {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   color: var(--ink-muted);
 }
 
 .risk-total-value {
   font-family: 'Rubik', monospace;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 800;
   color: var(--ink);
 }
 
-.trade-plan-flow .sizing-warning { margin-top: 10px; }
+.trade-plan-flow .sizing-warning { margin-top: 8px; }
 
 .target-options {
-  margin-top: 7px;
-  gap: 7px 10px;
+  margin-top: 6px;
+  gap: 6px 9px;
   justify-content: flex-start;
 }
 
 .rr-result-wrap { align-self: start; }
-.rr-label { margin-bottom: 6px; }
+.rr-label { margin-bottom: 5px; }
 .rr-result-wrap .rr-prominent {
   margin: 0;
-  min-height: 44px;
-  padding: 8px 12px;
+  min-height: 42px;
+  padding: 7px 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1087,14 +1142,16 @@ body {
 .rr-result-wrap .rr-prominent.ok { background: var(--bg); color: var(--ink-soft); }
 .rr-result-wrap .rr-prominent.bad { background: var(--danger-bg); color: var(--danger); }
 
+@media (max-width: 900px) {
+  .risk-metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @media (max-width: 760px) {
   .plan-entry-stop-grid,
   .plan-reward-grid,
-  .risk-metrics-grid,
-  .risk-input-row {
+  .risk-metrics-grid {
     grid-template-columns: 1fr;
   }
-  .risk-input-block { max-width: none; }
   .atr-inline { align-items: flex-start; flex-direction: column; gap: 4px; }
 }
 
@@ -1285,7 +1342,7 @@ body {
         <div class="technical-grid">
           <div class="technical-group-label">מבנה</div>
 
-          <div class="technical-field">
+          <div class="technical-field technical-field--structure">
             <label>מגמת המניה <span class="tf-hint">(1-3 חודשים)</span></label>
             <div class="rg">
               <label><input type="radio" name="trend" value="up" onchange="countFlags()"><span class="rb"></span> עלייה ✅</label>
@@ -1294,7 +1351,7 @@ body {
             </div>
           </div>
 
-          <div class="technical-field">
+          <div class="technical-field technical-field--structure technical-field--distance">
             <label>מרחק מהסיגנל</label>
             <div class="tf-input-row">
               <input type="number" class="fi fi-s" id="distance" step="0.1" oninput="countFlags()" placeholder="%">%
@@ -1302,7 +1359,7 @@ body {
             <span class="hint" id="dist-hint"></span>
           </div>
 
-          <div class="technical-field">
+          <div class="technical-field technical-field--structure">
             <label>המניה היום</label>
             <div class="rg">
               <label><input type="radio" name="color" value="green" onchange="countFlags()"><span class="rb"></span> ירוקה</label>
@@ -1375,18 +1432,15 @@ body {
 
           <div class="trade-plan-stage trade-plan-stage-risk" id="sizing-box">
             <div class="trade-plan-stage-title">ניהול סיכון</div>
-            <div class="risk-input-row">
-              <div class="risk-input-block">
+            <div class="risk-metrics-grid">
+              <div class="risk-input-metric">
                 <label>Max Risk</label>
                 <div class="sizing-input-prefixed eq-input">
                   <span>$</span>
                   <input type="number" step="1" id="max-risk" placeholder="100" oninput="onMaxRiskInput()">
                 </div>
-                <button type="button" class="sizing-default-btn" id="sizing-default-btn" onclick="resetToDefaultRisk()">Risk default: <span id="default-risk-display">$100</span> · שנה</button>
+                <button type="button" class="sizing-default-btn" id="sizing-default-btn" onclick="resetToDefaultRisk()">ברירת מחדל: <span id="default-risk-display">$100</span> · שנה</button>
               </div>
-            </div>
-
-            <div class="risk-metrics-grid">
               <div class="risk-metric">
                 <label>Risk / Share</label>
                 <div class="sizing-value" id="risk-per-share">—</div>
