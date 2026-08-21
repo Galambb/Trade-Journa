@@ -217,8 +217,19 @@ body {
 .technical-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 16px;
+  gap: 14px 16px;
   align-items: start;
+}
+.technical-group-label {
+  grid-column: 1 / -1;
+  font-size: 9.5px;
+  font-weight: 800;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--border-light);
 }
 .technical-field {
   display: flex;
@@ -231,10 +242,12 @@ body {
 }
 .tf-hint { font-size: 10px; font-weight: 500; color: var(--ink-muted); }
 .tf-input-row { display: flex; align-items: center; gap: 4px; }
-.technical-field { grid-column: span 3; }
+.technical-field { grid-column: span 4; }
 .technical-field--wide { grid-column: span 6; }
-.technical-field--half { grid-column: span 6; }
+.technical-field--half { grid-column: span 4; }
 .technical-field--full { grid-column: span 12; }
+.technical-field--structure-wide { grid-column: span 4; }
+.technical-field--confirm-wide { grid-column: span 6; }
 .technical-field .rg { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0; }
 
 @media (max-width: 900px) {
@@ -295,6 +308,12 @@ body {
 .plan-row { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; margin-bottom: 14px; align-items: start; }
 .plan-row > .plan-field { grid-column: span 6; }
 .plan-row.plan-row-three > .plan-field { grid-column: span 4; }
+.plan-field--atr {
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
 .plan-row-single { grid-template-columns: repeat(12, minmax(0, 1fr)); }
 .plan-row-single > .plan-field { grid-column: span 6; }
 .plan-field { min-width: 0; }
@@ -328,34 +347,45 @@ body {
 }
 .risk-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(220px, .75fr);
+  grid-template-columns: minmax(210px, .8fr) minmax(0, 1.7fr);
   gap: 22px;
   align-items: stretch;
 }
-.risk-fields {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
+.risk-input-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding-left: 20px;
+  border-left: 1px solid var(--border);
 }
-.eq-row { display: contents; }
+.risk-output-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 12px;
+  align-items: stretch;
+}
 .eq-item { min-width: 0; }
 .eq-item label { display: block; font-size: 9.5px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.2px; margin-bottom: 4px; white-space: nowrap; }
 .eq-arrow { display: none; }
 .risk-summary {
-  border-right: 1px solid var(--border);
-  padding-right: 18px;
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--border-light);
+  padding-top: 10px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
 }
-.risk-summary-item { display: flex; flex-direction: column; gap: 3px; }
+.risk-summary-item { display: flex; align-items: baseline; gap: 8px; }
 .risk-summary-label { font-size: 10px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: .2px; }
-.risk-summary-value { font-family: 'Rubik', monospace; font-size: 18px; font-weight: 800; color: var(--ink); direction: ltr; text-align: right; }
-.risk-summary .sizing-default-btn { margin-top: 2px; text-align: right; width: auto; }
+.risk-summary-value { font-family: 'Rubik', monospace; font-size: 15px; font-weight: 800; color: var(--ink); direction: ltr; }
+.risk-summary .sizing-default-btn { margin-top: 0; text-align: left; width: auto; }
 @media (max-width: 700px) {
   .risk-layout { grid-template-columns: 1fr; gap: 14px; }
-  .risk-summary { border-right: 0; border-top: 1px solid var(--border); padding-right: 0; padding-top: 12px; }
+  .risk-input-panel { padding-left: 0; border-left: 0; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .risk-output-grid { grid-template-columns: 1fr; }
+  .risk-summary { align-items: flex-start; flex-direction: column; }
 }
 .sizing-input-prefixed { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: 6px; background: var(--surface); direction: ltr; }
 .sizing-input-prefixed span { padding: 0 0 0 6px; font-size: 13px; font-weight: 700; color: var(--ink-muted); font-family: 'Rubik', monospace; }
@@ -363,7 +393,18 @@ body {
 .sizing-input-prefixed input:focus { outline: none; }
 .sizing-input-prefixed:focus-within { border-color: var(--accent); }
 .eq-readonly .sizing-value { margin: 0; }
-.eq-highlight .sizing-value { border-color: var(--ink-muted); background: var(--surface); }
+.eq-highlight .sizing-value { border-color: var(--accent-border); background: var(--surface); }
+.eq-readonly .sizing-value {
+  background: var(--surface);
+  border-color: transparent;
+  box-shadow: inset 0 0 0 1px var(--border-light);
+}
+.eq-highlight .sizing-value {
+  font-size: 20px;
+  min-height: 44px;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--accent-border);
+}
 .eq-total { margin-top: 0; font-size: 11px; font-weight: 600; color: var(--ink-soft); text-align: right; }
 .eq-total span { font-weight: 800; color: var(--ink); font-family: 'Rubik', monospace; }
 .sizing-default-btn { display: block; margin-top: 0; background: none; border: none; padding: 0; font-size: 10px; color: var(--ink-muted); cursor: pointer; font-family: inherit; text-decoration: underline; text-underline-offset: 2px; text-align: right; width: auto; }
@@ -383,8 +424,8 @@ body {
 }
 .status-top-grid > .event-indicator,
 .status-top-grid > .cpi-toggle {
-  min-height:112px;
-  padding:16px 18px;
+  min-height:86px;
+  padding:12px 14px;
   border:1px solid var(--border-light);
   border-radius:10px;
   background: var(--surface);
@@ -393,13 +434,13 @@ body {
 .status-top-grid > .event-indicator.danger { border-color: var(--danger-border); background: #fffafa; }
 .status-top-grid > .cpi-toggle { display:flex; flex-direction:column; justify-content:center; }
 @media (max-width:700px){ .status-top-grid{ grid-template-columns:1fr; } }
-.status-card-title { font-size: 11px; font-weight: 700; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.4px; padding: 12px 16px 8px; }
-.status-row { padding: 12px 16px; }
+.status-card-title { font-size: 10px; font-weight: 800; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.6px; padding: 10px 16px 7px; }
+.status-row { padding: 10px 16px; }
 .status-row ~ .status-row { border-top: 1px solid var(--border-light); }
 
 /* ── STOP BOX ── */
-.stop-box { background: transparent; padding: 14px 16px; }
-.stop-box-inner { background:#fffafa; border:1px solid var(--danger-border); border-radius:10px; padding:14px 16px; }
+.stop-box { background: transparent; padding: 10px 16px; }
+.stop-box-inner { background:#fffafa; border:1px solid var(--danger-border); border-radius:10px; padding:10px 14px; }
 
 /* ── EVENT INDICATOR ── */
 .event-indicator {
@@ -458,7 +499,8 @@ body {
 
 /* ── PRE-FILTER ── */
 .prefilter.all-checked { background: var(--go-bg); }
-.pf-title { font-size: 11px; font-weight: 700; color: var(--ink-soft); margin-bottom: 6px; transition: color 0.2s; }
+.pf-title { font-size: 11px; font-weight: 800; color: var(--ink-soft); margin-bottom: 5px; transition: color 0.2s; }
+.prefilter { background: #fcfcfd; }
 .prefilter.all-checked .pf-title { color: var(--go); }
 .pf-items { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
 .pf-item { display: flex; align-items: flex-start; gap: 6px; font-size: 11px; }
@@ -504,6 +546,9 @@ body {
 
 /* ── DECISION CONNECTOR ── */
 .decision-section { margin-bottom: 0; }
+#group-3 { margin-bottom: 18px; }
+#group-4 { margin-top: 0; }
+#group-4 .fieldset-title { margin-bottom: 8px; }
 .decision-connector { display: flex; justify-content: center; padding: 2px 0; }
 .decision-connector-line { width: 2px; height: 14px; background: var(--border-strong); }
 .sc-icon { font-size: 13px; font-weight: 700; }
@@ -957,6 +1002,7 @@ body {
       <div class="section-head sh-sig"><span class="dot"></span><span>סיגנל טכני</span><span class="num">02</span></div>
       <div class="section-body">
         <div class="technical-grid">
+          <div class="technical-group-label">מבנה</div>
 
           <div class="technical-field">
             <label>מגמת המניה <span class="tf-hint">(1-3 חודשים)</span></label>
@@ -975,7 +1021,17 @@ body {
             <span class="hint" id="dist-hint"></span>
           </div>
 
-          <div class="technical-field technical-field--wide">
+          <div class="technical-field">
+            <label>המניה היום</label>
+            <div class="rg">
+              <label><input type="radio" name="color" value="green" onchange="countFlags()"><span class="rb"></span> ירוקה</label>
+              <label id="lbl-red"><input type="radio" name="color" value="red" onchange="countFlags()"><span class="rb"></span> אדומה</label>
+            </div>
+          </div>
+
+          <div class="technical-group-label">אישור</div>
+
+          <div class="technical-field technical-field--confirm-wide">
             <label>אופן כניסה</label>
             <div class="rg">
               <label><input type="radio" name="entry" value="limit" onchange="countFlags()"><span class="rb"></span> Limit ✅</label>
@@ -985,15 +1041,7 @@ body {
             </div>
           </div>
 
-          <div class="technical-field technical-field--half">
-            <label>המניה היום</label>
-            <div class="rg">
-              <label><input type="radio" name="color" value="green" onchange="countFlags()"><span class="rb"></span> ירוקה</label>
-              <label id="lbl-red"><input type="radio" name="color" value="red" onchange="countFlags()"><span class="rb"></span> אדומה</label>
-            </div>
-          </div>
-
-          <div class="technical-field technical-field--wide">
+          <div class="technical-field technical-field--confirm-wide">
             <label>Volume <span class="tf-hint">(מול ממוצע 20 יום)</span></label>
             <div class="rg">
               <label><input type="radio" name="vol" value="high" onchange="countFlags()"><span class="rb"></span> גבוה ×1.5+ ✅</label>
@@ -1030,7 +1078,7 @@ body {
             <div class="sizing-input-prefixed"><span>$</span><input type="number" step="0.01" id="price-stop" oninput="calcRR()"></div>
             <span class="hint">רמה טכנית − ATR</span>
           </div>
-          <div class="plan-field plan-field--choice">
+          <div class="plan-field plan-field--choice plan-field--atr">
             <label>ATR מרווח מתחת לרמה?</label>
             <div class="rg">
               <label><input type="radio" name="atr" value="yes" onchange="countFlags()"><span class="rb"></span> כן</label>
@@ -1041,33 +1089,34 @@ body {
 
         <!-- Position Sizing -->
         <div class="equation-strip" id="sizing-box">
-          <div class="eq-label">סיכון לפוזיציה</div>
+          <div class="eq-label">ניהול סיכון</div>
           <div class="risk-layout">
-            <div class="risk-fields">
-              <div class="eq-row">
-                <div class="eq-item">
-                  <label>Max Risk</label>
-                  <div class="sizing-input-prefixed eq-input">
-                    <span>$</span>
-                    <input type="number" step="1" id="max-risk" placeholder="100" oninput="onMaxRiskInput()">
-                  </div>
-                </div>
-                <div class="eq-item eq-readonly">
-                  <label>Risk / Share</label>
-                  <div class="sizing-value" id="risk-per-share">—</div>
-                </div>
-                <div class="eq-item eq-readonly eq-highlight">
-                  <label>Position Size</label>
-                  <div class="sizing-value sizing-value-lg" id="position-size">— <span class="sizing-unit">מניות</span></div>
+            <div class="risk-input-panel">
+              <div class="eq-item">
+                <label>Max Risk</label>
+                <div class="sizing-input-prefixed eq-input">
+                  <span>$</span>
+                  <input type="number" step="1" id="max-risk" placeholder="100" oninput="onMaxRiskInput()">
                 </div>
               </div>
+              <button type="button" class="sizing-default-btn" id="sizing-default-btn" onclick="resetToDefaultRisk()">Risk default: <span id="default-risk-display">$100</span> · שנה</button>
             </div>
-            <div class="risk-summary">
-              <div class="risk-summary-item">
-                <span class="risk-summary-label">סה"כ סיכון בפועל</span>
-                <span class="risk-summary-value" id="total-risk-display">—</span>
+
+            <div class="risk-output-grid">
+              <div class="eq-item eq-readonly">
+                <label>Risk / Share</label>
+                <div class="sizing-value" id="risk-per-share">—</div>
               </div>
-              <button type="button" class="sizing-default-btn" id="sizing-default-btn" onclick="resetToDefaultRisk()">ברירת מחדל: <span id="default-risk-display">$100</span> ✎</button>
+              <div class="eq-item eq-readonly eq-highlight">
+                <label>Position Size</label>
+                <div class="sizing-value sizing-value-lg" id="position-size">— <span class="sizing-unit">מניות</span></div>
+              </div>
+              <div class="risk-summary">
+                <div class="risk-summary-item">
+                  <span class="risk-summary-label">סה"כ סיכון בפועל</span>
+                  <span class="risk-summary-value" id="total-risk-display">—</span>
+                </div>
+              </div>
             </div>
           </div>
           <div class="sizing-warning" id="sizing-warning" style="display:none;"></div>
