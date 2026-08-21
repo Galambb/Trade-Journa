@@ -194,6 +194,21 @@ body {
 
 /* ── R:R DISPLAY ── */
 .rr { background: var(--bg); border: 1.5px solid var(--border); border-radius: 6px; padding: 6px 12px; margin-top: 6px; font-size: 12px; font-weight: 700; text-align: center; direction: ltr; transition: all 0.3s; }
+
+/* ── POSITION SIZING ── */
+.sizing-box { background: var(--purple-bg); border: 1.5px solid var(--purple); border-radius: 10px; padding: 10px 12px; margin: 8px 0; }
+.sizing-title { font-size: 11px; font-weight: 700; color: var(--purple); margin-bottom: 8px; }
+.sizing-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 10px; }
+.sizing-field label { display: block; font-size: 10px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
+.sizing-field input { width: 100%; border: 1.5px solid var(--border); border-radius: 6px; padding: 5px 8px; font-size: 13px; font-weight: 700; font-family: 'Rubik', monospace; direction: ltr; text-align: center; background: var(--surface); }
+.sizing-field input:focus { border-color: var(--purple); outline: none; }
+.sizing-default-btn { display: block; margin-top: 4px; background: none; border: none; padding: 0; font-size: 10px; color: var(--ink-muted); cursor: pointer; font-family: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.sizing-default-btn:hover { color: var(--purple); }
+.sizing-readonly { display: flex; flex-direction: column; }
+.sizing-value { background: var(--surface); border: 1.5px solid var(--border-light); border-radius: 6px; padding: 5px 8px; font-size: 13px; font-weight: 800; font-family: 'Rubik', monospace; direction: ltr; text-align: center; color: var(--ink); }
+.sizing-value-lg { color: var(--purple); font-size: 15px; }
+.sizing-unit { font-size: 10px; font-weight: 500; color: var(--ink-muted); }
+.sizing-warning { margin-top: 8px; background: var(--danger-bg); border: 1px solid var(--danger-border); border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: 600; color: var(--danger); text-align: center; }
 .rr.good { border-color: var(--go-border); background: var(--go-bg); color: var(--go); }
 .rr.ok { color: var(--ink-soft); }
 .rr.bad { border-color: var(--danger-border); background: var(--danger-bg); color: var(--danger); }
@@ -525,6 +540,8 @@ body {
 
   .stop-grid { grid-template-columns: 1fr; }
   .pf-items { grid-template-columns: 1fr; }
+  .sizing-grid { grid-template-columns: 1fr 1fr; }
+  .sizing-field:first-child { grid-column: 1 / -1; }
 
   .scores { grid-template-columns: 1fr; gap: 6px; }
   .sc { padding: 10px; }
@@ -785,6 +802,30 @@ body {
               <label><input type="radio" name="atr" value="no" onchange="countFlags()"><span class="rb"></span> לא</label>
             </div></div>
           </li>
+        </ul>
+
+        <!-- Position Sizing -->
+        <div class="sizing-box" id="sizing-box">
+          <div class="sizing-title">גודל פוזיציה</div>
+          <div class="sizing-grid">
+            <div class="sizing-field">
+              <label>Max Risk ($)</label>
+              <input type="number" step="1" class="fi fi-p" id="max-risk" placeholder="100" oninput="onMaxRiskInput()">
+              <button type="button" class="sizing-default-btn" id="sizing-default-btn" onclick="resetToDefaultRisk()">ברירת מחדל: <span id="default-risk-display">$100</span> ✎</button>
+            </div>
+            <div class="sizing-field sizing-readonly">
+              <label>Risk / Share ($)</label>
+              <div class="sizing-value" id="risk-per-share">—</div>
+            </div>
+            <div class="sizing-field sizing-readonly">
+              <label>Position Size</label>
+              <div class="sizing-value sizing-value-lg" id="position-size">— <span class="sizing-unit">מניות</span></div>
+            </div>
+          </div>
+          <div class="sizing-warning" id="sizing-warning" style="display:none;"></div>
+        </div>
+
+        <ul class="cl">
           <li><div class="cl-text" style="padding: 3px 0;"><strong>יעד</strong> $<input type="number" step="0.01" class="fi fi-p" id="price-target" oninput="calcRR()">
             <div class="rg" style="margin-top:3px;">
               <label><input type="radio" name="tb" value="res"><span class="rb"></span> התנגדות / שיא</label>
@@ -1232,6 +1273,82 @@ function removeScreenshot() {
   document.getElementById('screenshot-input').value = '';
 }
 
+// ── POSITION SIZING ──
+var DEFAULT_RISK_KEY = 'default_max_risk';
+
+function getDefaultRisk() {
+  var v = parseFloat(localStorage.getItem(DEFAULT_RISK_KEY));
+  return (v && v > 0) ? v : 100;
+}
+
+function initSizing() {
+  var dr = getDefaultRisk();
+  document.getElementById('default-risk-display').textContent = '$' + dr;
+  document.getElementById('max-risk').value = dr;
+}
+
+function resetToDefaultRisk() {
+  var current = getDefaultRisk();
+  var input = prompt('ברירת מחדל גלובלית לסיכון מקסימלי ($):', current);
+  if (input === null) return;
+  var val = parseFloat(input);
+  if (!val || val <= 0) { toast('⚠️ ערך לא תקין'); return; }
+  localStorage.setItem(DEFAULT_RISK_KEY, val);
+  document.getElementById('default-risk-display').textContent = '$' + val;
+  document.getElementById('max-risk').value = val;
+  calcSizing();
+  toast('✅ ברירת המחדל עודכנה ל-$' + val);
+}
+
+function onMaxRiskInput() {
+  calcSizing();
+}
+
+function calcSizing() {
+  var e = parseFloat(document.getElementById('price-entry').value);
+  var s = parseFloat(document.getElementById('price-stop').value);
+  var maxRisk = parseFloat(document.getElementById('max-risk').value);
+  var rpsEl = document.getElementById('risk-per-share');
+  var posEl = document.getElementById('position-size');
+  var warnEl = document.getElementById('sizing-warning');
+
+  warnEl.style.display = 'none';
+  warnEl.textContent = '';
+
+  if (!e || !s) {
+    rpsEl.textContent = '—';
+    posEl.innerHTML = '— <span class="sizing-unit">מניות</span>';
+    return { valid: false, riskPerShare: null, positionSize: null };
+  }
+
+  if (s >= e) {
+    rpsEl.textContent = '—';
+    posEl.innerHTML = '— <span class="sizing-unit">מניות</span>';
+    warnEl.style.display = 'block';
+    warnEl.textContent = '⚠️ Stop חייב להיות מתחת למחיר הכניסה';
+    return { valid: false, riskPerShare: null, positionSize: null };
+  }
+
+  var riskPerShare = e - s;
+  rpsEl.textContent = '$' + riskPerShare.toFixed(2);
+
+  if (!maxRisk || maxRisk <= 0) {
+    posEl.innerHTML = '— <span class="sizing-unit">מניות</span>';
+    return { valid: false, riskPerShare: riskPerShare, positionSize: null };
+  }
+
+  var positionSize = Math.floor(maxRisk / riskPerShare);
+  if (positionSize < 1) {
+    posEl.innerHTML = '0 <span class="sizing-unit">מניות</span>';
+    warnEl.style.display = 'block';
+    warnEl.textContent = '⚠️ הסיכון למניה (' + riskPerShare.toFixed(2) + '$) גדול מה-Max Risk — אי אפשר לחשב פוזיציה';
+    return { valid: false, riskPerShare: riskPerShare, positionSize: 0 };
+  }
+
+  posEl.innerHTML = positionSize + ' <span class="sizing-unit">מניות</span>';
+  return { valid: true, riskPerShare: riskPerShare, positionSize: positionSize, maxRisk: maxRisk };
+}
+
 // ── R:R ──
 function calcRR() {
   var e = parseFloat(document.getElementById('price-entry').value);
@@ -1246,6 +1363,7 @@ function calcRR() {
     el.textContent = 'סטופ ($'+s.toFixed(2)+') גבוה מהכניסה — חייב להיות מתחת';
     el.className = 'rr bad';
   } else { el.textContent = 'R:R = —'; el.className = 'rr'; }
+  calcSizing();
   countFlags();
 }
 
@@ -1342,6 +1460,7 @@ async function saveTrade() {
   var ps = parseFloat(document.getElementById('price-stop').value) || null;
   var pt = parseFloat(document.getElementById('price-target').value) || null;
   var rr = (pe && ps && pt && pe > ps && pt > pe) ? parseFloat(((pt-pe)/(pe-ps)).toFixed(1)) : null;
+  var sizing = calcSizing();
 
   var trade = {
     id: Date.now(),
@@ -1356,6 +1475,9 @@ async function saveTrade() {
     stopPrice: ps,
     targetPrice: pt,
     rr: rr,
+    maxRisk: parseFloat(document.getElementById('max-risk').value) || null,
+    riskPerShare: sizing.riskPerShare,
+    positionSize: sizing.positionSize,
     analysis: document.getElementById('analysis').value,
     screenshot: screenshotData,
     exitDate: null, exitPrice: null, exitNotes: '', outcome: null, actualRR: null
@@ -1416,6 +1538,10 @@ function resetForm() {
   earnBtn.classList.remove('on');
   document.getElementById('earn-icon').textContent = '✓';
   document.getElementById('earn-text').textContent = 'אין השבוע';
+  initSizing();
+  document.getElementById('risk-per-share').textContent = '—';
+  document.getElementById('position-size').innerHTML = '— <span class="sizing-unit">מניות</span>';
+  document.getElementById('sizing-warning').style.display = 'none';
   countFlags();
   updateTitle();
   updateEventIndicator();
@@ -1664,6 +1790,7 @@ function saveDraft() {
     entryPrice: document.getElementById('price-entry').value,
     stopPrice: document.getElementById('price-stop').value,
     targetPrice: document.getElementById('price-target').value,
+    maxRisk: document.getElementById('max-risk').value,
     analysis: document.getElementById('analysis').value,
     pf1: document.getElementById('pf1').checked,
     pf2: document.getElementById('pf2').checked,
@@ -1713,6 +1840,7 @@ function restoreDraft() {
     document.getElementById('price-entry').value = draft.entryPrice || '';
     document.getElementById('price-stop').value = draft.stopPrice || '';
     document.getElementById('price-target').value = draft.targetPrice || '';
+    document.getElementById('max-risk').value = draft.maxRisk || getDefaultRisk();
     document.getElementById('analysis').value = draft.analysis || '';
     document.getElementById('pf1').checked = draft.pf1 || false;
     document.getElementById('pf2').checked = draft.pf2 || false;
@@ -1781,6 +1909,7 @@ function updateBadgeAndReminder() {
 
 // ── INIT ──
 initDate();
+initSizing();
 countFlags();
 updateTitle();
 updateEventIndicator();
