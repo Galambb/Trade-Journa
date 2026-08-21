@@ -397,39 +397,24 @@ body {
 .pdf-link:hover { color: var(--accent); }
 .checklist-actions-row { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 14px; }
 
-/* ── TWO-COLUMN LAYOUT (desktop) ── */
-.checklist-layout { display: block; }
-.checklist-main { min-width: 0; }
-
-/* ── SIDEBAR / IRON RULES ── */
+/* ── IRON RULES ── */
 .iron {
-  background: var(--surface); color: var(--ink); border-radius: 14px;
-  padding: 16px 18px; margin-top: 20px; border: 1px solid var(--border);
+  background: var(--bg); color: var(--ink); border-radius: 0;
+  padding: 18px 20px; margin-top: 32px; margin-bottom: -16px;
+  border-top: 1px solid var(--border);
+  width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;
 }
-.iron-inner { max-width: none; margin: 0; }
-.iron-title { font-size: 11px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.4px; }
-.iron-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
-.iron-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 20px; }
-.iron-item { font-size: 10.5px; color: var(--ink-soft); padding: 2px 10px 2px 0; position: relative; }
-.iron-item::before { content: "→"; position: absolute; right: 0; color: var(--accent); font-size: 9px; }
-.hours-title-sidebar { font-size: 11px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 16px; margin-bottom: 8px; }
+.iron-inner { max-width: 760px; margin: 0 auto; }
+.iron-title { font-size: 12px; font-weight: 800; margin-bottom: 8px; color: var(--ink); letter-spacing: -0.1px; }
+.iron-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 20px; }
+.iron-item { font-size: 11px; color: var(--ink-soft); padding: 2px 12px 2px 0; position: relative; }
+.iron-item::before { content: ""; position: absolute; right: 0; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--wait); }
+.iron-subtitle { font-size: 10px; font-weight: 700; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-light); margin-bottom: 8px; }
 .hours-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; }
 .hc { border-radius: 6px; padding: 5px 6px; text-align: center; background: var(--bg); border: 1px solid var(--border-light); }
 .hc .t { font-size: 10.5px; font-weight: 700; font-family: 'Rubik', monospace; color: var(--ink-soft); }
 .hc .d { font-size: 8.5px; margin-top: 1px; color: var(--ink-muted); }
 .h2 { background: var(--go-bg); border-color: var(--go-border); }
-
-/* ── DESKTOP TWO-COLUMN CHECKLIST LAYOUT ── */
-@media (min-width: 900px) {
-  body.tab-checklist .main { max-width: 1020px; }
-  .checklist-layout {
-    display: grid;
-    grid-template-columns: 1fr 260px;
-    gap: 24px;
-    align-items: start;
-  }
-  .iron { position: sticky; top: 76px; margin-top: 0; }
-}
 .h2 .t { color: var(--go); } .h2 .d { color: var(--go); }
 
 /* ── JOURNAL ── */
@@ -656,7 +641,6 @@ body {
   .trade-card { break-inside: avoid; margin-bottom: 16px; }
 
   /* Checklist specific */
-  #view-checklist.active .checklist-layout { display: block !important; }
   #view-checklist.active .iron {
     display: block !important;
     width: auto !important; position: static !important; left: auto !important; right: auto !important;
@@ -683,8 +667,6 @@ body {
      VIEW: CHECKLIST
 ══════════════════════════════════════ -->
 <div id="view-checklist" class="view active">
-<div class="checklist-layout">
-<div class="checklist-main">
 
   <!-- Draft Restore Banner -->
   <div class="draft-banner" id="draft-banner">
@@ -977,10 +959,10 @@ body {
       <div class="section-head sh-analysis"><span class="dot"></span><span>למה הטרייד הזה מוצדק?</span><span class="num">05</span></div>
       <div class="section-body">
         <div class="analysis-prompts">
-          <span class="prompt-tag">Setup</span>
-          <span class="prompt-tag">Market</span>
-          <span class="prompt-tag">Volume</span>
-          <span class="prompt-tag">Confluence</span>
+          <span class="prompt-tag">סיגנל</span>
+          <span class="prompt-tag">שוק</span>
+          <span class="prompt-tag">נפח</span>
+          <span class="prompt-tag">חיזוק</span>
         </div>
         <textarea class="analysis-ta" id="analysis" placeholder="כתוב במשפט-שניים למה הטרייד הזה טוב"></textarea>
 
@@ -1006,29 +988,25 @@ body {
     <button class="pdf-link" onclick="printChecklist()">הפק PDF</button>
   </div>
 
-</div><!-- checklist-main -->
-
-<!-- Sidebar -->
-<div class="iron">
-  <div class="iron-inner">
-    <div class="iron-title">כללי ברזל — אחרי כניסה</div>
-    <div class="iron-grid">
-      <div class="iron-item">אל תזיז את הסטופ למטה</div>
-      <div class="iron-item">תן לטרייד לעבוד</div>
-      <div class="iron-item">אל תוסיף לפוזיציה מפסידה</div>
-      <div class="iron-item">תעד ביומן · Cash is a position</div>
-    </div>
-    <div class="hours-title-sidebar">שעות מסחר</div>
-    <div class="hours-row">
-      <div class="hc h1"><div class="t">16:30–17:00</div><div class="d">המתן</div></div>
-      <div class="hc h2"><div class="t">17:30–19:00</div><div class="d">מומלץ</div></div>
-      <div class="hc h3"><div class="t">19:00–21:30</div><div class="d">נמוך</div></div>
-      <div class="hc h4"><div class="t">21:30–23:00</div><div class="d">סגירה</div></div>
+  <!-- Iron Rules -->
+  <div class="iron">
+    <div class="iron-inner">
+      <div class="iron-title">כללי ברזל</div>
+      <div class="iron-grid">
+        <div class="iron-item">אל תזיז את הסטופ למטה</div>
+        <div class="iron-item">תן לטרייד לעבוד</div>
+        <div class="iron-item">אל תוסיף לפוזיציה מפסידה</div>
+        <div class="iron-item">תעד ביומן · Cash is a position</div>
+      </div>
+      <div class="iron-subtitle">שעות מסחר</div>
+      <div class="hours-row">
+        <div class="hc h1"><div class="t">16:30–17:00</div><div class="d">המתן</div></div>
+        <div class="hc h2"><div class="t">17:30–19:00</div><div class="d">מומלץ</div></div>
+        <div class="hc h3"><div class="t">19:00–21:30</div><div class="d">נמוך</div></div>
+        <div class="hc h4"><div class="t">21:30–23:00</div><div class="d">סגירה</div></div>
+      </div>
     </div>
   </div>
-</div>
-
-</div><!-- checklist-layout -->
 </div>
 
 
