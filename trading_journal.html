@@ -108,18 +108,6 @@ body {
 /* ── MAIN CONTENT ── */
 .main { max-width: 760px; margin: 0 auto; padding: 16px; }
 
-/* ── DESKTOP TWO-COLUMN CHECKLIST LAYOUT ── */
-@media (min-width: 900px) {
-  body.tab-checklist .main { max-width: 1020px; }
-  .checklist-layout {
-    display: grid;
-    grid-template-columns: 1fr 260px;
-    gap: 24px;
-    align-items: start;
-  }
-  .iron { position: sticky; top: 76px; margin-top: 0; }
-}
-
 /* ── VIEWS ── */
 .view { display: none; }
 .view.active { display: block; }
@@ -284,16 +272,16 @@ body {
 .status-row ~ .status-row { border-top: 1px solid var(--border-light); }
 
 /* ── STOP BOX ── */
-.stop-box { border-right: 3px solid var(--danger); background: var(--danger-bg); }
+.stop-box { background: var(--danger-bg); }
 
 /* ── EVENT INDICATOR ── */
 .event-indicator {
   display: flex; align-items: center; gap: 12px;
-  border-right: 3px solid var(--go); background: var(--go-bg);
+  background: var(--go-bg);
   transition: all 0.2s;
 }
-.event-indicator.warn { background: var(--wait-bg); border-right-color: var(--wait); }
-.event-indicator.danger { background: var(--danger-bg); border-right-color: var(--danger); }
+.event-indicator.warn { background: var(--wait-bg); }
+.event-indicator.danger { background: var(--danger-bg); }
 .ei-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--go); flex-shrink: 0; }
 .event-indicator.warn .ei-dot { background: var(--wait); }
 .event-indicator.danger .ei-dot { background: var(--danger); }
@@ -348,7 +336,7 @@ body {
 .pf-result { margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--ink-muted); }
 
 /* ── BLOCKER ── */
-.blocker { display: none; border-right: 3px solid var(--danger); background: var(--danger-bg); text-align: center; }
+.blocker { display: none; background: var(--danger-bg); text-align: center; }
 .blocker.on { display: block; }
 .bl-title { color: var(--danger); font-size: 15px; font-weight: 800; }
 .bl-reason { color: var(--ink-soft); font-size: 11px; margin-top: 2px; }
@@ -430,6 +418,18 @@ body {
 .hc .t { font-size: 10.5px; font-weight: 700; font-family: 'Rubik', monospace; color: var(--ink-soft); }
 .hc .d { font-size: 8.5px; margin-top: 1px; color: var(--ink-muted); }
 .h2 { background: var(--go-bg); border-color: var(--go-border); }
+
+/* ── DESKTOP TWO-COLUMN CHECKLIST LAYOUT ── */
+@media (min-width: 900px) {
+  body.tab-checklist .main { max-width: 1020px; }
+  .checklist-layout {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 24px;
+    align-items: start;
+  }
+  .iron { position: sticky; top: 76px; margin-top: 0; }
+}
 .h2 .t { color: var(--go); } .h2 .d { color: var(--go); }
 
 /* ── JOURNAL ── */
@@ -663,13 +663,6 @@ body {
     margin-left: 0 !important; margin-right: 0 !important; box-shadow: none !important;
   }
   #view-checklist.active .score-bar { position: static !important; }
-}
-
-@page { size: A4; margin: 12mm; }
-  .meta { grid-template-columns: 1fr 1fr; }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .pf-items { grid-template-columns: 1fr; }
-  .tc-prices { flex-wrap: wrap; }
 }
 </style>
 </head>
