@@ -137,6 +137,40 @@ body {
 
 /* ── GROUP FIELDSETS ── */
 .fieldset { margin-bottom: 32px; }
+
+/* ── HARD GATE ── */
+.fieldset.gate-disabled { opacity: 0.35; pointer-events: none; user-select: none; filter: grayscale(0.6); transition: opacity 0.25s, filter 0.25s; }
+.gate-message { display: none; background: var(--danger-bg); border: 1.5px solid var(--danger); border-radius: 14px; padding: 14px 16px; margin-bottom: 20px; text-align: center; }
+.gate-message-title { font-family: 'Rubik', sans-serif; font-size: 15px; font-weight: 800; color: var(--danger); margin-bottom: 6px; }
+.gate-message-reasons { font-size: 12px; font-weight: 600; color: var(--danger); margin-bottom: 4px; }
+.gate-message-sub { font-size: 11px; color: var(--ink-soft); }
+
+/* ── OVERRIDE MODAL ── */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 2000;
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+.modal-box {
+  background: var(--surface); border-radius: 16px; padding: 20px; max-width: 420px; width: 100%;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+.modal-title { font-family: 'Rubik', sans-serif; font-size: 15px; font-weight: 800; color: var(--danger); margin-bottom: 6px; }
+.modal-sub { font-size: 12px; color: var(--ink-soft); margin-bottom: 8px; }
+.modal-reasons { list-style: none; margin-bottom: 14px; }
+.modal-reasons li { font-size: 12px; color: var(--danger); padding: 3px 0 3px 0; padding-right: 16px; position: relative; }
+.modal-reasons li::before { content: "✕"; position: absolute; right: 0; font-weight: 700; }
+.modal-label { display: block; font-size: 11px; font-weight: 700; color: var(--ink-soft); margin-bottom: 6px; }
+.modal-textarea {
+  width: 100%; border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 10px;
+  font-size: 12px; font-family: inherit; resize: none; height: 60px; outline: none; direction: rtl; margin-bottom: 14px;
+}
+.modal-textarea:focus { border-color: var(--danger); }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.modal-btn { padding: 9px 18px; border-radius: 8px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: 'Rubik', sans-serif; border: none; }
+.modal-btn-cancel { background: var(--bg); color: var(--ink-soft); border: 1.5px solid var(--border); }
+.modal-btn-cancel:hover { background: var(--border-light); }
+.modal-btn-confirm { background: var(--danger); color: #fff; }
+.modal-btn-confirm:hover { background: #a01616; }
 .fieldset:last-of-type { margin-bottom: 0; }
 .fieldset-title {
   font-family: 'Rubik', sans-serif; font-size: 15px; font-weight: 800;
@@ -373,6 +407,7 @@ body {
 .tc-date { font-size: 11px; color: var(--ink-muted); }
 .tc-signal { font-size: 10px; color: var(--ink-soft); background: var(--bg); padding: 2px 7px; border-radius: 4px; }
 .tc-verdict { margin-right: auto; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.tc-override-badge { background: var(--danger); color: #fff; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px; }
 .tc-verdict.go { background: var(--go); color: #fff; }
 .tc-verdict.wait { background: var(--wait); color: #fff; }
 .tc-verdict.no { background: var(--danger); color: #fff; }
@@ -737,8 +772,15 @@ body {
     </div>
   </div>
 
+  <!-- GATE MESSAGE -->
+  <div class="gate-message" id="gate-message" style="display:none;">
+    <div class="gate-message-title">🔒 המסחר חסום היום</div>
+    <div class="gate-message-reasons" id="gate-message-reasons"></div>
+    <div class="gate-message-sub">שאר התהליך מנוטרל. אין Override על החסימות האלה.</div>
+  </div>
+
   <!-- GROUP 3: ניתוח וכניסה -->
-  <div class="fieldset">
+  <div class="fieldset gate-target" id="group-3">
     <div class="fieldset-title">ניתוח וכניסה</div>
 
     <!-- Signal -->
@@ -840,7 +882,7 @@ body {
   </div>
 
   <!-- GROUP 4: החלטה -->
-  <div class="fieldset">
+  <div class="fieldset gate-target" id="group-4">
     <div class="fieldset-title">החלטה</div>
 
     <!-- Score -->
@@ -958,6 +1000,21 @@ body {
 </div>
 
 </div><!-- main -->
+
+<!-- OVERRIDE MODAL -->
+<div class="modal-backdrop" id="override-backdrop" style="display:none;" onclick="if(event.target===this) closeOverrideModal()">
+  <div class="modal-box">
+    <div class="modal-title">⚠️ אתה נכנס למרות הפרת כלל</div>
+    <div class="modal-sub">הקריטריונים הבאים לא עברו:</div>
+    <ul class="modal-reasons" id="modal-reasons"></ul>
+    <label class="modal-label">למה אתה בוחר לעקוף את הכלל?</label>
+    <textarea class="modal-textarea" id="override-reason-input" placeholder="לדוגמה: Catalyst חזק + פריצה נקייה"></textarea>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="closeOverrideModal()">ביטול</button>
+      <button class="modal-btn modal-btn-confirm" onclick="confirmOverride()">אשר Override והמשך לשמירה</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 <div id="loading-bar" style="display:none; position:fixed; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#2563eb,#059669); z-index:9999; animation:loadpulse 1s infinite;"></div>
@@ -1367,10 +1424,60 @@ function calcRR() {
   countFlags();
 }
 
+// ── OVERRIDE MODAL ──
+var pendingViolationRules = [];
+
+function openOverrideModal(violationReasons) {
+  pendingViolationRules = violationReasons;
+  var list = document.getElementById('modal-reasons');
+  list.innerHTML = violationReasons.map(r => '<li>' + r + '</li>').join('');
+  document.getElementById('override-reason-input').value = '';
+  document.getElementById('override-backdrop').style.display = 'flex';
+}
+
+function closeOverrideModal() {
+  document.getElementById('override-backdrop').style.display = 'none';
+  pendingViolationRules = [];
+}
+
+async function confirmOverride() {
+  var reason = document.getElementById('override-reason-input').value.trim();
+  if (!reason) { toast('⚠️ חובה לכתוב סיבה'); return; }
+  var rules = pendingViolationRules;
+  closeOverrideModal();
+  await executeSaveTrade({ reason: reason, rules: rules });
+}
+
+// ── HARD GATE ──
+function applyGate(blockerReasons) {
+  var isBlocked = blockerReasons && blockerReasons.length > 0;
+  var g3 = document.getElementById('group-3');
+  var g4 = document.getElementById('group-4');
+  var msg = document.getElementById('gate-message');
+  var reasonsEl = document.getElementById('gate-message-reasons');
+  var saveBtn = document.getElementById('save-btn');
+  var actionsRow = document.querySelector('.checklist-actions-row');
+
+  if (isBlocked) {
+    g3.classList.add('gate-disabled');
+    g4.classList.add('gate-disabled');
+    msg.style.display = 'block';
+    reasonsEl.textContent = blockerReasons.join(' · ');
+    if (saveBtn) saveBtn.disabled = true;
+    if (actionsRow) actionsRow.classList.add('gate-disabled');
+  } else {
+    g3.classList.remove('gate-disabled');
+    g4.classList.remove('gate-disabled');
+    msg.style.display = 'none';
+    if (saveBtn) saveBtn.disabled = false;
+    if (actionsRow) actionsRow.classList.remove('gate-disabled');
+  }
+}
+
 // ── COUNT FLAGS ──
 function countFlags() {
-  var y=0, r=0, reasons=[];
-  if (document.getElementById('trade-num').value==='3') { r++; reasons.push('3+ טריידים'); }
+  var y=0, r=0, reasons=[], blockerReasons=[], violationReasons=[];
+  if (document.getElementById('trade-num').value==='3') { r++; reasons.push('3+ טריידים'); violationReasons.push('3+ טריידים היום'); }
 
   // Auto-detected events (FOMC / OpEx / CPI-PPI toggle / Earnings toggle)
   var dateStr = getSelectedDate();
@@ -1380,16 +1487,16 @@ function countFlags() {
   var earningsToday = document.getElementById('earn-toggle') && document.getElementById('earn-toggle').classList.contains('on');
 
   if (isOpEx) y++;
-  if (isFomcToday) { r++; reasons.push('FOMC'); }
-  if (cpiToday) { r++; reasons.push('CPI/PPI'); }
-  if (earningsToday) { r++; reasons.push('ארנינגס'); }
+  if (isFomcToday) { r++; reasons.push('FOMC'); blockerReasons.push('FOMC היום'); }
+  if (cpiToday) { r++; reasons.push('CPI/PPI'); blockerReasons.push('CPI/PPI היום'); }
+  if (earningsToday) { r++; reasons.push('ארנינגס'); blockerReasons.push('דיווח תוצאות השבוע'); }
 
   var sig=document.getElementById('signal-type').value;
   var trend=rv('trend');
   if(trend==='down' && ['support','ma','pullback'].includes(sig)) y++;
   var dist=parseFloat(document.getElementById('distance').value)||0;
   var dh=document.getElementById('dist-hint');
-  if(dist>=5){r++;reasons.push('רדיפה 5%+');dh.textContent='🔴 רדיפה';}
+  if(dist>=5){r++;reasons.push('רדיפה 5%+');violationReasons.push('רדיפה — 5%+ מהסיגנל');dh.textContent='🔴 רדיפה';}
   else if(dist>=3){y++;dh.textContent='⚠️ שקול Retest';}
   else if(dist>=2){dh.textContent='📝 שקול Retest';}
   else{dh.textContent='';}
@@ -1400,12 +1507,12 @@ function countFlags() {
   if(spy==='up' && col==='red') y++;
   var sup=rv('support');
   if(sup==='4plus') y++;
-  if(sup==='broken'){r++;reasons.push('תמיכה שנשברה');}
+  if(sup==='broken'){r++;reasons.push('תמיכה שנשברה');violationReasons.push('תמיכה שנשברה');}
   if(rv('tb')==='feel') y++;
   var pe=parseFloat(document.getElementById('price-entry').value);
   var ps=parseFloat(document.getElementById('price-stop').value);
   var pt=parseFloat(document.getElementById('price-target').value);
-  if(pe&&ps&&pt&&pe>ps&&pt>pe&&(pt-pe)/(pe-ps)<2.0){r++;reasons.push('R:R < 2:1');}
+  if(pe&&ps&&pt&&pe>ps&&pt>pe&&(pt-pe)/(pe-ps)<2.0){r++;reasons.push('R:R < 2:1');violationReasons.push('R:R מתחת ל-2:1');}
 
   // Highlights
   document.querySelectorAll('.hy,.hr').forEach(e=>e.classList.remove('hy','hr'));
@@ -1446,7 +1553,9 @@ function countFlags() {
   if(r>0&&reasons.length>0){bl.classList.add('on');document.getElementById('bl-reason').textContent=reasons.join(' · ');}
   else{bl.classList.remove('on');}
 
-  return {yellow:y, red:r, verdict: verdict};
+  applyGate(blockerReasons);
+
+  return {yellow:y, red:r, verdict: verdict, blockerReasons: blockerReasons, violationReasons: violationReasons};
 }
 
 // ── SAVE TRADE ──
@@ -1455,6 +1564,24 @@ async function saveTrade() {
   var date = document.getElementById('trade-date').value;
   if (!ticker || !date) { toast('⚠️ מלא תאריך ומניה'); return; }
 
+  var flags = countFlags();
+
+  if (flags.blockerReasons.length > 0) {
+    toast('🔒 חסום — ' + flags.blockerReasons.join(' · '));
+    return;
+  }
+
+  if (flags.violationReasons.length > 0) {
+    openOverrideModal(flags.violationReasons);
+    return;
+  }
+
+  await executeSaveTrade(null);
+}
+
+async function executeSaveTrade(overrideInfo) {
+  var ticker = document.getElementById('ticker').value.toUpperCase().trim();
+  var date = document.getElementById('trade-date').value;
   var flags = countFlags();
   var pe = parseFloat(document.getElementById('price-entry').value) || null;
   var ps = parseFloat(document.getElementById('price-stop').value) || null;
@@ -1470,7 +1597,7 @@ async function saveTrade() {
     tradeNum: document.getElementById('trade-num').value,
     yellowFlags: flags.yellow,
     redFlags: flags.red,
-    verdict: flags.verdict,
+    verdict: overrideInfo ? 'GO' : flags.verdict,
     entryPrice: pe,
     stopPrice: ps,
     targetPrice: pt,
@@ -1480,6 +1607,9 @@ async function saveTrade() {
     positionSize: sizing.positionSize,
     analysis: document.getElementById('analysis').value,
     screenshot: screenshotData,
+    override: overrideInfo ? true : false,
+    overrideReason: overrideInfo ? overrideInfo.reason : '',
+    failedRules: overrideInfo ? overrideInfo.rules.join(' · ') : '',
     exitDate: null, exitPrice: null, exitNotes: '', outcome: null, actualRR: null
   };
 
@@ -1501,7 +1631,7 @@ async function saveTrade() {
     trades.unshift(trade);
     setCache(trades);
 
-    toast('✅ טרייד נשמר בענן!');
+    toast(overrideInfo ? '✅ נשמר עם Override' : '✅ טרייד נשמר בענן!');
     resetForm();
   } catch(e) {
     toast('⚠️ שגיאה בשמירה: ' + e.message);
@@ -1562,12 +1692,14 @@ function tradeCardHTML(t) {
   var sigLabel = signalLabel(t.signal);
   var rrText = t.rr ? t.rr+'R' : '—';
   var actualRRText = t.actualRR ? t.actualRR+'R' : '';
+  var isOverride = t.override === true || t.override === 'true' || t.override === 'TRUE';
 
   return `<div class="trade-card" id="card-${t.id}">
     <div class="tc-header" onclick="toggleCard(${t.id})">
       <div class="tc-ticker">${t.ticker}</div>
       <div class="tc-date">${formatDate(t.date)}</div>
       <div class="tc-signal">${sigLabel}</div>
+      ${isOverride ? '<div class="tc-override-badge">⚠️ OVERRIDE</div>' : ''}
       <div class="tc-verdict ${t.verdict.toLowerCase().replace(' ','')}">${t.verdict}</div>
       <div class="tc-outcome ${outcomeClass}">${outcomeLabel}${actualRRText?' · '+actualRRText:''}</div>
       <div class="tc-expand" id="expand-${t.id}">▼</div>
@@ -1578,8 +1710,10 @@ function tradeCardHTML(t) {
         <div class="tc-price-item"><div class="label">סטופ</div><div class="value stop">$${t.stopPrice||'—'}</div></div>
         <div class="tc-price-item"><div class="label">יעד</div><div class="value target">$${t.targetPrice||'—'}</div></div>
         <div class="tc-price-item"><div class="label">R:R תוכנן</div><div class="value rr">${rrText}</div></div>
+        ${t.positionSize?`<div class="tc-price-item"><div class="label">פוזיציה</div><div class="value">${t.positionSize} מניות</div></div>`:''}
         ${t.exitPrice?`<div class="tc-price-item"><div class="label">יציאה</div><div class="value ${t.outcome==='win'?'entry':'stop'}">$${t.exitPrice}</div></div>`:''}
       </div>
+      ${isOverride?`<div class="tc-analysis" style="background:var(--danger-bg);color:var(--danger);"><strong>⚠️ Override:</strong> ${escHTML(t.failedRules||'')}<br>${escHTML(t.overrideReason||'')}</div>`:''}
       ${t.analysis?`<div class="tc-analysis">${escHTML(t.analysis)}</div>`:''}
       ${t.screenshot?`<div class="tc-screenshot"><img src="${t.screenshot}" alt="גרף"></div>`:''}
       ${t.exitNotes?`<div class="tc-analysis" style="background:#f0fdf4;color:var(--go);">${escHTML(t.exitNotes)}</div>`:''}
