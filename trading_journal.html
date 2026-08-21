@@ -1856,6 +1856,175 @@ body.tab-checklist .score-bar {
   object-fit: contain !important;
 }
 </style>
+
+<style id="v7-23-typography-hierarchy">
+/* V7.23 — 2026 typography hierarchy pass
+   P1 = page/flow section titles
+   P2 = card/task titles
+   P3 = field labels
+   P4 = values/results
+   P5 = helper/meta copy
+*/
+:root {
+  --type-p1: 19px;
+  --type-p2: 15px;
+  --type-p3: 12px;
+  --type-p4: 16px;
+  --type-p5: 10.5px;
+}
+
+/* P1 — flow landmarks: context, analysis, decision */
+.fieldset-title {
+  font-size: var(--type-p1) !important;
+  font-weight: 750 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.35px !important;
+  color: var(--ink) !important;
+  padding-bottom: 10px !important;
+  margin-bottom: 14px !important;
+  border-bottom-width: 1px !important;
+}
+
+/* P1 landmark glyphs — abstract, monochrome, intentionally non-literal */
+.fieldset-title.chapter-title {
+  display: flex !important;
+  align-items: center !important;
+  gap: 9px !important;
+}
+.chapter-glyph {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  color: var(--accent-strong);
+  opacity: .82;
+}
+.chapter-glyph svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.55;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* P2 — task/card titles: 01–05 cards */
+.section-head {
+  font-size: var(--type-p2) !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  padding-block: 11px !important;
+  color: var(--ink) !important;
+}
+.section-head .num {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--ink-muted) !important;
+}
+
+/* P2.5 — titles inside a task, intentionally quieter than card title */
+.trade-plan-stage-title,
+.technical-group-label,
+.status-card-title {
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+  color: var(--accent-strong) !important;
+  letter-spacing: 0 !important;
+}
+
+/* P3 — labels: darker than helper copy, never competing with titles */
+.technical-field > label,
+.plan-field label,
+.rr-label,
+.risk-metric > label,
+.risk-input-metric > label,
+.documentation-label,
+.mf label,
+.modal-label {
+  font-size: var(--type-p3) !important;
+  font-weight: 650 !important;
+  line-height: 1.35 !important;
+  color: var(--ink-soft) !important;
+}
+
+/* P4 — ordinary values/results */
+.sizing-value,
+.risk-total-value,
+.rr-prominent {
+  font-size: var(--type-p4) !important;
+  font-weight: 750 !important;
+  line-height: 1.2 !important;
+}
+
+/* Hero results: the answer the user is looking for */
+.risk-metric.position-size-metric .sizing-value-lg,
+#position-size {
+  font-size: 25px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.5px !important;
+}
+#rr-display {
+  font-size: 19px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.25px !important;
+}
+
+/* P5 — helper/meta copy recedes clearly */
+.hint,
+.tf-hint,
+.documentation-helper,
+.chart-upload-note,
+.sizing-default-btn,
+.sc-d,
+.modal-sub {
+  font-size: var(--type-p5) !important;
+  font-weight: 450 !important;
+  line-height: 1.5 !important;
+  color: var(--ink-muted) !important;
+}
+
+/* Slightly stronger body/control text so the hierarchy does not feel washed out */
+.rg label,
+.cl li,
+.prefilter,
+.meta {
+  font-size: 12px;
+}
+
+/* Preserve compactness on smaller screens */
+@media (max-width: 720px) {
+  :root {
+    --type-p1: 17px;
+    --type-p2: 14px;
+    --type-p3: 11.5px;
+    --type-p4: 15px;
+    --type-p5: 10px;
+  }
+  .risk-metric.position-size-metric .sizing-value-lg,
+  #position-size { font-size: 22px !important; }
+  #rr-display { font-size: 17px !important; }
+}
+</style>
+
+
+<style id="v7-25-icon-and-risk-unification">
+/* V7.25 — familiar thin-line chapter icons + unified calculated risk tiles */
+.chapter-glyph {
+  color: var(--ink-muted) !important;
+  opacity: .92 !important;
+}
+.chapter-glyph svg {
+  stroke-width: 1.45 !important;
+}
+/* Keep all three calculated outputs on one neutral surface.
+   Position Size remains the hero through typography, not a different fill. */
+.risk-metric.position-size-metric {
+  background: var(--bg) !important;
+  border-color: var(--border-light) !important;
+}
+</style>
 </head>
 <body class="tab-checklist">
 
@@ -1912,7 +2081,7 @@ body.tab-checklist .score-bar {
 
   <!-- GROUP 1: פרטי הטרייד -->
   <div class="fieldset">
-    <div class="fieldset-title">פרטי הטרייד</div>
+    <div class="fieldset-title chapter-title"><span class="chapter-glyph" aria-hidden="true"><svg viewBox="0 0 20 20"><rect x="5" y="4.5" width="10" height="12" rx="1.8"/><path d="M7.5 4.5v-1h5v1M7.5 8h5M7.5 11h5M7.5 14h3"/></svg></span><span>פרטי הטרייד</span></div>
     <div class="meta">
       <div class="mf"><label>תאריך</label><input type="date" id="trade-date" onchange="updateTitle(); updateEventIndicator()"></div>
       <div class="mf"><label>מניה</label><input type="text" id="ticker" placeholder="NVDA" oninput="updateTitle()" style="text-transform:uppercase;"></div>
@@ -1944,7 +2113,7 @@ body.tab-checklist .score-bar {
 
   <!-- GROUP 2: הקשר ובטיחות -->
   <div class="fieldset">
-    <div class="fieldset-title">הקשר ובטיחות</div>
+    <div class="fieldset-title chapter-title"><span class="chapter-glyph" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M10 2.8 15.5 5v4.4c0 3.6-2.2 6.1-5.5 7.8-3.3-1.7-5.5-4.2-5.5-7.8V5L10 2.8Z"/><path d="m7.5 10 1.6 1.6 3.5-3.7"/></svg></span><span>הקשר ובטיחות</span></div>
 
     <div class="status-card">
       <div class="status-card-title">מצב מסחר</div>
@@ -2035,7 +2204,7 @@ body.tab-checklist .score-bar {
 
   <!-- GROUP 3: ניתוח וכניסה -->
   <div class="fieldset gate-target" id="group-3">
-    <div class="fieldset-title">ניתוח וכניסה</div>
+    <div class="fieldset-title chapter-title"><span class="chapter-glyph" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M3.5 15.5h13M5 13l3-3 2.3 1.8 4.2-5"/><circle cx="5" cy="13" r=".7"/><circle cx="8" cy="10" r=".7"/><circle cx="10.3" cy="11.8" r=".7"/><circle cx="14.5" cy="6.8" r=".7"/></svg></span><span>ניתוח וכניסה</span></div>
 
     <!-- Signal -->
     <div class="section">
@@ -2176,7 +2345,7 @@ body.tab-checklist .score-bar {
 
   <!-- GROUP 4: החלטה -->
   <div class="fieldset gate-target" id="group-4">
-    <div class="fieldset-title">החלטה</div>
+    <div class="fieldset-title chapter-title"><span class="chapter-glyph" aria-hidden="true"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="6.5"/><path d="m6.8 10.1 2.1 2.1 4.4-4.7"/></svg></span><span>החלטה</span></div>
 
     <!-- Score -->
     <div class="section decision-section">
