@@ -9,12 +9,12 @@
 :root {
   --ink: #292524;
   --ink-soft: #57534e;
-  --ink-muted: #a8a29e;
+  --ink-muted: #94a3b8;
   --surface: #ffffff;
-  --bg: #faf8f5;
-  --bg2: #f3f0ea;
-  --border: #e7e2d9;
-  --border-light: #f0ece4;
+  --bg: #f7f8fa;
+  --bg2: #eef1f4;
+  --border: #e2e8f0;
+  --border-light: #eef2f6;
   --go: #059669;
   --go-bg: #ecfdf5;
   --go-border: #a7f3d0;
@@ -108,6 +108,18 @@ body {
 /* ── MAIN CONTENT ── */
 .main { max-width: 760px; margin: 0 auto; padding: 16px; }
 
+/* ── DESKTOP TWO-COLUMN CHECKLIST LAYOUT ── */
+@media (min-width: 900px) {
+  body.tab-checklist .main { max-width: 1020px; }
+  .checklist-layout {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 24px;
+    align-items: start;
+  }
+  .iron { position: sticky; top: 76px; margin-top: 0; }
+}
+
 /* ── VIEWS ── */
 .view { display: none; }
 .view.active { display: block; }
@@ -185,12 +197,12 @@ body {
 }
 .section-head .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .section-head .num { font-size: 10px; color: var(--ink-muted); margin-right: auto; font-weight: 500; }
-.sh-pre { background: var(--surface); } .sh-pre .dot { background: var(--go); }
-.sh-mkt { background: var(--surface); } .sh-mkt .dot { background: var(--accent); }
-.sh-sig { background: var(--surface); } .sh-sig .dot { background: var(--go); }
-.sh-plan { background: var(--surface); } .sh-plan .dot { background: var(--purple); }
-.sh-score { background: var(--surface); } .sh-score .dot { background: var(--ink); }
-.sh-analysis { background: var(--surface); } .sh-analysis .dot { background: #0ea5e9; }
+.sh-pre { background: var(--surface); } .sh-pre .dot { background: var(--ink-muted); }
+.sh-mkt { background: var(--surface); } .sh-mkt .dot { background: var(--ink-muted); }
+.sh-sig { background: var(--surface); } .sh-sig .dot { background: var(--ink-muted); }
+.sh-plan { background: var(--surface); } .sh-plan .dot { background: var(--ink-muted); }
+.sh-score { background: var(--surface); } .sh-score .dot { background: var(--ink-muted); }
+.sh-analysis { background: var(--surface); } .sh-analysis .dot { background: var(--ink-muted); }
 
 .section-body { padding: 10px 14px; }
 
@@ -227,38 +239,61 @@ body {
 .fi-s { width: 42px; }
 
 /* ── R:R DISPLAY ── */
-.rr { background: var(--bg); border: 1.5px solid var(--border); border-radius: 6px; padding: 6px 12px; margin-top: 6px; font-size: 12px; font-weight: 700; text-align: center; direction: ltr; transition: all 0.3s; }
+.rr-prominent {
+  background: var(--surface); border: 2px solid var(--border); border-radius: 10px;
+  padding: 10px 14px; margin-top: 10px; text-align: center; direction: ltr;
+  font-family: 'Rubik', monospace; font-size: 15px; font-weight: 800; transition: all 0.3s;
+}
+.rr-prominent.good { border-color: var(--go); background: var(--go-bg); color: var(--go); }
+.rr-prominent.ok { border-color: var(--border-strong); color: var(--ink-soft); }
+.rr-prominent.bad { border-color: var(--danger); background: var(--danger-bg); color: var(--danger); }
 
-/* ── POSITION SIZING ── */
-.sizing-box { background: var(--purple-bg); border: 1.5px solid var(--purple); border-radius: 10px; padding: 10px 12px; margin: 8px 0; }
-.sizing-title { font-size: 11px; font-weight: 700; color: var(--purple); margin-bottom: 8px; }
-.sizing-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 10px; }
-.sizing-field label { display: block; font-size: 10px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
-.sizing-field input { width: 100%; border: 1.5px solid var(--border); border-radius: 6px; padding: 5px 8px; font-size: 13px; font-weight: 700; font-family: 'Rubik', monospace; direction: ltr; text-align: center; background: var(--surface); }
-.sizing-field input:focus { border-color: var(--purple); outline: none; }
-.sizing-default-btn { display: block; margin-top: 4px; background: none; border: none; padding: 0; font-size: 10px; color: var(--ink-muted); cursor: pointer; font-family: inherit; text-decoration: underline; text-underline-offset: 2px; }
+/* ── PLAN ROW (Entry/Stop/Target) ── */
+.plan-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+.plan-row-single { grid-template-columns: 1fr; }
+.plan-field label { display: block; font-size: 10px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
+.plan-field .hint { display: block; margin-top: 3px; }
+
+/* ── POSITION SIZING EQUATION ── */
+.equation-strip { background: var(--purple-bg); border: 1.5px solid var(--purple); border-radius: 10px; padding: 10px 12px; margin: 8px 0; }
+.eq-label { font-size: 11px; font-weight: 700; color: var(--purple); margin-bottom: 8px; }
+.eq-row { display: flex; align-items: flex-end; gap: 6px; }
+.eq-item { flex: 1; min-width: 0; }
+.eq-item label { display: block; font-size: 9.5px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.2px; margin-bottom: 3px; white-space: nowrap; }
+.eq-arrow { color: var(--purple); font-size: 14px; font-weight: 700; padding-bottom: 8px; flex-shrink: 0; }
+.sizing-input-prefixed { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: 6px; background: var(--surface); direction: ltr; }
+.sizing-input-prefixed span { padding: 0 0 0 6px; font-size: 13px; font-weight: 700; color: var(--ink-muted); font-family: 'Rubik', monospace; }
+.sizing-input-prefixed input { border: none; padding: 5px 8px 5px 0; width: 100%; font-size: 13px; font-weight: 700; font-family: 'Rubik', monospace; text-align: center; background: transparent; }
+.sizing-input-prefixed input:focus { outline: none; }
+.sizing-input-prefixed:focus-within { border-color: var(--purple); }
+.eq-readonly .sizing-value { margin: 0; }
+.eq-highlight .sizing-value { border-color: var(--purple); background: var(--purple-bg); }
+.eq-total { margin-top: 8px; font-size: 11px; font-weight: 600; color: var(--ink-soft); text-align: center; }
+.eq-total span { font-weight: 800; color: var(--purple); font-family: 'Rubik', monospace; }
+.sizing-default-btn { display: block; margin-top: 8px; background: none; border: none; padding: 0; font-size: 10px; color: var(--ink-muted); cursor: pointer; font-family: inherit; text-decoration: underline; text-underline-offset: 2px; text-align: center; width: 100%; }
 .sizing-default-btn:hover { color: var(--purple); }
-.sizing-readonly { display: flex; flex-direction: column; }
 .sizing-value { background: var(--surface); border: 1.5px solid var(--border-light); border-radius: 6px; padding: 5px 8px; font-size: 13px; font-weight: 800; font-family: 'Rubik', monospace; direction: ltr; text-align: center; color: var(--ink); }
 .sizing-value-lg { color: var(--purple); font-size: 15px; }
 .sizing-unit { font-size: 10px; font-weight: 500; color: var(--ink-muted); }
 .sizing-warning { margin-top: 8px; background: var(--danger-bg); border: 1px solid var(--danger-border); border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: 600; color: var(--danger); text-align: center; }
-.rr.good { border-color: var(--go-border); background: var(--go-bg); color: var(--go); }
-.rr.ok { color: var(--ink-soft); }
-.rr.bad { border-color: var(--danger-border); background: var(--danger-bg); color: var(--danger); }
+
+/* ── STATUS CARD (unified market status) ── */
+.status-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 10px; overflow: hidden; }
+.status-card-title { font-size: 11px; font-weight: 700; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.4px; padding: 10px 14px 6px; }
+.status-row { padding: 8px 14px; }
+.status-row ~ .status-row { border-top: 1px solid var(--border-light); }
 
 /* ── STOP BOX ── */
-.stop-box { background: var(--danger-bg); border: 1px solid var(--danger-border); border-radius: 14px; padding: 8px 14px; margin-bottom: 10px; }
+.stop-box { border-right: 3px solid var(--danger); background: var(--danger-bg); }
 
 /* ── EVENT INDICATOR ── */
 .event-indicator {
   display: flex; align-items: center; gap: 12px;
-  border-radius: 14px; padding: 10px 14px; margin-bottom: 8px;
-  background: var(--go-bg); border: 1px solid var(--go-border);
+  border-right: 3px solid var(--go); background: var(--go-bg);
   transition: all 0.2s;
 }
-.event-indicator.warn { background: var(--wait-bg); border-color: var(--wait-border); }
-.event-indicator.danger { background: var(--danger-bg); border-color: var(--danger-border); }
+.event-indicator.warn { background: var(--wait-bg); border-right-color: var(--wait); }
+.event-indicator.danger { background: var(--danger-bg); border-right-color: var(--danger); }
 .ei-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--go); flex-shrink: 0; }
 .event-indicator.warn .ei-dot { background: var(--wait); }
 .event-indicator.danger .ei-dot { background: var(--danger); }
@@ -271,10 +306,6 @@ body {
 .event-indicator.warn .ei-icon { color: var(--wait); }
 .event-indicator.danger .ei-icon { color: var(--danger); }
 
-.cpi-toggle {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
-  padding: 8px 14px; margin-bottom: 10px;
-}
 .cpi-toggle-row { display: flex; align-items: center; justify-content: space-between; }
 .cpi-label { font-size: 12px; font-weight: 600; color: var(--ink-soft); }
 .cpi-btns { display: flex; gap: 6px; }
@@ -308,8 +339,7 @@ body {
 .si::before { content: "×"; position: absolute; right: 0; color: var(--danger); font-weight: 700; font-size: 10px; }
 
 /* ── PRE-FILTER ── */
-.prefilter { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 8px 14px; margin-bottom: 10px; transition: all 0.2s; }
-.prefilter.all-checked { background: var(--go-bg); border-color: var(--go-border); }
+.prefilter.all-checked { background: var(--go-bg); }
 .pf-title { font-size: 11px; font-weight: 700; color: var(--ink-soft); margin-bottom: 6px; transition: color 0.2s; }
 .prefilter.all-checked .pf-title { color: var(--go); }
 .pf-items { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
@@ -318,7 +348,7 @@ body {
 .pf-result { margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--ink-muted); }
 
 /* ── BLOCKER ── */
-.blocker { display: none; background: var(--danger-bg); border: 1.5px solid var(--danger); border-radius: 14px; padding: 10px 14px; margin-bottom: 10px; text-align: center; }
+.blocker { display: none; border-right: 3px solid var(--danger); background: var(--danger-bg); text-align: center; }
 .blocker.on { display: block; }
 .bl-title { color: var(--danger); font-size: 15px; font-weight: 800; }
 .bl-reason { color: var(--ink-soft); font-size: 11px; margin-top: 2px; }
@@ -335,22 +365,30 @@ body {
 .sc-d { font-size: 10px; color: var(--ink-muted); margin-top: 2px; }
 
 /* ── ANALYSIS ── */
+.analysis-prompts { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+.prompt-tag { font-size: 10px; font-weight: 600; color: var(--ink-muted); background: var(--bg); border: 1px solid var(--border-light); border-radius: 20px; padding: 2px 10px; }
 .analysis-ta {
-  width: 100%; border: none; font-size: 12px; font-family: inherit;
-  resize: vertical; min-height: 80px; outline: none; direction: rtl;
-  color: var(--ink); line-height: 1.6; background: transparent;
+  width: 100%; border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 10px;
+  font-size: 12px; font-family: inherit; resize: vertical; min-height: 50px; outline: none;
+  direction: rtl; color: var(--ink); line-height: 1.6; background: var(--surface);
 }
+.analysis-ta:focus { border-color: var(--accent); }
 .analysis-ta::placeholder { color: var(--ink-muted); }
-.upload-area {
-  border: 1.5px dashed var(--border); border-radius: 8px; padding: 12px;
-  text-align: center; cursor: pointer; transition: all 0.2s; margin-top: 8px;
-  color: var(--ink-muted); font-size: 12px;
+.attach-btn {
+  display: inline-flex; align-items: center; gap: 5px; margin-top: 8px;
+  background: none; border: none; padding: 0; font-size: 11px; color: var(--ink-muted);
+  cursor: pointer; font-family: inherit; text-decoration: underline; text-underline-offset: 2px;
 }
-.upload-area:hover { border-color: #0ea5e9; color: #0ea5e9; background: #f0f9ff; }
-#screenshot-input { display: none; }
+.attach-btn:hover { color: var(--accent); }
 .screenshot-preview { margin-top: 8px; display: none; border-radius: 8px; overflow: hidden; position: relative; border: 1px solid var(--border); }
 .screenshot-preview img { width: 100%; height: auto; display: block; }
 .remove-ss { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 4px; padding: 3px 8px; font-size: 11px; cursor: pointer; font-family: inherit; }
+
+/* ── DECISION CONNECTOR ── */
+.decision-section { margin-bottom: 0; }
+.decision-connector { display: flex; justify-content: center; padding: 2px 0; }
+.decision-connector-line { width: 2px; height: 14px; background: var(--border-strong); }
+.sc-icon { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
 
 /* ── SAVE BUTTON ── */
 .save-btn {
@@ -363,28 +401,31 @@ body {
 .save-btn:hover { background: #66727e; transform: translateY(-1px); }
 .save-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-.pdf-btn {
-  padding: 11px 22px; background: var(--accent-bg); color: var(--accent);
-  border: 1px solid var(--accent-border); border-radius: 10px; font-size: 13px; font-weight: 700;
-  cursor: pointer; font-family: 'Rubik', sans-serif; white-space: nowrap; transition: all 0.15s;
+.pdf-link {
+  background: none; border: none; padding: 0; font-size: 12px; font-weight: 600;
+  color: var(--ink-muted); cursor: pointer; font-family: inherit;
+  text-decoration: underline; text-underline-offset: 3px; transition: color 0.15s;
 }
-.pdf-btn:hover { background: var(--accent-border); }
-.checklist-actions-row { display: flex; gap: 10px; margin-top: 14px; justify-content: center; }
+.pdf-link:hover { color: var(--accent); }
+.checklist-actions-row { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 14px; }
 
-/* ── IRON RULES ── */
+/* ── TWO-COLUMN LAYOUT (desktop) ── */
+.checklist-layout { display: block; }
+.checklist-main { min-width: 0; }
+
+/* ── SIDEBAR / IRON RULES ── */
 .iron {
-  background: var(--bg); color: var(--ink); border-radius: 0;
-  padding: 18px 20px; margin-top: 32px; margin-bottom: -16px;
-  border-top: 1px solid var(--border);
-  width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;
+  background: var(--surface); color: var(--ink); border-radius: 14px;
+  padding: 16px 18px; margin-top: 20px; border: 1px solid var(--border);
 }
-.iron-inner { max-width: 760px; margin: 0 auto; }
-.iron-title { font-size: 11px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; color: var(--ink-soft); }
+.iron-inner { max-width: none; margin: 0; }
+.iron-title { font-size: 11px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.4px; }
 .iron-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
-.iron-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+.iron-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 20px; }
 .iron-item { font-size: 10.5px; color: var(--ink-soft); padding: 2px 10px 2px 0; position: relative; }
 .iron-item::before { content: "→"; position: absolute; right: 0; color: var(--accent); font-size: 9px; }
-.hours-row { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-light); display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; }
+.hours-title-sidebar { font-size: 11px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 16px; margin-bottom: 8px; }
+.hours-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; }
 .hc { border-radius: 6px; padding: 5px 6px; text-align: center; background: var(--bg); border: 1px solid var(--border-light); }
 .hc .t { font-size: 10.5px; font-weight: 700; font-family: 'Rubik', monospace; color: var(--ink-soft); }
 .hc .d { font-size: 8.5px; margin-top: 1px; color: var(--ink-muted); }
@@ -575,8 +616,9 @@ body {
 
   .stop-grid { grid-template-columns: 1fr; }
   .pf-items { grid-template-columns: 1fr; }
-  .sizing-grid { grid-template-columns: 1fr 1fr; }
-  .sizing-field:first-child { grid-column: 1 / -1; }
+  .plan-row { grid-template-columns: 1fr; }
+  .eq-row { flex-direction: column; align-items: stretch; gap: 8px; }
+  .eq-arrow { display: none; }
 
   .scores { grid-template-columns: 1fr; gap: 6px; }
   .sc { padding: 10px; }
@@ -596,8 +638,7 @@ body {
 
   .filter-chips { gap: 5px; }
 
-  .checklist-actions-row { flex-direction: column; }
-  .save-btn, .pdf-btn { width: 100%; text-align: center; }
+  .save-btn { width: 100%; text-align: center; }
 }
 
 /* Print styles */
@@ -615,6 +656,7 @@ body {
   .trade-card { break-inside: avoid; margin-bottom: 16px; }
 
   /* Checklist specific */
+  #view-checklist.active .checklist-layout { display: block !important; }
   #view-checklist.active .iron {
     display: block !important;
     width: auto !important; position: static !important; left: auto !important; right: auto !important;
@@ -631,7 +673,7 @@ body {
 }
 </style>
 </head>
-<body>
+<body class="tab-checklist">
 
 <div class="app-header">
   <div class="app-title">TRADE <span>JOURNAL</span></div>
@@ -648,6 +690,8 @@ body {
      VIEW: CHECKLIST
 ══════════════════════════════════════ -->
 <div id="view-checklist" class="view active">
+<div class="checklist-layout">
+<div class="checklist-main">
 
   <!-- Draft Restore Banner -->
   <div class="draft-banner" id="draft-banner">
@@ -705,54 +749,58 @@ body {
   <div class="fieldset">
     <div class="fieldset-title">הקשר ובטיחות</div>
 
-    <div class="event-indicator" id="event-indicator">
-      <div class="ei-dot" id="ei-dot"></div>
-      <div class="ei-text">
-        <div class="ei-title" id="ei-title">בודק...</div>
-        <div class="ei-sub" id="ei-sub"></div>
-      </div>
-      <div class="ei-icon" id="ei-icon"></div>
-    </div>
+    <div class="status-card">
+      <div class="status-card-title">מצב מסחר</div>
 
-    <div class="cpi-toggle">
-      <div class="cpi-toggle-row">
-        <span class="cpi-label">CPI / PPI היום?</span>
-        <div class="cpi-btns">
-          <button class="cpi-btn" id="cpi-no" onclick="setCpiToday(false)">לא</button>
-          <button class="cpi-btn" id="cpi-yes" onclick="setCpiToday(true)">כן</button>
+      <div class="status-row event-indicator" id="event-indicator">
+        <div class="ei-dot" id="ei-dot"></div>
+        <div class="ei-text">
+          <div class="ei-title" id="ei-title">בודק...</div>
+          <div class="ei-sub" id="ei-sub"></div>
+        </div>
+        <div class="ei-icon" id="ei-icon"></div>
+      </div>
+
+      <div class="status-row cpi-toggle">
+        <div class="cpi-toggle-row">
+          <span class="cpi-label">CPI / PPI היום?</span>
+          <div class="cpi-btns">
+            <button class="cpi-btn" id="cpi-no" onclick="setCpiToday(false)">לא</button>
+            <button class="cpi-btn" id="cpi-yes" onclick="setCpiToday(true)">כן</button>
+          </div>
+        </div>
+        <a href="https://www.bls.gov/schedule/news_release/cpi.htm" target="_blank" rel="noopener" class="cpi-link">בדוק בלוח BLS הרשמי →</a>
+      </div>
+
+      <!-- Blocker -->
+      <div class="status-row blocker" id="blocker">
+        <div class="bl-title">STOP — לא נכנסים</div>
+        <div class="bl-reason" id="bl-reason"></div>
+      </div>
+
+      <!-- Stop Box -->
+      <div class="status-row stop-box">
+        <div class="stop-box-title">עצירה מיידית</div>
+        <div class="stop-grid">
+          <div class="si">20 MA משמש כהתנגדות (מחיר מתחתיו)</div>
+          <div class="si">נגיעה ראשונה ב-MA בלי אישור Volume</div>
+          <div class="si">Extension 3+ ATR</div>
+          <div class="si">תמיכה שנשברה</div>
+          <div class="si">R:R מתחת ל-2:1</div>
+          <div class="si">2+ סטופים / 3+ טריידים</div>
         </div>
       </div>
-      <a href="https://www.bls.gov/schedule/news_release/cpi.htm" target="_blank" rel="noopener" class="cpi-link">בדוק בלוח BLS הרשמי →</a>
-    </div>
 
-    <!-- Blocker -->
-    <div class="blocker" id="blocker">
-      <div class="bl-title">STOP — לא נכנסים</div>
-      <div class="bl-reason" id="bl-reason"></div>
-    </div>
-
-    <!-- Stop Box -->
-    <div class="stop-box">
-      <div class="stop-box-title">עצירה מיידית</div>
-      <div class="stop-grid">
-        <div class="si">20 MA משמש כהתנגדות (מחיר מתחתיו)</div>
-        <div class="si">נגיעה ראשונה ב-MA בלי אישור Volume</div>
-        <div class="si">Extension 3+ ATR</div>
-        <div class="si">תמיכה שנשברה</div>
-        <div class="si">R:R מתחת ל-2:1</div>
-        <div class="si">2+ סטופים / 3+ טריידים</div>
+      <!-- Pre-filter -->
+      <div class="status-row prefilter">
+        <div class="pf-title">פילטר מקדים — 30 שניות</div>
+        <div class="pf-items">
+          <label class="pf-item"><input type="checkbox" id="pf1" onchange="checkPF()"><span class="cb-box"></span> <span>20 MA לא משמש כהתנגדות (מחיר מעליו / נוגע בו)</span></label>
+          <label class="pf-item"><input type="checkbox" id="pf2" onchange="checkPF()"><span class="cb-box"></span> <span>אם זו נגיעה ראשונה אחרי שינוי כיוון — יש Volume + נר סגירה חזק</span></label>
+          <label class="pf-item"><input type="checkbox" id="pf3" onchange="checkPF()"><span class="cb-box"></span> <span>מניה ללא גאפים תכופים</span></label>
+        </div>
+        <div class="pf-result" id="pf-result">סמן את שלושת הפילטרים כדי להמשיך</div>
       </div>
-    </div>
-
-    <!-- Pre-filter -->
-    <div class="prefilter">
-      <div class="pf-title">פילטר מקדים — 30 שניות</div>
-      <div class="pf-items">
-        <label class="pf-item"><input type="checkbox" id="pf1" onchange="checkPF()"><span class="cb-box"></span> <span>20 MA לא משמש כהתנגדות (מחיר מעליו / נוגע בו)</span></label>
-        <label class="pf-item"><input type="checkbox" id="pf2" onchange="checkPF()"><span class="cb-box"></span> <span>אם זו נגיעה ראשונה אחרי שינוי כיוון — יש Volume + נר סגירה חזק</span></label>
-        <label class="pf-item"><input type="checkbox" id="pf3" onchange="checkPF()"><span class="cb-box"></span> <span>מניה ללא גאפים תכופים</span></label>
-      </div>
-      <div class="pf-result" id="pf-result">סמן את שלושת הפילטרים כדי להמשיך</div>
     </div>
 
     <!-- Market -->
@@ -835,9 +883,20 @@ body {
     <div class="section">
       <div class="section-head sh-plan"><span class="dot"></span><span>תוכנית טרייד</span><span class="num">03</span></div>
       <div class="section-body">
+
+        <div class="plan-row">
+          <div class="plan-field">
+            <label>כניסה</label>
+            <div class="sizing-input-prefixed"><span>$</span><input type="number" step="0.01" id="price-entry" oninput="calcRR()"></div>
+          </div>
+          <div class="plan-field">
+            <label>סטופ לוס</label>
+            <div class="sizing-input-prefixed"><span>$</span><input type="number" step="0.01" id="price-stop" oninput="calcRR()"></div>
+            <span class="hint">רמה טכנית − ATR</span>
+          </div>
+        </div>
+
         <ul class="cl">
-          <li><div class="cl-text" style="padding: 3px 0;"><strong>כניסה</strong> $<input type="number" step="0.01" class="fi fi-p" id="price-entry" oninput="calcRR()"></div></li>
-          <li><div class="cl-text" style="padding: 3px 0;"><strong>סטופ לוס</strong> $<input type="number" step="0.01" class="fi fi-p" id="price-stop" oninput="calcRR()"> <span class="hint">(רמה טכנית − ATR)</span></div></li>
           <li><div class="cl-text" style="padding: 3px 0;"><strong>ATR מרווח מתחת לרמה?</strong>
             <div class="rg">
               <label><input type="radio" name="atr" value="yes" onchange="countFlags()"><span class="rb"></span> כן</label>
@@ -846,37 +905,46 @@ body {
           </li>
         </ul>
 
-        <!-- Position Sizing -->
-        <div class="sizing-box" id="sizing-box">
-          <div class="sizing-title">גודל פוזיציה</div>
-          <div class="sizing-grid">
-            <div class="sizing-field">
-              <label>Max Risk ($)</label>
-              <input type="number" step="1" class="fi fi-p" id="max-risk" placeholder="100" oninput="onMaxRiskInput()">
-              <button type="button" class="sizing-default-btn" id="sizing-default-btn" onclick="resetToDefaultRisk()">ברירת מחדל: <span id="default-risk-display">$100</span> ✎</button>
+        <!-- Position Sizing Equation -->
+        <div class="equation-strip" id="sizing-box">
+          <div class="eq-label">סיכון לפוזיציה</div>
+          <div class="eq-row">
+            <div class="eq-item">
+              <label>Max Risk</label>
+              <div class="sizing-input-prefixed eq-input">
+                <span>$</span>
+                <input type="number" step="1" id="max-risk" placeholder="100" oninput="onMaxRiskInput()">
+              </div>
             </div>
-            <div class="sizing-field sizing-readonly">
-              <label>Risk / Share ($)</label>
+            <div class="eq-arrow">→</div>
+            <div class="eq-item eq-readonly">
+              <label>Risk / Share</label>
               <div class="sizing-value" id="risk-per-share">—</div>
             </div>
-            <div class="sizing-field sizing-readonly">
+            <div class="eq-arrow">→</div>
+            <div class="eq-item eq-readonly eq-highlight">
               <label>Position Size</label>
               <div class="sizing-value sizing-value-lg" id="position-size">— <span class="sizing-unit">מניות</span></div>
             </div>
           </div>
+          <div class="eq-total">סה"כ סיכון בפועל: <span id="total-risk-display">—</span></div>
+          <button type="button" class="sizing-default-btn" id="sizing-default-btn" onclick="resetToDefaultRisk()">ברירת מחדל: <span id="default-risk-display">$100</span> ✎</button>
           <div class="sizing-warning" id="sizing-warning" style="display:none;"></div>
         </div>
 
-        <ul class="cl">
-          <li><div class="cl-text" style="padding: 3px 0;"><strong>יעד</strong> $<input type="number" step="0.01" class="fi fi-p" id="price-target" oninput="calcRR()">
-            <div class="rg" style="margin-top:3px;">
+        <div class="plan-row plan-row-single">
+          <div class="plan-field">
+            <label>יעד</label>
+            <div class="sizing-input-prefixed"><span>$</span><input type="number" step="0.01" id="price-target" oninput="calcRR()"></div>
+            <div class="rg" style="margin-top:5px;">
               <label><input type="radio" name="tb" value="res"><span class="rb"></span> התנגדות / שיא</label>
               <label><input type="radio" name="tb" value="rr"><span class="rb"></span> R:R 2:1</label>
               <label id="lbl-feel"><input type="radio" name="tb" value="feel" onchange="countFlags()"><span class="rb"></span> תחושה ⚠️</label>
-            </div></div>
-          </li>
-        </ul>
-        <div class="rr" id="rr-display">R:R = —</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rr-prominent" id="rr-display">R:R = —</div>
       </div>
     </div>
   </div>
@@ -886,30 +954,47 @@ body {
     <div class="fieldset-title">החלטה</div>
 
     <!-- Score -->
-    <div class="section">
+    <div class="section decision-section">
       <div class="section-head sh-score"><span class="dot"></span><span>ציון סופי</span><span class="num">04</span></div>
       <div class="section-body">
         <div class="scores">
-          <div class="sc sc-go" id="score-go"><div class="sc-l">GO</div><div class="sc-d">0-2 צהובים · 0 אדומים</div></div>
-          <div class="sc sc-wait" id="score-wait"><div class="sc-l">WAIT</div><div class="sc-d">3 צהובים</div></div>
-          <div class="sc sc-no" id="score-no"><div class="sc-l">NO</div><div class="sc-d">4+ צהובים / אדום</div></div>
+          <div class="sc sc-go" id="score-go">
+            <div class="sc-icon">✓</div>
+            <div class="sc-l">GO</div>
+            <div class="sc-d">מוכן לכניסה</div>
+          </div>
+          <div class="sc sc-wait" id="score-wait">
+            <div class="sc-icon">⏳</div>
+            <div class="sc-l">WAIT</div>
+            <div class="sc-d">חסר אישור</div>
+          </div>
+          <div class="sc sc-no" id="score-no">
+            <div class="sc-icon">✕</div>
+            <div class="sc-l">NO</div>
+            <div class="sc-d">לא עומד בתנאים</div>
+          </div>
         </div>
       </div>
     </div>
 
+    <div class="decision-connector"><div class="decision-connector-line"></div></div>
+
     <!-- Analysis -->
-    <div class="section">
-      <div class="section-head sh-analysis"><span class="dot"></span><span>ניתוח — למה אני נכנס לטרייד הזה?</span><span class="num">05</span></div>
+    <div class="section decision-section">
+      <div class="section-head sh-analysis"><span class="dot"></span><span>למה הטרייד הזה מוצדק?</span><span class="num">05</span></div>
       <div class="section-body">
-        <textarea class="analysis-ta" id="analysis" placeholder="תאר מה אתה רואה בגרף ולמה זה טרייד טוב:
-• מה הסיגנל הטכני?
-• מה מגמת המניה והשוק?
-• מה מחזק את הכניסה? (Volume / Confluence / חוזק יחסי)
-• מה יכול להפריע?"></textarea>
-        <div class="upload-area" onclick="document.getElementById('screenshot-input').click()">
-          📷 העלה צילום מסך מטריידינגוויו
-          <input type="file" id="screenshot-input" accept="image/*" onchange="handleScreenshot(event)">
+        <div class="analysis-prompts">
+          <span class="prompt-tag">Setup</span>
+          <span class="prompt-tag">Market</span>
+          <span class="prompt-tag">Volume</span>
+          <span class="prompt-tag">Confluence</span>
         </div>
+        <textarea class="analysis-ta" id="analysis" placeholder="כתוב במשפט-שניים למה הטרייד הזה טוב"></textarea>
+
+        <button type="button" class="attach-btn" onclick="document.getElementById('screenshot-input').click()" id="attach-btn">
+          📎 צרף צילום מסך
+        </button>
+        <input type="file" id="screenshot-input" accept="image/*" onchange="handleScreenshot(event)" style="display:none;">
         <div class="screenshot-preview" id="ss-preview">
           <img id="ss-img" src="" alt="גרף">
           <button class="remove-ss" onclick="removeScreenshot()">הסר</button>
@@ -924,28 +1009,33 @@ body {
   </div>
 
   <div class="checklist-actions-row">
-    <button class="save-btn" id="save-btn" onclick="saveTrade()">💾 שמור טרייד ביומן</button>
-    <button class="pdf-btn" onclick="printChecklist()">🖨️ שמירה כ-PDF</button>
+    <button class="save-btn" id="save-btn" onclick="saveTrade()">שמור טרייד ביומן</button>
+    <button class="pdf-link" onclick="printChecklist()">הפק PDF</button>
   </div>
 
-  <!-- Iron Rules -->
-  <div class="iron">
-    <div class="iron-inner">
-      <div class="iron-title">כללי ברזל — אחרי כניסה</div>
-      <div class="iron-grid">
-        <div class="iron-item">אל תזיז את הסטופ למטה</div>
-        <div class="iron-item">תן לטרייד לעבוד</div>
-        <div class="iron-item">אל תוסיף לפוזיציה מפסידה</div>
-        <div class="iron-item">תעד ביומן · Cash is a position</div>
-      </div>
-      <div class="hours-row">
-        <div class="hc h1"><div class="t">16:30–17:00</div><div class="d">המתן</div></div>
-        <div class="hc h2"><div class="t">17:30–19:00</div><div class="d">מומלץ</div></div>
-        <div class="hc h3"><div class="t">19:00–21:30</div><div class="d">נמוך</div></div>
-        <div class="hc h4"><div class="t">21:30–23:00</div><div class="d">סגירה</div></div>
-      </div>
+</div><!-- checklist-main -->
+
+<!-- Sidebar -->
+<div class="iron">
+  <div class="iron-inner">
+    <div class="iron-title">כללי ברזל — אחרי כניסה</div>
+    <div class="iron-grid">
+      <div class="iron-item">אל תזיז את הסטופ למטה</div>
+      <div class="iron-item">תן לטרייד לעבוד</div>
+      <div class="iron-item">אל תוסיף לפוזיציה מפסידה</div>
+      <div class="iron-item">תעד ביומן · Cash is a position</div>
+    </div>
+    <div class="hours-title-sidebar">שעות מסחר</div>
+    <div class="hours-row">
+      <div class="hc h1"><div class="t">16:30–17:00</div><div class="d">המתן</div></div>
+      <div class="hc h2"><div class="t">17:30–19:00</div><div class="d">מומלץ</div></div>
+      <div class="hc h3"><div class="t">19:00–21:30</div><div class="d">נמוך</div></div>
+      <div class="hc h4"><div class="t">21:30–23:00</div><div class="d">סגירה</div></div>
     </div>
   </div>
+</div>
+
+</div><!-- checklist-layout -->
 </div>
 
 
@@ -1368,6 +1458,7 @@ function calcSizing() {
   var rpsEl = document.getElementById('risk-per-share');
   var posEl = document.getElementById('position-size');
   var warnEl = document.getElementById('sizing-warning');
+  var totalEl = document.getElementById('total-risk-display');
 
   warnEl.style.display = 'none';
   warnEl.textContent = '';
@@ -1375,12 +1466,14 @@ function calcSizing() {
   if (!e || !s) {
     rpsEl.textContent = '—';
     posEl.innerHTML = '— <span class="sizing-unit">מניות</span>';
+    totalEl.textContent = '—';
     return { valid: false, riskPerShare: null, positionSize: null };
   }
 
   if (s >= e) {
     rpsEl.textContent = '—';
     posEl.innerHTML = '— <span class="sizing-unit">מניות</span>';
+    totalEl.textContent = '—';
     warnEl.style.display = 'block';
     warnEl.textContent = '⚠️ Stop חייב להיות מתחת למחיר הכניסה';
     return { valid: false, riskPerShare: null, positionSize: null };
@@ -1391,18 +1484,21 @@ function calcSizing() {
 
   if (!maxRisk || maxRisk <= 0) {
     posEl.innerHTML = '— <span class="sizing-unit">מניות</span>';
+    totalEl.textContent = '—';
     return { valid: false, riskPerShare: riskPerShare, positionSize: null };
   }
 
   var positionSize = Math.floor(maxRisk / riskPerShare);
   if (positionSize < 1) {
     posEl.innerHTML = '0 <span class="sizing-unit">מניות</span>';
+    totalEl.textContent = '—';
     warnEl.style.display = 'block';
     warnEl.textContent = '⚠️ הסיכון למניה (' + riskPerShare.toFixed(2) + '$) גדול מה-Max Risk — אי אפשר לחשב פוזיציה';
     return { valid: false, riskPerShare: riskPerShare, positionSize: 0 };
   }
 
   posEl.innerHTML = positionSize + ' <span class="sizing-unit">מניות</span>';
+  totalEl.textContent = '$' + (positionSize * riskPerShare).toFixed(2);
   return { valid: true, riskPerShare: riskPerShare, positionSize: positionSize, maxRisk: maxRisk };
 }
 
@@ -1415,11 +1511,11 @@ function calcRR() {
   if (e && s && t && e > s && t > e) {
     var rr = ((t-e)/(e-s)).toFixed(1);
     el.textContent = 'Entry: $'+e.toFixed(2)+'  |  Stop: $'+s.toFixed(2)+'  |  Target: $'+t.toFixed(2)+'  |  R:R = '+rr+':1';
-    el.className = 'rr' + (rr>=2.5?' good':rr>=2?' ok':' bad');
+    el.className = 'rr-prominent' + (rr>=2.5?' good':rr>=2?' ok':' bad');
   } else if (e && s && s >= e) {
     el.textContent = 'סטופ ($'+s.toFixed(2)+') גבוה מהכניסה — חייב להיות מתחת';
-    el.className = 'rr bad';
-  } else { el.textContent = 'R:R = —'; el.className = 'rr'; }
+    el.className = 'rr-prominent bad';
+  } else { el.textContent = 'R:R = —'; el.className = 'rr-prominent'; }
   calcSizing();
   countFlags();
 }
@@ -1650,7 +1746,7 @@ function resetForm() {
   document.getElementById('trade-num').value='1';
   document.getElementById('analysis').value='';
   document.getElementById('rr-display').textContent='R:R = —';
-  document.getElementById('rr-display').className='rr';
+  document.getElementById('rr-display').className='rr-prominent';
   document.getElementById('trade-date').valueAsDate = new Date();
   updateDateDisplay();
   document.getElementById('support-row').style.display='none';
@@ -1671,6 +1767,7 @@ function resetForm() {
   initSizing();
   document.getElementById('risk-per-share').textContent = '—';
   document.getElementById('position-size').innerHTML = '— <span class="sizing-unit">מניות</span>';
+  document.getElementById('total-risk-display').textContent = '—';
   document.getElementById('sizing-warning').style.display = 'none';
   countFlags();
   updateTitle();
