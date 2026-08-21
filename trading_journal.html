@@ -1182,15 +1182,17 @@ body {
 <style>
 /* v7.3 RTL-first refinements */
 .score-bar{
-  background: transparent !important;
+  background: var(--surface) !important;
   border: 0 !important;
+  box-shadow: 0 0 0 100vmax var(--surface) !important;
+  clip-path: inset(0 -100vmax);
   border-radius: 0 !important;
   box-shadow: none !important;
   padding: 6px 0 10px !important;
   margin-bottom: 14px !important;
   border-bottom: 1px solid var(--border-light) !important;
 }
-.score-bar.clean,.score-bar.warn,.score-bar.stop,.score-bar.empty{background:transparent !important;border-color:transparent !important;}
+.score-bar.clean,.score-bar.warn,.score-bar.stop,.score-bar.empty{background:var(--surface) !important;border-color:transparent !important;}
 .sb-v{padding:0 !important;background:transparent !important;color:var(--ink-muted) !important;font-weight:700 !important;}
 .sb-v.go{color:var(--go) !important;} .sb-v.wait{color:var(--wait) !important;} .sb-v.no{color:var(--danger) !important;}
 .sb-flags{gap:12px;}
@@ -1215,8 +1217,9 @@ body {
 .technical-grid .technical-group-label{grid-column:1/-1;}
 .technical-field .rg{margin-top:6px;gap:12px 16px;}
 .technical-field > label{font-size:12px;}
-#distance{width:100% !important;max-width:none !important;}
-.tf-input-row{width:100%;}
+#distance{width:100% !important;max-width:none !important;padding-right:28px !important;}
+.tf-input-row{width:100%;position:relative;}
+.distance-suffix{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:13px;font-weight:600;color:var(--ink-soft);pointer-events:none;}
 
 @media (max-width:700px){
   .technical-grid{grid-template-columns:1fr !important;}
@@ -1401,7 +1404,8 @@ body {
           <div class="technical-field">
             <label>מרחק מהסיגנל</label>
             <div class="tf-input-row">
-              <input type="number" class="fi fi-s" id="distance" step="0.1" oninput="countFlags()" placeholder="%">%
+              <span class="distance-suffix">%</span>
+              <input type="number" class="fi fi-s" id="distance" step="0.1" oninput="countFlags()" placeholder="">
             </div>
             <span class="hint" id="dist-hint"></span>
           </div>
