@@ -910,115 +910,192 @@ body {
 }
 
 
-/* ── V6 TRADE PLAN: PLAN + RISK SUMMARY ── */
-.plan-risk-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1.65fr) minmax(290px, .95fr);
-  gap: 16px;
-  align-items: stretch;
+/* ── V7 TRADE PLAN — HUMAN FLOW: PLAN → RISK → REWARD ── */
+.trade-plan-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  direction: rtl;
 }
-.plan-panel, .risk-panel {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px;
-  min-width: 0;
+
+.trade-plan-stage {
+  padding: 16px 0;
 }
-.plan-panel { background: var(--surface); }
-.risk-panel { background: var(--bg); }
-.plan-panel-title {
-  font-size: 10px;
+
+.trade-plan-stage:first-child { padding-top: 2px; }
+.trade-plan-stage + .trade-plan-stage { border-top: 1px solid var(--border-light); }
+
+.trade-plan-stage-title {
+  font-size: 11px;
   font-weight: 800;
   color: var(--ink-muted);
-  text-transform: uppercase;
-  letter-spacing: .45px;
   margin-bottom: 12px;
+  text-align: right;
 }
-.plan-core-grid {
+
+.plan-entry-stop-grid,
+.plan-reward-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   align-items: start;
 }
-.atr-inline {
-  margin-top: 9px;
-  padding-top: 8px;
-  border-top: 1px solid var(--border-light);
-}
-.atr-label {
-  display: block;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--ink-muted);
-  margin-bottom: 5px;
-}
-.target-options { margin-top: 7px; gap: 7px 10px; }
+
+.plan-field,
 .rr-result-wrap { min-width: 0; }
-.rr-label {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--ink-muted);
-  text-transform: uppercase;
-  letter-spacing: .3px;
-  margin-bottom: 3px;
-}
-.rr-result-wrap .rr-prominent {
-  margin-top: 0;
-  min-height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg);
-}
-.risk-summary-grid-v6 {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-}
-.risk-summary-item-v6 label {
+
+.plan-field label,
+.rr-label,
+.risk-input-block > label,
+.risk-metric > label {
   display: block;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--ink-muted);
-  text-transform: uppercase;
-  letter-spacing: .3px;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  text-align: right;
+  text-transform: none;
+  letter-spacing: 0;
 }
-.risk-summary-item-v6 .sizing-value,
-.risk-summary-item-v6 .sizing-input-prefixed { min-height: 40px; }
-.risk-pos-item-v6 .sizing-value-lg {
-  min-height: 64px;
+
+.trade-plan-flow .sizing-input-prefixed {
+  min-height: 44px;
+  border-radius: 8px;
+}
+
+.trade-plan-flow .sizing-input-prefixed input { min-height: 42px; }
+
+.stop-field .hint {
+  display: block;
+  margin-top: 5px;
+  text-align: right;
+}
+
+.atr-inline {
+  margin-top: 8px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-size: 24px;
-  background: var(--surface);
-  border-color: var(--accent-border);
+  justify-content: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
 }
-.risk-total-row-v6 {
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
-  font-size: 11px;
+
+.atr-label {
+  font-size: 10.5px;
+  font-weight: 700;
   color: var(--ink-muted);
+  white-space: nowrap;
 }
-.risk-total-row-v6 span {
-  font-family: 'Rubik', monospace;
-  font-weight: 800;
-  color: var(--ink);
+.atr-inline .rg { margin: 0; }
+
+/* Risk stage: one user input, three outputs */
+.risk-input-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) 1.2fr;
+  gap: 18px;
+  align-items: end;
+  margin-bottom: 14px;
 }
-.risk-panel .sizing-default-btn {
+
+.risk-input-block { min-width: 0; max-width: 360px; }
+
+.risk-input-block .sizing-default-btn {
   margin-top: 6px;
   width: auto;
   text-align: right;
+  font-size: 10px;
 }
-@media (max-width: 900px) {
-  .plan-risk-layout { grid-template-columns: 1fr; }
-  .risk-summary-grid-v6 { grid-template-columns: repeat(3, minmax(0,1fr)); }
-  .risk-total-row-v6 { grid-column: 1 / -1; }
+
+.risk-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
 }
-@media (max-width: 640px) {
-  .plan-core-grid, .risk-summary-grid-v6 { grid-template-columns: 1fr; }
-  .risk-total-row-v6 { grid-column: auto; }
+
+.risk-metric {
+  min-width: 0;
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  border-radius: 9px;
+  padding: 11px 12px;
+  text-align: center;
+}
+
+.risk-metric > label { text-align: center; margin-bottom: 4px; }
+.risk-metric .sizing-value {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  min-height: auto;
+  font-family: 'Rubik', monospace;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.risk-metric.position-size-metric {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+}
+
+.risk-metric.position-size-metric .sizing-value-lg {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 27px;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.risk-metric .sizing-unit {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.risk-total-value {
+  font-family: 'Rubik', monospace;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.trade-plan-flow .sizing-warning { margin-top: 10px; }
+
+.target-options {
+  margin-top: 7px;
+  gap: 7px 10px;
+  justify-content: flex-start;
+}
+
+.rr-result-wrap { align-self: start; }
+.rr-label { margin-bottom: 6px; }
+.rr-result-wrap .rr-prominent {
+  margin: 0;
+  min-height: 44px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 16px;
+}
+.rr-result-wrap .rr-prominent.good { background: var(--go-bg); color: var(--go); }
+.rr-result-wrap .rr-prominent.ok { background: var(--bg); color: var(--ink-soft); }
+.rr-result-wrap .rr-prominent.bad { background: var(--danger-bg); color: var(--danger); }
+
+@media (max-width: 760px) {
+  .plan-entry-stop-grid,
+  .plan-reward-grid,
+  .risk-metrics-grid,
+  .risk-input-row {
+    grid-template-columns: 1fr;
+  }
+  .risk-input-block { max-width: none; }
+  .atr-inline { align-items: flex-start; flex-direction: column; gap: 4px; }
 }
 
 /* Print styles */
@@ -1160,7 +1237,6 @@ body {
           <div class="dynamic-stop-list" id="dynamic-stop-list"></div>
         </div>
       </div>
-      </div>
 
       <!-- Pre-filter -->
       <div class="status-row prefilter">
@@ -1273,10 +1349,10 @@ body {
       <div class="section-head sh-plan"><span class="dot"></span><span>תוכנית טרייד</span><span class="num">03</span></div>
       <div class="section-body">
 
-        <div class="plan-risk-layout">
-          <div class="plan-panel">
-            <div class="plan-panel-title">Plan</div>
-            <div class="plan-core-grid">
+        <div class="trade-plan-flow">
+          <div class="trade-plan-stage trade-plan-stage-plan">
+            <div class="trade-plan-stage-title">כניסה וסטופ</div>
+            <div class="plan-entry-stop-grid">
               <div class="plan-field">
                 <label>כניסה</label>
                 <div class="sizing-input-prefixed"><span>$</span><input type="number" step="0.01" id="price-entry" oninput="calcRR()"></div>
@@ -1294,7 +1370,42 @@ body {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
 
+          <div class="trade-plan-stage trade-plan-stage-risk" id="sizing-box">
+            <div class="trade-plan-stage-title">ניהול סיכון</div>
+            <div class="risk-input-row">
+              <div class="risk-input-block">
+                <label>Max Risk</label>
+                <div class="sizing-input-prefixed eq-input">
+                  <span>$</span>
+                  <input type="number" step="1" id="max-risk" placeholder="100" oninput="onMaxRiskInput()">
+                </div>
+                <button type="button" class="sizing-default-btn" id="sizing-default-btn" onclick="resetToDefaultRisk()">Risk default: <span id="default-risk-display">$100</span> · שנה</button>
+              </div>
+            </div>
+
+            <div class="risk-metrics-grid">
+              <div class="risk-metric">
+                <label>Risk / Share</label>
+                <div class="sizing-value" id="risk-per-share">—</div>
+              </div>
+              <div class="risk-metric position-size-metric">
+                <label>Position Size</label>
+                <div class="sizing-value sizing-value-lg" id="position-size">— <span class="sizing-unit">מניות</span></div>
+              </div>
+              <div class="risk-metric">
+                <label>סה״כ סיכון בפועל</label>
+                <div class="risk-total-value" id="total-risk-display">—</div>
+              </div>
+            </div>
+            <div class="sizing-warning" id="sizing-warning" style="display:none;"></div>
+          </div>
+
+          <div class="trade-plan-stage trade-plan-stage-reward">
+            <div class="trade-plan-stage-title">יעד ותמורה</div>
+            <div class="plan-reward-grid">
               <div class="plan-field target-field">
                 <label>יעד</label>
                 <div class="sizing-input-prefixed"><span>$</span><input type="number" step="0.01" id="price-target" oninput="calcRR()"></div>
@@ -1304,39 +1415,11 @@ body {
                   <label id="lbl-feel"><input type="radio" name="tb" value="feel" onchange="countFlags()"><span class="rb"></span> תחושה ⚠️</label>
                 </div>
               </div>
-
               <div class="rr-result-wrap">
                 <div class="rr-label">R:R</div>
                 <div class="rr-prominent" id="rr-display">R:R = —</div>
               </div>
             </div>
-          </div>
-
-          <div class="risk-panel" id="sizing-box">
-            <div class="plan-panel-title">Risk Summary</div>
-            <div class="risk-summary-grid-v6">
-              <div class="risk-summary-item-v6">
-                <label>Max Risk</label>
-                <div class="sizing-input-prefixed eq-input">
-                  <span>$</span>
-                  <input type="number" step="1" id="max-risk" placeholder="100" oninput="onMaxRiskInput()">
-                </div>
-                <button type="button" class="sizing-default-btn" id="sizing-default-btn" onclick="resetToDefaultRisk()">Risk default: <span id="default-risk-display">$100</span> · שנה</button>
-              </div>
-
-              <div class="risk-summary-item-v6">
-                <label>Risk / Share</label>
-                <div class="sizing-value" id="risk-per-share">—</div>
-              </div>
-
-              <div class="risk-summary-item-v6 risk-pos-item-v6">
-                <label>Position Size</label>
-                <div class="sizing-value sizing-value-lg" id="position-size">— <span class="sizing-unit">מניות</span></div>
-              </div>
-
-              <div class="risk-total-row-v6">סה"כ סיכון בפועל: <span id="total-risk-display">—</span></div>
-            </div>
-            <div class="sizing-warning" id="sizing-warning" style="display:none;"></div>
           </div>
         </div>
       </div>
@@ -1444,7 +1527,7 @@ body {
       </div>
     </div>
   </div>
-</div>
+</div><!-- view-checklist -->
 
 
 <!-- ══════════════════════════════════════
