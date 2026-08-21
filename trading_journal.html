@@ -72,6 +72,8 @@ body {
   box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.04);
   border-bottom: 1px solid var(--border-light);
 }
+.header-spacer { flex: 1; }
+.header-tabs-wrap { flex: 1; display: flex; justify-content: center; }
 .app-title {
   font-family: 'Rubik', sans-serif;
   font-size: 19px;
@@ -107,6 +109,11 @@ body {
 
 /* ── MAIN CONTENT ── */
 .main { max-width: 760px; margin: 0 auto; padding: 16px; }
+
+@media (min-width: 860px) {
+  .main { max-width: 960px; padding: 24px; }
+  .iron-inner { max-width: 960px; }
+}
 
 /* ── VIEWS ── */
 .view { display: none; }
@@ -243,25 +250,25 @@ body {
 .plan-field .hint { display: block; margin-top: 3px; }
 
 /* ── POSITION SIZING EQUATION ── */
-.equation-strip { background: var(--purple-bg); border: 1.5px solid var(--purple); border-radius: 10px; padding: 10px 12px; margin: 8px 0; }
-.eq-label { font-size: 11px; font-weight: 700; color: var(--purple); margin-bottom: 8px; }
+.equation-strip { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin: 8px 0; }
+.eq-label { font-size: 11px; font-weight: 700; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 8px; }
 .eq-row { display: flex; align-items: flex-end; gap: 6px; }
 .eq-item { flex: 1; min-width: 0; }
 .eq-item label { display: block; font-size: 9.5px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.2px; margin-bottom: 3px; white-space: nowrap; }
-.eq-arrow { color: var(--purple); font-size: 14px; font-weight: 700; padding-bottom: 8px; flex-shrink: 0; }
+.eq-arrow { color: var(--ink-muted); font-size: 14px; font-weight: 700; padding-bottom: 8px; flex-shrink: 0; }
 .sizing-input-prefixed { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: 6px; background: var(--surface); direction: ltr; }
 .sizing-input-prefixed span { padding: 0 0 0 6px; font-size: 13px; font-weight: 700; color: var(--ink-muted); font-family: 'Rubik', monospace; }
 .sizing-input-prefixed input { border: none; padding: 5px 8px 5px 0; width: 100%; font-size: 13px; font-weight: 700; font-family: 'Rubik', monospace; text-align: center; background: transparent; }
 .sizing-input-prefixed input:focus { outline: none; }
-.sizing-input-prefixed:focus-within { border-color: var(--purple); }
+.sizing-input-prefixed:focus-within { border-color: var(--accent); }
 .eq-readonly .sizing-value { margin: 0; }
-.eq-highlight .sizing-value { border-color: var(--purple); background: var(--purple-bg); }
+.eq-highlight .sizing-value { border-color: var(--ink-muted); background: var(--surface); }
 .eq-total { margin-top: 8px; font-size: 11px; font-weight: 600; color: var(--ink-soft); text-align: center; }
-.eq-total span { font-weight: 800; color: var(--purple); font-family: 'Rubik', monospace; }
+.eq-total span { font-weight: 800; color: var(--ink); font-family: 'Rubik', monospace; }
 .sizing-default-btn { display: block; margin-top: 8px; background: none; border: none; padding: 0; font-size: 10px; color: var(--ink-muted); cursor: pointer; font-family: inherit; text-decoration: underline; text-underline-offset: 2px; text-align: center; width: 100%; }
-.sizing-default-btn:hover { color: var(--purple); }
+.sizing-default-btn:hover { color: var(--accent); }
 .sizing-value { background: var(--surface); border: 1.5px solid var(--border-light); border-radius: 6px; padding: 5px 8px; font-size: 13px; font-weight: 800; font-family: 'Rubik', monospace; direction: ltr; text-align: center; color: var(--ink); }
-.sizing-value-lg { color: var(--purple); font-size: 15px; }
+.sizing-value-lg { color: var(--ink); font-size: 17px; font-weight: 900; }
 .sizing-unit { font-size: 10px; font-weight: 500; color: var(--ink-muted); }
 .sizing-warning { margin-top: 8px; background: var(--danger-bg); border: 1px solid var(--danger-border); border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: 600; color: var(--danger); text-align: center; }
 
@@ -290,7 +297,7 @@ body {
 .event-indicator.warn .ei-title { color: var(--wait); }
 .event-indicator.danger .ei-title { color: var(--danger); }
 .ei-sub { font-size: 11px; color: var(--ink-muted); margin-top: 1px; }
-.ei-icon { font-size: 18px; font-weight: 700; color: var(--go); }
+.ei-icon { font-size: 14px; font-weight: 700; color: var(--go); }
 .event-indicator.warn .ei-icon { color: var(--wait); }
 .event-indicator.danger .ei-icon { color: var(--danger); }
 
@@ -343,12 +350,12 @@ body {
 
 /* ── SCORE CARDS ── */
 .scores { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px; }
-.sc { border-radius: 8px; padding: 8px; text-align: center; transition: all 0.25s; opacity: 0.35; }
+.sc { border-radius: 8px; padding: 8px; text-align: center; transition: all 0.25s; opacity: 0.5; }
 .sc.on { opacity: 1; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transform: scale(1.03); border-width: 2.5px !important; }
 .sc-go { background: var(--go-bg); border: 1.5px solid var(--go-border); }
 .sc-wait { background: var(--wait-bg); border: 1.5px solid var(--wait-border); }
 .sc-no { background: var(--danger-bg); border: 1.5px solid var(--danger-border); }
-.sc-l { font-family: 'Rubik', sans-serif; font-size: 18px; font-weight: 900; letter-spacing: 1.5px; }
+.sc-l { font-family: 'Rubik', sans-serif; font-size: 16px; font-weight: 900; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 4px; }
 .sc-go .sc-l { color: var(--go); } .sc-wait .sc-l { color: var(--wait); } .sc-no .sc-l { color: var(--danger); }
 .sc-d { font-size: 10px; color: var(--ink-muted); margin-top: 2px; }
 
@@ -376,7 +383,7 @@ body {
 .decision-section { margin-bottom: 0; }
 .decision-connector { display: flex; justify-content: center; padding: 2px 0; }
 .decision-connector-line { width: 2px; height: 14px; background: var(--border-strong); }
-.sc-icon { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+.sc-icon { font-size: 13px; font-weight: 700; }
 
 /* ── SAVE BUTTON ── */
 .save-btn {
@@ -590,6 +597,8 @@ body {
   .app-header { padding: 10px 12px; }
   .app-title { font-size: 14px; }
   .tab-btn { padding: 5px 10px; font-size: 11px; }
+  .header-tabs-wrap { flex: 0; }
+  .header-spacer { display: none; }
 
   .meta { grid-template-columns: 1fr 1fr; }
   .earnings-toggle-wrap { grid-column: 1 / -1; flex-direction: row; justify-content: space-between; }
@@ -654,11 +663,14 @@ body {
 
 <div class="app-header">
   <div class="app-title">TRADE <span>JOURNAL</span></div>
-  <div class="tabs">
-    <button class="tab-btn active" onclick="showView('checklist')">צ׳קליסט</button>
-    <button class="tab-btn" onclick="showView('journal')"><span class="tab-badge" id="tab-badge"></span>יומן</button>
-    <button class="tab-btn" onclick="showView('stats')">סטטיסטיקות</button>
+  <div class="header-tabs-wrap">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showView('checklist')">צ׳קליסט</button>
+      <button class="tab-btn" onclick="showView('journal')"><span class="tab-badge" id="tab-badge"></span>יומן</button>
+      <button class="tab-btn" onclick="showView('stats')">סטטיסטיקות</button>
+    </div>
   </div>
+  <div class="header-spacer"></div>
 </div>
 
 <div class="main">
@@ -934,18 +946,15 @@ body {
       <div class="section-body">
         <div class="scores">
           <div class="sc sc-go" id="score-go">
-            <div class="sc-icon">✓</div>
-            <div class="sc-l">GO</div>
+            <div class="sc-l"><span class="sc-icon">✓</span> GO</div>
             <div class="sc-d">מוכן לכניסה</div>
           </div>
           <div class="sc sc-wait" id="score-wait">
-            <div class="sc-icon">⏳</div>
-            <div class="sc-l">WAIT</div>
+            <div class="sc-l"><span class="sc-icon">⏳</span> WAIT</div>
             <div class="sc-d">חסר אישור</div>
           </div>
           <div class="sc sc-no" id="score-no">
-            <div class="sc-icon">✕</div>
-            <div class="sc-l">NO</div>
+            <div class="sc-l"><span class="sc-icon">✕</span> NO</div>
             <div class="sc-d">לא עומד בתנאים</div>
           </div>
         </div>
