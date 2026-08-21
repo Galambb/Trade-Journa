@@ -25,6 +25,7 @@
   --danger-bg: #fdf2f1;
   --danger-border: #f0c9c4;
   --accent: #7c8a99;
+  --accent-strong: #5f6f7f;
   --accent-bg: #eef1f3;
   --accent-border: #d3dade;
   --amber: #b45309;
@@ -36,11 +37,13 @@
 /* Per-tab accent theming — checklist (default) uses root --accent above */
 body.tab-journal {
   --accent: #6f9573;
+  --accent-strong: #557a5a;
   --accent-bg: #eef4ef;
   --accent-border: #cddccf;
 }
 body.tab-stats {
   --accent: #5f8580;
+  --accent-strong: #486d69;
   --accent-bg: #eaf1f0;
   --accent-border: #c6dad7;
 }
@@ -76,36 +79,67 @@ body {
 .header-tabs-wrap { display: flex; justify-content: center; }
 .app-title {
   font-family: 'Rubik', sans-serif;
-  font-size: 19px;
-  font-weight: 900;
-  letter-spacing: -0.6px;
-  color: var(--accent);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: var(--ink-muted);
 }
+.app-title span { font-weight: 500; color: inherit; }
 
 .tabs {
   display: flex;
-  gap: 4px;
-  background: var(--bg);
-  border-radius: 8px;
-  padding: 3px;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
 }
 .tab-btn {
-  padding: 5px 14px;
-  border: none;
-  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 6px 11px;
+  border: 1px solid transparent;
+  border-radius: 8px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
   color: var(--ink-muted);
   background: transparent;
-  transition: all 0.2s;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.tab-btn:hover:not(.active) {
+  color: var(--ink-soft);
+  background: var(--bg);
 }
 .tab-btn.active {
-  background: var(--accent);
-  color: #fff;
+  background: var(--accent-bg);
+  color: var(--accent-strong);
+  border-color: var(--accent-border);
+  font-weight: 700;
+  box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--accent-strong) 28%, transparent);
 }
-.tab-btn:hover:not(.active) { color: var(--ink); }
+.tab-btn.active .tab-icon {
+  color: var(--accent-strong);
+  opacity: 1;
+  stroke-width: 2.05;
+}
+.tab-icon {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+}
+.tab-label { line-height: 1; }
+.tab-btn > * { pointer-events: none; }
 
 /* ── MAIN CONTENT ── */
 .main { max-width: 760px; margin: 0 auto; padding: 16px; }
@@ -501,8 +535,8 @@ body {
 }
 .status-top-grid > .event-indicator,
 .status-top-grid > .cpi-toggle {
-  min-height:86px;
-  padding:12px 14px;
+  min-height:70px;
+  padding:10px 14px;
   border:1px solid var(--border-light);
   border-radius:10px;
   background: var(--surface);
@@ -542,9 +576,15 @@ body {
 .event-indicator.warn .ei-icon { color: var(--wait); }
 .event-indicator.danger .ei-icon { color: var(--danger); }
 
-.cpi-toggle-row { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
-.cpi-label { font-size: 12px; font-weight: 600; color: var(--ink-soft); }
-.cpi-btns { display: flex; gap: 6px; }
+.cpi-toggle-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  direction:rtl;
+}
+.cpi-label { font-size:12px; font-weight:700; color:var(--ink-soft); white-space:nowrap; }
+.cpi-btns { display:flex; gap:6px; flex-shrink:0; direction:rtl; }
 .cpi-btn {
   padding: 5px 14px; border-radius: 6px; border: 1.5px solid var(--border);
   background: var(--surface); color: var(--ink-muted); font-size: 12px; font-weight: 600;
@@ -552,22 +592,26 @@ body {
 }
 .cpi-btn.on-go { border-color: var(--go); background: var(--go-bg); color: var(--go); }
 .cpi-btn.on-danger { border-color: var(--danger); background: var(--danger-bg); color: var(--danger); }
-.cpi-link { display: inline-block; margin-top: 6px; font-size: 11px; color: var(--accent); text-decoration: none; }
+.cpi-link { display:inline-block; margin-top:5px; font-size:10.5px; color:var(--accent); text-decoration:none; align-self:flex-start; }
 .cpi-link:hover { text-decoration: underline; }
 
 /* ── EARNINGS TOGGLE ── */
-.earnings-toggle-wrap { display: flex; flex-direction: row; align-items: center; gap: 6px; white-space: nowrap; }
-.earnings-toggle-wrap label { white-space: nowrap; }
+.earnings-toggle-wrap { display: flex; align-items: center; white-space: nowrap; }
 .earn-toggle {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 4px 8px; border-radius: 6px; border: 1.5px solid var(--go-border);
-  background: var(--go-bg); color: var(--go); font-size: 11px; font-weight: 700;
-  cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  width: 100%; min-height: 30px; padding: 5px 10px;
+  border-radius: 6px; border: 1px solid var(--border-light);
+  background: var(--bg); color: var(--ink-muted);
+  font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: background 0.15s, border-color 0.15s, color 0.15s; white-space: nowrap;
 }
+.earn-toggle:hover { border-color: var(--border); background: var(--accent-bg); color: var(--ink-soft); }
 .earn-toggle.on {
   border-color: var(--danger-border); background: var(--danger-bg); color: var(--danger);
+  font-weight: 700;
 }
-.earn-icon { font-size: 12px; }
+.earn-toggle.on:hover { border-color: var(--danger); background: var(--danger-bg); }
+.earn-icon { font-size: 11px; line-height: 1; min-width: 10px; text-align: center; }
 .stop-box-title { font-size: 11px; font-weight: 700; color: var(--danger); margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
 .stop-box-title::before { content: ""; width: 6px; height: 6px; background: var(--danger); border-radius: 50%; }
 .stop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 16px; }
@@ -575,14 +619,30 @@ body {
 .si::before { content: "×"; position: absolute; right: 0; color: var(--danger); font-weight: 700; font-size: 10px; }
 
 /* ── PRE-FILTER ── */
-.prefilter.all-checked { background: var(--go-bg); }
-.pf-title { font-size: 11px; font-weight: 800; color: var(--ink-soft); margin-bottom: 5px; transition: color 0.2s; }
-.prefilter { background: #fcfcfd; }
-.prefilter.all-checked .pf-title { color: var(--go); }
-.pf-items { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-.pf-item { display: flex; align-items: flex-start; gap: 6px; font-size: 11px; }
-.pf-item input { accent-color: var(--go); margin-top: 2px; }
-.pf-result { margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--ink-muted); }
+.prefilter { background:#fcfcfd; padding:10px 16px 12px; }
+.prefilter.all-checked { background:var(--go-bg); }
+.pf-title-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px; }
+.pf-title { font-size:11px; font-weight:800; color:var(--ink-soft); margin:0; transition:color 0.2s; }
+.prefilter.all-checked .pf-title { color:var(--go); }
+.pf-progress { font-size:10.5px; font-weight:700; color:var(--ink-muted); white-space:nowrap; }
+.pf-items { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; direction:rtl; }
+.pf-item {
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:start;
+  gap:8px;
+  min-width:0;
+  padding:9px 10px;
+  background:var(--surface);
+  border:1px solid var(--border-light);
+  border-radius:8px;
+  cursor:pointer;
+}
+.pf-copy { min-width:0; }
+.pf-item-title { display:block; font-size:11px; font-weight:700; color:var(--ink); line-height:1.35; }
+.pf-item-help { display:block; margin-top:2px; font-size:9.5px; font-weight:500; color:var(--ink-muted); line-height:1.4; }
+.pf-result { margin-top:7px; font-size:10.5px; font-weight:700; color:var(--ink-muted); }
+@media (max-width:760px){ .pf-items{ grid-template-columns:1fr; } }
 
 /* ── BLOCKER ── */
 .blocker { display: none; background: var(--danger-bg); text-align: center; }
@@ -852,7 +912,7 @@ body {
 .reminder-sub { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
 
 /* ── TAB BADGE ── */
-.tab-badge { display: none; background: var(--danger); color: #fff; font-size: 9px; font-weight: 800; border-radius: 10px; padding: 1px 5px; min-width: 15px; margin-right: 3px; line-height: 1.4; text-align: center; }
+.tab-badge { display: none; background: var(--danger); color: #fff; font-size: 9px; font-weight: 800; border-radius: 10px; padding: 1px 5px; min-width: 16px; margin-right: 1px; line-height: 1.45; text-align: center; }
 .tab-badge.show { display: inline-block; }
 
 /* ── CUSTOM CHECKBOX (prefilter) ── */
@@ -1177,6 +1237,70 @@ body {
   }
   #view-checklist.active .score-bar { position: static !important; }
 }
+
+/* v7.18: align trade status to main content grid */
+.trade-status-shell,
+#trade-status-shell,
+.trade-status-bar,
+#trade-status-bar {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
+  transform: none !important;
+}
+.trade-status-inner,
+#trade-status-inner {
+  max-width: 980px !important;
+  margin: 0 auto !important;
+  padding: 10px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  direction: rtl !important;
+  background: #fff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+}
+.trade-status-main,
+#trade-status-main {
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: right !important;
+  justify-self: start !important;
+}
+.trade-status-counters,
+#trade-status-counters {
+  display: flex !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-items: center !important;
+  direction: rtl !important;
+}
+@media (max-width: 700px) {
+  .trade-status-inner, #trade-status-inner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .trade-status-counters, #trade-status-counters {
+    justify-content: flex-start !important;
+  }
+}
+
+
+/* v7.21: add breathing room above trade status bar */
+.score-bar {
+  margin-top: 16px !important;
+}
+
 </style>
 
 <style>
@@ -1249,6 +1373,489 @@ body {
 }
 </style>
 
+
+<style>
+/* ── V7.6 TECHNICAL SIGNAL — WIDE 4-COLUMN RTL FLOW ── */
+@media (min-width: 1100px) {
+  .technical-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    direction: rtl;
+  }
+  .technical-field {
+    min-height: 176px !important;
+    padding: 18px 20px !important;
+    border-top: 0 !important;
+    border-left: 0 !important;
+    border-inline-end: 1px solid var(--border-light) !important;
+  }
+  .technical-field:nth-child(4) {
+    border-inline-end: 0 !important;
+  }
+  #support-row {
+    grid-column: 1 / -1 !important;
+    min-height: auto !important;
+    border-inline-end: 0 !important;
+    border-top: 1px solid var(--border-light) !important;
+  }
+  #support-row .rg {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px 18px !important;
+  }
+  #support-row .rg label { width: auto !important; }
+}
+
+/* Medium desktop/tablet: 2×2 */
+@media (min-width: 701px) and (max-width: 1099px) {
+  .technical-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .technical-field {
+    min-height: 156px !important;
+  }
+  #support-row { grid-column: 1 / -1 !important; }
+}
+</style>
+
+
+<style>
+/* ── V7.8 DOCUMENTATION — EQUAL VISUAL WINDOWS ── */
+@media (min-width: 761px) {
+  .documentation-copy,
+  .documentation-chart {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .analysis-ta,
+  .chart-upload-shell {
+    height: 224px;
+    min-height: 224px;
+    max-height: 224px;
+    flex: 0 0 224px;
+  }
+  .chart-upload-shell {
+    overflow: hidden;
+  }
+  .attach-btn {
+    min-height: 0;
+    height: 100%;
+    flex: 1;
+  }
+  .screenshot-preview {
+    height: 100%;
+  }
+  .screenshot-preview img {
+    height: 100%;
+    max-height: none;
+    object-fit: contain;
+  }
+}
+
+/* ── V7.9 DOCUMENTATION — SHARED WINDOW ROW + LIGHTER LOGO ── */
+@media (min-width: 761px) {
+  .documentation-grid {
+    align-items: start;
+  }
+  .documentation-copy,
+  .documentation-chart {
+    display: grid;
+    grid-template-rows: auto auto auto 224px auto;
+    align-content: start;
+  }
+  .documentation-chart .documentation-label { grid-row: 1; }
+  .documentation-chart .documentation-helper { grid-row: 2; }
+  .documentation-chart .chart-upload-shell { grid-row: 4; }
+  .documentation-chart .chart-upload-note { grid-row: 5; }
+  .documentation-copy .documentation-label { grid-row: 1; }
+  .documentation-copy .documentation-helper { grid-row: 2; }
+  .documentation-copy .analysis-prompts { grid-row: 3; min-height: 30px; }
+  .documentation-copy .analysis-ta { grid-row: 4; }
+}
+</style>
+<style>
+/* v7.13 — clearer active tabs + readable top trade status */
+.tab-btn {
+  color: #8291a3;
+}
+.tab-btn .tab-icon {
+  color: #8291a3;
+}
+.tab-btn.active {
+  background: var(--accent-bg);
+  color: #53677b;
+  border-color: var(--accent-border);
+  font-weight: 750;
+  box-shadow: inset 0 -2px 0 rgba(83,103,123,.24);
+}
+.tab-btn.active .tab-icon {
+  color: #53677b;
+  opacity: 1;
+  stroke-width: 2.15;
+}
+body.tab-journal .tab-btn.active {
+  color: #55745b;
+}
+body.tab-journal .tab-btn.active .tab-icon {
+  color: #55745b;
+}
+body.tab-stats .tab-btn.active {
+  color: #4f746f;
+}
+body.tab-stats .tab-btn.active .tab-icon {
+  color: #4f746f;
+}
+
+.score-bar {
+  direction: rtl;
+  justify-content: space-between;
+  gap: 20px !important;
+  padding: 10px max(16px, calc((100vw - 912px)/2)) 11px !important;
+}
+.score-bar > *:first-child,
+.score-bar > *:last-child {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+.sb-v {
+  order: 0;
+  margin: 0 !important;
+  max-width: 70%;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  color: var(--ink-soft) !important;
+}
+.sb-v::before {
+  content: "מצב טרייד · ";
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+.sb-v.go { color: var(--go) !important; }
+.sb-v.wait { color: var(--wait) !important; }
+.sb-v.no { color: var(--danger) !important; }
+.sb-v.empty { color: var(--ink-soft) !important; }
+.sb-flags {
+  order: 1;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px !important;
+  direction: rtl;
+}
+.sb-y,
+.sb-r {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  background: transparent;
+  border: 1px solid var(--border-light);
+}
+.sb-y { color: var(--wait); }
+.sb-r { color: var(--danger); }
+
+@media (max-width: 640px) {
+  .score-bar {
+    padding-inline: 12px !important;
+    align-items: flex-start;
+  }
+  .sb-v { max-width: 100%; }
+  .sb-flags { margin-right: 0; }
+}
+</style>
+
+<style>
+/* v7.14 — flat 2026 tabs + integrated trade-status rail */
+.tab-btn {
+  position: relative;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 7px 10px 9px;
+  color: #8b9aab;
+}
+.tab-btn:hover:not(.active) {
+  background: transparent !important;
+  color: #6f8092;
+}
+.tab-btn .tab-icon { color: currentColor; }
+.tab-btn.active {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: #50677d !important;
+  font-weight: 700;
+}
+.tab-btn.active .tab-icon {
+  color: #50677d !important;
+  stroke-width: 2.1;
+}
+.tab-btn .tab-label {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+.tab-btn.active .tab-label::after {
+  content: "";
+  position: absolute;
+  right: 10%;
+  left: 10%;
+  bottom: -5px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: .78;
+}
+body.tab-journal .tab-btn.active,
+body.tab-journal .tab-btn.active .tab-icon { color: #5b7d60 !important; }
+body.tab-stats .tab-btn.active,
+body.tab-stats .tab-btn.active .tab-icon { color: #527873 !important; }
+
+/* Make the trade status read as part of the page shell, not a detached widget. */
+.score-bar {
+  min-height: 38px;
+  padding: 7px max(16px, calc((100vw - 912px)/2)) 8px !important;
+  margin-top: -24px !important;
+  margin-bottom: 8px !important;
+  background: var(--surface) !important;
+  border-top: 1px solid var(--border-light) !important;
+  border-bottom: 1px solid var(--border-light) !important;
+  align-items: center;
+}
+.score-bar > *:first-child,
+.score-bar > *:last-child {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+.sb-v {
+  font-size: 12px !important;
+  font-weight: 650 !important;
+}
+.sb-v::before {
+  color: #9aa8b8;
+  font-weight: 500;
+}
+.sb-flags { gap: 7px !important; }
+.sb-y, .sb-r {
+  padding: 2px 7px;
+  font-size: 10px;
+  border-width: 1px;
+}
+/* A lighter, more golden warning tone so it does not read like red. */
+.sb-y {
+  color: #c58a18 !important;
+  border-color: #f0ddb6 !important;
+  background: #fffaf0 !important;
+}
+.sb-r {
+  color: #b91c1c !important;
+  border-color: #efcfcc !important;
+  background: #fff8f7 !important;
+}
+@media (max-width: 640px) {
+  .score-bar { padding-inline: 12px !important; }
+  .tab-btn { padding-inline: 7px; gap: 5px; }
+}
+</style>
+
+
+<style>
+/* v7.15 — stronger tab accents + breathing room below trade-status rail */
+.tab-btn {
+  color: #94a1b1 !important;
+}
+.tab-btn:hover:not(.active) {
+  color: #75869a !important;
+}
+/* Checklist: clearer blue-slate accent, still consistent with the existing UI palette. */
+body.tab-checklist .tab-btn.active,
+body.tab-checklist .tab-btn.active .tab-icon {
+  color: #3f6f96 !important;
+}
+/* Journal: muted but clearly distinct green. */
+body.tab-journal .tab-btn.active,
+body.tab-journal .tab-btn.active .tab-icon {
+  color: #4f8065 !important;
+}
+/* Statistics: distinct cool teal, rather than another grey-blue. */
+body.tab-stats .tab-btn.active,
+body.tab-stats .tab-btn.active .tab-icon {
+  color: #3f7f7c !important;
+}
+.tab-btn.active .tab-label::after {
+  opacity: .95 !important;
+  height: 2px !important;
+}
+
+/* Keep the status rail integrated with the shell, but give the trade details card
+   a deliberate visual pause below it. */
+.score-bar {
+  margin-bottom: 22px !important;
+}
+</style>
+
+
+<style>
+/* v7.16 — status rail attached to navigation + neutral zero counters */
+body:not(.tab-checklist) .score-bar { display: none !important; }
+.score-bar {
+  margin: 0 !important;
+  min-height: 36px;
+  padding: 6px max(16px, calc((100vw - 912px)/2)) 7px !important;
+  background: var(--surface) !important;
+  border-top: 1px solid var(--border-light) !important;
+  border-bottom: 1px solid var(--border-light) !important;
+  box-shadow: none !important;
+}
+.main { padding-top: 18px; }
+.sb-y.is-zero, .sb-r.is-zero {
+  color: #8f9dad !important;
+  border-color: #e2e8ef !important;
+  background: #f7f9fb !important;
+}
+.sb-y:not(.is-zero) {
+  color: #c58a18 !important;
+  border-color: #f0ddb6 !important;
+  background: #fffaf0 !important;
+}
+.sb-r:not(.is-zero) {
+  color: #b91c1c !important;
+  border-color: #efcfcc !important;
+  background: #fff8f7 !important;
+}
+</style>
+
+<style>
+/* v7.17 — center trade-status rail with the same inner grid as the main content */
+.score-bar {
+  width: 100% !important;
+  max-width: none !important;
+  left: auto !important;
+  right: auto !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding: 0 !important;
+  min-height: 36px;
+  display: block !important;
+  background: var(--surface) !important;
+}
+.score-bar-inner {
+  width: 100%;
+  max-width: 960px;
+  min-height: 36px;
+  margin: 0 auto;
+  padding: 6px 24px 7px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  direction: rtl;
+}
+.score-bar-inner .sb-v {
+  order: 0;
+  margin: 0 !important;
+}
+.score-bar-inner .sb-flags {
+  order: 1;
+  margin: 0 !important;
+}
+@media (max-width: 859px) {
+  .score-bar-inner { max-width: 760px; padding-inline: 16px; }
+}
+@media (max-width: 640px) {
+  .score-bar-inner {
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    padding-inline: 12px;
+  }
+}
+</style>
+
+<style>
+/* v7.19 — constrain trade-status rail to the same visual width as checklist cards */
+body.tab-checklist .score-bar {
+  width: calc(100% - 48px) !important;
+  max-width: 912px !important;
+  margin: 0 auto 18px !important;
+  padding: 0 !important;
+  background: #fff !important;
+  border: 1px solid var(--border-light) !important;
+  border-radius: 12px !important;
+  box-sizing: border-box !important;
+}
+body.tab-checklist .score-bar-inner {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 36px !important;
+  margin: 0 !important;
+  padding: 7px 16px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  direction: rtl !important;
+}
+body.tab-checklist .score-bar-inner .sb-v {
+  text-align: right !important;
+  margin: 0 !important;
+}
+body.tab-checklist .score-bar-inner .sb-flags {
+  margin: 0 !important;
+}
+@media (max-width: 700px) {
+  body.tab-checklist .score-bar {
+    width: calc(100% - 24px) !important;
+    margin-bottom: 12px !important;
+  }
+}
+</style>
+
+
+<style>
+/* v7.20 — status bar must stay in normal document flow; do not overlay section titles */
+body.tab-checklist .score-bar {
+  position: static !important;
+  top: auto !important;
+  z-index: auto !important;
+  margin-bottom: 18px !important;
+}
+</style>
+
+
+<style>
+/* v7.22 — final spacing + screenshot replacement state */
+body.tab-checklist .score-bar {
+  margin-top: 28px !important;
+}
+
+/* Once a chart is uploaded, the preview replaces the upload prompt completely. */
+.chart-upload-shell.has-screenshot {
+  padding: 0 !important;
+  background: var(--surface) !important;
+  border-style: solid !important;
+}
+.chart-upload-shell.has-screenshot .attach-btn {
+  display: none !important;
+}
+.chart-upload-shell.has-screenshot .screenshot-preview {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  border-radius: 9px !important;
+}
+.chart-upload-shell.has-screenshot .screenshot-preview img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+</style>
 </head>
 <body class="tab-checklist">
 
@@ -1256,12 +1863,33 @@ body {
   <div class="app-title">TRADE <span>JOURNAL</span></div>
   <div class="header-tabs-wrap">
     <div class="tabs">
-      <button class="tab-btn active" onclick="showView('checklist')">צ׳קליסט</button>
-      <button class="tab-btn" onclick="showView('journal')"><span class="tab-badge" id="tab-badge"></span>יומן</button>
-      <button class="tab-btn" onclick="showView('stats')">סטטיסטיקות</button>
+      <button class="tab-btn active" onclick="showView('checklist')" aria-label="צ׳קליסט">
+        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1.5 1.5L7.5 5M4 12l1.5 1.5L7.5 11M4 18l1.5 1.5L7.5 17"/></svg>
+        <span class="tab-label">צ׳קליסט</span>
+      </button>
+      <button class="tab-btn" onclick="showView('journal')" aria-label="יומן">
+        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z"/><path d="M8 4v16M11 8h5M11 12h5"/></svg>
+        <span class="tab-label">יומן</span>
+        <span class="tab-badge" id="tab-badge"></span>
+      </button>
+      <button class="tab-btn" onclick="showView('stats')" aria-label="סטטיסטיקות">
+        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+        <span class="tab-label">סטטיסטיקות</span>
+      </button>
     </div>
   </div>
   <div class="header-spacer"></div>
+</div>
+
+<!-- Trade status rail: visually attached to the top navigation -->
+<div class="score-bar" id="sb">
+  <div class="score-bar-inner">
+    <span class="sb-v" id="sv">ממתין לנתונים</span>
+    <div class="sb-flags">
+      <span class="sb-y is-zero" id="yc">אזהרות 0</span>
+      <span class="sb-r is-zero" id="rc">חריגות 0</span>
+    </div>
+  </div>
 </div>
 
 <div class="main">
@@ -1281,14 +1909,6 @@ body {
     <button class="draft-dismiss-btn" onclick="dismissDraft()">מחק</button>
   </div>
 
-  <!-- Score Bar -->
-  <div class="score-bar" id="sb">
-    <div class="sb-flags">
-      <span class="sb-y" id="yc">0 yellow</span>
-      <span class="sb-r" id="rc">0 red</span>
-    </div>
-    <span class="sb-v" id="sv">—</span>
-  </div>
 
   <!-- GROUP 1: פרטי הטרייד -->
   <div class="fieldset">
@@ -1297,10 +1917,9 @@ body {
       <div class="mf"><label>תאריך</label><input type="date" id="trade-date" onchange="updateTitle(); updateEventIndicator()"></div>
       <div class="mf"><label>מניה</label><input type="text" id="ticker" placeholder="NVDA" oninput="updateTitle()" style="text-transform:uppercase;"></div>
       <div class="mf earnings-toggle-wrap">
-        <label>דיווח תוצאות</label>
-        <button type="button" class="earn-toggle" id="earn-toggle" onclick="toggleEarnings()">
-          <span class="earn-icon" id="earn-icon">✓</span>
-          <span id="earn-text">אין השבוע</span>
+        <button type="button" class="earn-toggle" id="earn-toggle" onclick="toggleEarnings()" aria-pressed="false">
+          <span class="earn-icon" id="earn-icon"></span>
+          <span id="earn-text">דיווח תוצאות השבוע</span>
         </button>
       </div>
       <div class="mf"><label>סיגנל</label>
@@ -1368,11 +1987,23 @@ body {
 
       <!-- Pre-filter -->
       <div class="status-row prefilter">
-        <div class="pf-title">פילטר מקדים — 30 שניות</div>
+        <div class="pf-title-row">
+          <div class="pf-title">פילטר מקדים — 30 שניות</div>
+          <div class="pf-progress" id="pf-progress">0/3 עברו</div>
+        </div>
         <div class="pf-items">
-          <label class="pf-item"><input type="checkbox" id="pf1" onchange="checkPF()"><span class="cb-box"></span> <span>20 MA לא משמש כהתנגדות (מחיר מעליו / נוגע בו)</span></label>
-          <label class="pf-item"><input type="checkbox" id="pf2" onchange="checkPF()"><span class="cb-box"></span> <span>אם זו נגיעה ראשונה אחרי שינוי כיוון — יש Volume + נר סגירה חזק</span></label>
-          <label class="pf-item"><input type="checkbox" id="pf3" onchange="checkPF()"><span class="cb-box"></span> <span>מניה ללא גאפים תכופים</span></label>
+          <label class="pf-item">
+            <input type="checkbox" id="pf1" onchange="checkPF()"><span class="cb-box"></span>
+            <span class="pf-copy"><span class="pf-item-title">MA20 תקין</span><span class="pf-item-help">המחיר מעל הממוצע או נוגע בו</span></span>
+          </label>
+          <label class="pf-item">
+            <input type="checkbox" id="pf2" onchange="checkPF()"><span class="cb-box"></span>
+            <span class="pf-copy"><span class="pf-item-title">אישור נגיעה</span><span class="pf-item-help">בנגיעה ראשונה אחרי שינוי כיוון: Volume + נר סגירה חזק</span></span>
+          </label>
+          <label class="pf-item">
+            <input type="checkbox" id="pf3" onchange="checkPF()"><span class="cb-box"></span>
+            <span class="pf-copy"><span class="pf-item-title">אין גאפים תכופים</span><span class="pf-item-help">מבנה מניה נקי יחסית</span></span>
+          </label>
         </div>
         <div class="pf-result" id="pf-result">סמן את שלושת הפילטרים כדי להמשיך</div>
       </div>
@@ -1412,7 +2043,16 @@ body {
       <div class="section-body">
         <div class="technical-grid">
 
-          <!-- מבנה: ימין = מגמת המניה, שמאל = מרחק מהסיגנל -->
+          <!-- מבנה: ימין = מרחק מהסיגנל, אחריו = מגמת המניה -->
+          <div class="technical-field technical-field--distance">
+            <label>מרחק מהסיגנל</label>
+            <div class="tf-input-row">
+              <span class="distance-suffix">%</span>
+              <input type="number" class="fi fi-s" id="distance" step="0.1" oninput="countFlags()" placeholder="">
+            </div>
+            <span class="hint" id="dist-hint"></span>
+          </div>
+
           <div class="technical-field">
             <label>מגמת המניה <span class="tf-hint">(1-3 חודשים)</span></label>
             <div class="rg">
@@ -1420,15 +2060,6 @@ body {
               <label id="lbl-trend-down"><input type="radio" name="trend" value="down" onchange="countFlags()"><span class="rb"></span> ירידה ⚠️</label>
               <label><input type="radio" name="trend" value="flat" onchange="countFlags()"><span class="rb"></span> דשדוש</label>
             </div>
-          </div>
-
-          <div class="technical-field">
-            <label>מרחק מהסיגנל</label>
-            <div class="tf-input-row">
-              <span class="distance-suffix">%</span>
-              <input type="number" class="fi fi-s" id="distance" step="0.1" oninput="countFlags()" placeholder="">
-            </div>
-            <span class="hint" id="dist-hint"></span>
           </div>
 
           <!-- אישור: ימין = אופן כניסה, שמאל = Volume -->
@@ -1948,15 +2579,9 @@ function updateEventIndicator() {
 function toggleEarnings() {
   var btn = document.getElementById('earn-toggle');
   var icon = document.getElementById('earn-icon');
-  var text = document.getElementById('earn-text');
   var isOn = btn.classList.toggle('on');
-  if (isOn) {
-    icon.textContent = '✕';
-    text.textContent = 'יש השבוע';
-  } else {
-    icon.textContent = '✓';
-    text.textContent = 'אין השבוע';
-  }
+  btn.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+  icon.textContent = isOn ? '✕' : '';
   countFlags();
 }
 
@@ -1994,6 +2619,9 @@ function checkPF() {
   var p3 = document.getElementById('pf3').checked;
   var el = document.getElementById('pf-result');
   var container = document.querySelector('.prefilter');
+  var progress = document.getElementById('pf-progress');
+  var passedCount = [p1,p2,p3].filter(Boolean).length;
+  if (progress) progress.textContent = passedCount + '/3 עברו';
   if (p1 && p2 && p3) {
     el.textContent = '✅ עבר פילטר — ממשיכים לצ׳קליסט'; el.style.color = 'var(--go)';
     if (container) container.classList.add('all-checked');
@@ -2020,6 +2648,8 @@ function handleScreenshot(e) {
     screenshotData = ev.target.result;
     document.getElementById('ss-img').src = screenshotData;
     document.getElementById('ss-preview').style.display = 'block';
+    var shell = document.querySelector('.chart-upload-shell');
+    if (shell) shell.classList.add('has-screenshot');
   };
   reader.readAsDataURL(file);
 }
@@ -2027,6 +2657,8 @@ function removeScreenshot() {
   screenshotData = null;
   document.getElementById('ss-img').src = '';
   document.getElementById('ss-preview').style.display = 'none';
+  var shell = document.querySelector('.chart-upload-shell');
+  if (shell) shell.classList.remove('has-screenshot');
   document.getElementById('screenshot-input').value = '';
 }
 
@@ -2290,8 +2922,12 @@ function countFlags() {
   if(rv('entry')==='market'&&dist>=2)hl('lbl-market','y');
   if(rv('tb')==='feel')hl('lbl-feel','y');
 
-  document.getElementById('yc').textContent = y+' yellow';
-  document.getElementById('rc').textContent = r+' red';
+  var ycEl = document.getElementById('yc');
+  var rcEl = document.getElementById('rc');
+  ycEl.textContent = 'אזהרות ' + y;
+  rcEl.textContent = 'חריגות ' + r;
+  ycEl.classList.toggle('is-zero', y === 0);
+  rcEl.classList.toggle('is-zero', r === 0);
   var bar=document.getElementById('sb');
   var sv=document.getElementById('sv');
   var sgo=document.getElementById('score-go'),swa=document.getElementById('score-wait'),sno=document.getElementById('score-no');
@@ -2424,14 +3060,16 @@ function resetForm() {
   document.getElementById('pf3').checked=false;
   document.getElementById('pf-result').textContent='סמן את שלושת הפילטרים כדי להמשיך';
   document.getElementById('pf-result').style.color='var(--ink-muted)';
+  var pfProgress = document.getElementById('pf-progress');
+  if (pfProgress) pfProgress.textContent='0/3 עברו';
   removeScreenshot();
   dismissDraft();
   document.getElementById('cpi-yes').classList.remove('on-danger');
   document.getElementById('cpi-no').classList.remove('on-go');
   var earnBtn = document.getElementById('earn-toggle');
   earnBtn.classList.remove('on');
-  document.getElementById('earn-icon').textContent = '✓';
-  document.getElementById('earn-text').textContent = 'אין השבוע';
+  document.getElementById('earn-icon').textContent = '';
+  document.getElementById('earn-toggle').setAttribute('aria-pressed', 'false');
   initSizing();
   document.getElementById('risk-per-share').textContent = '—';
   document.getElementById('position-size').innerHTML = '— <span class="sizing-unit">מניות</span>';
@@ -2748,7 +3386,7 @@ function restoreDraft() {
     if (draft.earningsOn) {
       document.getElementById('earn-toggle').classList.add('on');
       document.getElementById('earn-icon').textContent = '✕';
-      document.getElementById('earn-text').textContent = 'יש השבוע';
+      document.getElementById('earn-toggle').setAttribute('aria-pressed', 'true');
     }
     if (draft.cpiOn) { setCpiToday(true); }
     if (draft.radios) {
