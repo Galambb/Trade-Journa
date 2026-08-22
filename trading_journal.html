@@ -2317,6 +2317,377 @@ body.tab-checklist .score-bar-inner .sb-flags > span:hover {
   box-shadow: none !important;
 }
 </style>
+
+<style id="2026-grid-system-refinement">
+/* 2026 layout refinement — visual only. No copy, behavior or JS changes. */
+:root {
+  --layout-max-width: 1240px;
+  --layout-page-pad: 24px;
+  --grid-gap: 24px;
+  --section-gap: 20px;
+  --group-gap: 36px;
+  --field-gap: 16px;
+  --control-height: 40px;
+  --radius-section: 10px;
+  --radius-control: 7px;
+}
+
+/* One shared horizontal spine for the entire app. */
+.main {
+  width: 100%;
+  max-width: var(--layout-max-width) !important;
+  margin-inline: auto !important;
+  padding: 24px var(--layout-page-pad) 0 !important;
+}
+
+/* Checklist: consistent vertical rhythm. */
+#view-checklist .fieldset {
+  margin-bottom: var(--group-gap) !important;
+}
+#view-checklist .fieldset-title {
+  margin-bottom: 16px !important;
+  padding-bottom: 12px !important;
+}
+#view-checklist .section,
+#view-checklist .status-card,
+#view-checklist .meta {
+  border-radius: var(--radius-section) !important;
+}
+#view-checklist .section {
+  margin-bottom: var(--section-gap) !important;
+}
+#view-checklist .section-head {
+  min-height: 48px;
+  padding: 12px 24px !important;
+  display: grid !important;
+  grid-template-columns: 32px minmax(0,1fr) !important;
+  align-items: center !important;
+  column-gap: 8px !important;
+  direction: rtl !important;
+}
+#view-checklist .section-head .num {
+  order: initial !important;
+  grid-column: 1;
+  margin: 0 !important;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+#view-checklist .section-head > span:not(.num):not(.dot) {
+  grid-column: 2;
+  text-align: right;
+}
+#view-checklist .section-body {
+  padding: 20px 24px !important;
+}
+
+/* Trade details: true 12-column grid; all controls share baseline and height. */
+#view-checklist .meta {
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0,1fr)) !important;
+  gap: var(--field-gap) var(--grid-gap) !important;
+  align-items: end !important;
+  padding: 20px 24px !important;
+  margin-bottom: 0 !important;
+}
+#view-checklist .meta > .mf:nth-child(1) { grid-column: span 3; }
+#view-checklist .meta > .mf:nth-child(2) { grid-column: span 3; }
+#view-checklist .meta > .mf:nth-child(3) { grid-column: span 2; }
+#view-checklist .meta > .mf:nth-child(4) { grid-column: span 2; }
+#view-checklist .meta > .mf:nth-child(5) { grid-column: span 2; }
+#view-checklist .mf {
+  min-width: 0;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 7px !important;
+}
+#view-checklist .mf label {
+  margin: 0 !important;
+  text-align: right;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  line-height: 1.3;
+}
+#view-checklist .mf input,
+#view-checklist .mf select,
+#view-checklist .earn-toggle {
+  width: 100%;
+  min-width: 0;
+  height: var(--control-height) !important;
+  min-height: var(--control-height) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-control) !important;
+  padding: 0 11px !important;
+  background: var(--surface) !important;
+  box-shadow: none !important;
+}
+#view-checklist .mf input:focus,
+#view-checklist .mf select:focus,
+#view-checklist .earn-toggle:focus-visible {
+  border-color: var(--accent) !important;
+  outline: 2px solid color-mix(in srgb, var(--accent) 16%, transparent);
+  outline-offset: 1px;
+}
+
+/* Safety/context: related content uses the width instead of floating in the center. */
+#view-checklist .status-top-grid {
+  grid-template-columns: repeat(12, minmax(0,1fr)) !important;
+  gap: var(--grid-gap) !important;
+  padding: 0 24px 20px !important;
+  align-items: stretch !important;
+}
+#view-checklist .status-top-grid > * { grid-column: span 6; }
+#view-checklist .status-top-grid > .event-indicator,
+#view-checklist .status-top-grid > .cpi-toggle {
+  min-height: 88px !important;
+  padding: 16px !important;
+  border-radius: var(--radius-control) !important;
+}
+#view-checklist .status-card-title {
+  padding: 16px 24px 10px !important;
+}
+#view-checklist .status-row { padding-inline: 24px !important; }
+#view-checklist .stop-box { padding-block: 12px 18px !important; }
+#view-checklist .stop-box-inner { padding: 14px 16px !important; border-radius: var(--radius-control) !important; }
+#view-checklist .prefilter { padding: 18px 24px 20px !important; }
+#view-checklist .pf-items {
+  grid-template-columns: repeat(3, minmax(0,1fr)) !important;
+  gap: 16px !important;
+}
+#view-checklist .pf-item {
+  min-height: 76px;
+  padding: 14px !important;
+  border-radius: var(--radius-control) !important;
+  align-content: start;
+}
+
+/* Market context: right-aligned reading path, no unnecessary centering. */
+#view-checklist .cl li { padding: 0 !important; border-bottom: 0 !important; }
+#view-checklist .cl-text { text-align: right; }
+#view-checklist .cl-text > strong { display: block; margin-bottom: 10px; }
+
+/* Technical signal: four equal desktop columns on the same X/Y grid. */
+@media (min-width: 1100px) {
+  #view-checklist .technical-grid {
+    grid-template-columns: repeat(12, minmax(0,1fr)) !important;
+    column-gap: 0 !important;
+    row-gap: 0 !important;
+  }
+  #view-checklist .technical-grid > .technical-field:not(#support-row) {
+    grid-column: span 3 !important;
+    min-height: 148px !important;
+    padding: 20px 22px !important;
+    border-top: 0 !important;
+    border-left: 0 !important;
+    border-inline-end: 1px solid var(--border-light) !important;
+  }
+  #view-checklist .technical-grid > .technical-field:nth-of-type(4) {
+    border-inline-end: 0 !important;
+  }
+  #view-checklist #support-row {
+    grid-column: 1 / -1 !important;
+    min-height: auto !important;
+    padding: 16px 22px !important;
+    border-inline-end: 0 !important;
+    border-top: 1px solid var(--border-light) !important;
+  }
+}
+#view-checklist .technical-field {
+  justify-content: flex-start !important;
+  gap: 12px !important;
+}
+#view-checklist .technical-field > label,
+#view-checklist .technical-field-head > label {
+  min-height: 18px;
+  margin: 0 !important;
+  text-align: right !important;
+}
+#view-checklist .technical-field .rg {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  align-content: flex-start !important;
+  gap: 8px !important;
+  margin-top: 0 !important;
+  max-width: none !important;
+}
+#view-checklist .technical-field .rg > label {
+  width: auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 6px 10px !important;
+}
+#view-checklist .technical-field .rg > label + label {
+  margin: 0 !important;
+  padding-top: 6px !important;
+}
+#view-checklist .technical-field .rg > label + label::before {
+  display: none !important;
+  content: none !important;
+}
+#view-checklist #support-row .rg { gap: 8px 12px !important; }
+
+/* Trade plan: one geometry for inputs, metrics and outputs. */
+#view-checklist .trade-plan-stage { padding: 20px 0 !important; }
+#view-checklist .trade-plan-stage:first-child { padding-top: 0 !important; }
+#view-checklist .trade-plan-stage-title { margin-bottom: 12px !important; }
+#view-checklist .plan-entry-stop-grid,
+#view-checklist .plan-reward-grid {
+  grid-template-columns: repeat(12, minmax(0,1fr)) !important;
+  gap: var(--grid-gap) !important;
+  align-items: start !important;
+}
+#view-checklist .plan-entry-stop-grid > *,
+#view-checklist .plan-reward-grid > * { grid-column: span 6; }
+#view-checklist .trade-plan-flow .sizing-input-prefixed,
+#view-checklist .rr-result-wrap .rr-prominent {
+  min-height: var(--control-height) !important;
+  height: var(--control-height) !important;
+  border-radius: var(--radius-control) !important;
+}
+#view-checklist .trade-plan-flow .sizing-input-prefixed input {
+  min-height: calc(var(--control-height) - 2px) !important;
+}
+#view-checklist .risk-metrics-grid {
+  grid-template-columns: repeat(12, minmax(0,1fr)) !important;
+  gap: 16px !important;
+  align-items: stretch !important;
+}
+#view-checklist .risk-metrics-grid > * { grid-column: span 3; }
+#view-checklist .risk-input-metric,
+#view-checklist .risk-metric {
+  min-height: 92px !important;
+  padding: 14px !important;
+  border-radius: var(--radius-control) !important;
+}
+#view-checklist .risk-input-metric {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+}
+#view-checklist .risk-metric {
+  background: var(--bg) !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+}
+#view-checklist .risk-metric .sizing-value,
+#view-checklist .risk-total-value {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+#view-checklist .target-options { margin-top: 10px !important; }
+
+/* Final decision: three equal cells, same baseline. */
+#view-checklist .scores {
+  grid-template-columns: repeat(3, minmax(0,1fr)) !important;
+  gap: 16px !important;
+  margin-top: 0 !important;
+}
+#view-checklist .sc {
+  min-height: 68px;
+  padding: 14px 16px !important;
+  border-radius: var(--radius-control) !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+#view-checklist .sc.on { transform: none !important; }
+
+/* Documentation: exactly equal columns and equal work areas. */
+@media (min-width: 761px) {
+  #view-checklist .documentation-grid {
+    grid-template-columns: repeat(12, minmax(0,1fr)) !important;
+    gap: var(--grid-gap) !important;
+    align-items: start !important;
+  }
+  #view-checklist .documentation-copy,
+  #view-checklist .documentation-chart {
+    grid-column: span 6;
+    min-width: 0;
+  }
+  #view-checklist .analysis-ta,
+  #view-checklist .chart-upload-shell {
+    height: 224px !important;
+    min-height: 224px !important;
+    max-height: 224px !important;
+    border-radius: var(--radius-control) !important;
+  }
+}
+
+/* Primary action is visually distinct from passive/secondary controls. */
+#view-checklist .checklist-actions-row {
+  margin-top: 24px !important;
+  gap: 10px !important;
+}
+#view-checklist .save-btn {
+  min-width: 200px;
+  min-height: 44px;
+  padding: 0 24px !important;
+  border-radius: 8px !important;
+}
+
+/* Footer aligns to the same central spine as the content. */
+#view-checklist .iron-inner {
+  width: 100%;
+  max-width: var(--layout-max-width) !important;
+  padding-inline: var(--layout-page-pad);
+}
+
+/* Status rail uses exactly the same width as the main content. */
+body.tab-checklist .score-bar {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 0 24px !important;
+  border-radius: var(--radius-section) !important;
+}
+body.tab-checklist .score-bar-inner {
+  max-width: none !important;
+  padding: 8px 16px !important;
+}
+
+/* Tablet: keep alignment, reduce columns predictably. */
+@media (min-width: 761px) and (max-width: 1099px) {
+  .main { padding-inline: 20px !important; }
+  #view-checklist .meta > .mf:nth-child(1),
+  #view-checklist .meta > .mf:nth-child(2),
+  #view-checklist .meta > .mf:nth-child(4),
+  #view-checklist .meta > .mf:nth-child(5) { grid-column: span 3; }
+  #view-checklist .meta > .mf:nth-child(3) { grid-column: span 12; }
+  #view-checklist .technical-grid { grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
+  #view-checklist .technical-grid > .technical-field:not(#support-row) { grid-column: auto !important; }
+  #view-checklist .risk-metrics-grid > * { grid-column: span 6; }
+}
+
+/* Mobile: single reading column; no functional reordering. */
+@media (max-width: 760px) {
+  :root { --layout-page-pad: 12px; --grid-gap: 14px; --group-gap: 28px; }
+  .main { padding: 14px var(--layout-page-pad) 0 !important; }
+  #view-checklist .section-head { padding-inline: 16px !important; }
+  #view-checklist .section-body { padding: 16px !important; }
+  #view-checklist .meta {
+    grid-template-columns: 1fr !important;
+    padding: 16px !important;
+  }
+  #view-checklist .meta > .mf { grid-column: auto !important; }
+  #view-checklist .status-top-grid {
+    grid-template-columns: 1fr !important;
+    padding-inline: 16px !important;
+  }
+  #view-checklist .status-top-grid > * { grid-column: auto !important; }
+  #view-checklist .prefilter { padding-inline: 16px !important; }
+  #view-checklist .pf-items { grid-template-columns: 1fr !important; }
+  #view-checklist .plan-entry-stop-grid,
+  #view-checklist .plan-reward-grid,
+  #view-checklist .risk-metrics-grid { grid-template-columns: 1fr !important; }
+  #view-checklist .plan-entry-stop-grid > *,
+  #view-checklist .plan-reward-grid > *,
+  #view-checklist .risk-metrics-grid > * { grid-column: auto !important; }
+  #view-checklist .scores { grid-template-columns: 1fr !important; }
+  #view-checklist .save-btn { width: 100%; }
+}
+</style>
+
 </head>
 <body class="tab-checklist">
 
