@@ -33,10 +33,13 @@
     /* 4. צבעים סמנטיים למסחר (רכים וברורים, MD3) */
     --go: #059669;              
     --go-bg: #ecfdf5;           
+    --go-border: #a7f3d0;
     --wait: #d97706;            
     --wait-bg: #fffbeb;         
+    --wait-border: #fde68a;
     --danger: #dc2626;          
     --danger-bg: #fef2f2;       
+    --danger-border: #fca5a5;
     
     --max-width: 960px;
   }
@@ -100,9 +103,9 @@
     z-index: 90;
     transition: all 0.3s;
   }
-  .score-bar.clean { background: var(--go-bg); border-bottom-color: #a7f3d0; }
-  .score-bar.warn { background: var(--wait-bg); border-bottom-color: #fde68a; }
-  .score-bar.stop { background: var(--danger-bg); border-bottom-color: #fca5a5; }
+  .score-bar.clean { background: var(--go-bg); border-bottom-color: var(--go-border); }
+  .score-bar.warn { background: var(--wait-bg); border-bottom-color: var(--wait-border); }
+  .score-bar.stop { background: var(--danger-bg); border-bottom-color: var(--danger-border); }
   .score-bar.empty { background: var(--bg); border-bottom-color: var(--border); }
   .score-bar.empty .sb-v { color: var(--ink-muted); }
   
@@ -137,7 +140,7 @@
     margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-light);
     display: flex; align-items: center; gap: 8px;
   }
-  .card-header-icon { width: 18px; height: 18px; stroke: var(--ink-muted); stroke-width: 1.75; fill: none; flex-shrink: 0; }
+  .card-header-icon { width: 18px; height: 18px; stroke: var(--ink-muted); stroke-width: 2; fill: none; flex-shrink: 0; }
   .section-title {
     font-size: 13px; font-weight: 700; color: var(--ink-muted); margin-bottom: 16px;
     display: flex; align-items: center; gap: 8px;
@@ -232,16 +235,16 @@
   }
   .checkbox-content .title { display: block; font-size: 13px; font-weight: 700; color: var(--ink); }
   .checkbox-content .desc { display: block; font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
-  .checkbox-card:has(input:checked) { background: var(--go-bg); border-color: #a7f3d0; }
+  .checkbox-card:has(input:checked) { background: var(--go-bg); border-color: var(--go-border); }
 
   /* ── INDICATORS & OUTPUTS ── */
   .status-indicator {
     display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px;
     background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-md);
   }
-  .status-indicator.safe { background: var(--go-bg); border-color: #a7f3d0; }
-  .status-indicator.warn { background: var(--wait-bg); border-color: #fde68a; }
-  .status-indicator.danger { background: var(--danger-bg); border-color: #fca5a5; }
+  .status-indicator.safe { background: var(--go-bg); border-color: var(--go-border); }
+  .status-indicator.warn { background: var(--wait-bg); border-color: var(--wait-border); }
+  .status-indicator.danger { background: var(--danger-bg); border-color: var(--danger-border); }
   .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-muted); }
   .status-indicator.safe .status-dot { background: var(--go); }
   .status-indicator.warn .status-dot { background: var(--wait); }
@@ -252,7 +255,7 @@
     padding: 12px; border: 1px dashed var(--border); border-radius: var(--radius-md);
     font-size: 12px; color: var(--ink-muted); text-align: center; background: var(--bg);
   }
-  .blocker-box.on { background: var(--danger-bg); border-color: #fca5a5; color: var(--danger); font-weight: 700; border-style: solid; }
+  .blocker-box.on { background: var(--danger-bg); border-color: var(--danger-border); color: var(--danger); font-weight: 700; border-style: solid; }
 
   .output-box {
     display: flex; align-items: center; justify-content: center; height: 40px;
@@ -265,9 +268,9 @@
     background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-md);
     font-family: var(--font-display); font-size: 16px; font-weight: 800; color: var(--ink-muted); direction: ltr;
   }
-  .rr-banner.good { background: var(--go-bg); border-color: #a7f3d0; color: var(--go); }
+  .rr-banner.good { background: var(--go-bg); border-color: var(--go-border); color: var(--go); }
   .rr-banner.ok { border-color: var(--ink-muted); color: var(--ink-soft); }
-  .rr-banner.bad { background: var(--danger-bg); border-color: #fca5a5; color: var(--danger); }
+  .rr-banner.bad { background: var(--danger-bg); border-color: var(--danger-border); color: var(--danger); }
 
   .scores-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .sc-box {
@@ -350,11 +353,11 @@
   /* ── BADGES (MD3 Tonal with SVG Icons) ── */
   .tc-badge { 
     display: inline-flex; align-items: center; gap: 4px;
-    padding: 4px 10px; border-radius: 6px; 
+    padding: 4px 10px; border-radius: var(--radius-md); 
     font-size: 11px; font-weight: 600; 
     background: var(--bg); border: 1px solid transparent;
   }
-  .tc-badge svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 1px; }
+  .tc-badge svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 1px; }
   
   .tc-badge.go { background: var(--go-bg); color: var(--go); }
   .tc-badge.wait { background: var(--wait-bg); color: var(--wait); }
@@ -376,7 +379,7 @@
   /* ── RANGE SLIDER ── */
   input[type="range"] {
     -webkit-appearance: none; appearance: none;
-    height: 4px; border-radius: 2px; background: var(--border); outline: none;
+    height: 4px; border-radius: var(--radius-sm); background: var(--border); outline: none;
   }
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none; appearance: none;
@@ -389,7 +392,7 @@
     background: var(--accent); border: 2px solid var(--surface);
     box-shadow: 0 0 0 1px var(--accent); cursor: pointer;
   }
-  input[type="range"]::-moz-range-track { background: var(--border); height: 4px; border-radius: 2px; }
+  input[type="range"]::-moz-range-track { background: var(--border); height: 4px; border-radius: var(--radius-sm); }
 
   /* Print */
   @media print {
@@ -407,7 +410,7 @@
   <div class="app-title">TRADE JOURNAL</div>
   <div class="tabs">
     <button class="tab-btn active" onclick="showView('checklist')"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1.5 1.5L7.5 5M4 12l1.5 1.5L7.5 11M4 18l1.5 1.5L7.5 17"/></svg> צ׳קליסט</button>
-    <button class="tab-btn" onclick="showView('journal')"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z"/><path d="M8 4v16M11 8h5M11 12h5"/></svg> יומן <span id="tab-badge" style="display:none; background:var(--danger); color:white; border-radius:10px; padding:2px 6px; font-size:10px;"></span></button>
+    <button class="tab-btn" onclick="showView('journal')"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z"/><path d="M8 4v16M11 8h5M11 12h5"/></svg> יומן <span id="tab-badge" style="display:none; background:var(--danger); color:white; border-radius:var(--radius-pill); padding:2px 6px; font-size:10px;"></span></button>
     <button class="tab-btn" onclick="showView('stats')"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg> סטטיסטיקות</button>
   </div>
 </div>
@@ -711,13 +714,13 @@
 <!-- MODALS & ALERTS -->
 <div class="modal-backdrop" id="override-backdrop">
   <div class="modal-box">
-    <div class="modal-title">⚠️ כניסה למרות הפרת כללים</div>
+    <div class="modal-title" style="display:flex; align-items:center; gap:8px;"><svg viewBox="0 0 24 24" style="width:18px; height:18px; stroke:currentColor; stroke-width:2; fill:none; flex-shrink:0;"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>כניסה למרות הפרת כללים</div>
     <ul id="modal-reasons" style="font-size:13px; color:var(--danger); margin-bottom:16px; padding-right:16px;"></ul>
     <label style="font-size:12px; font-weight:600; margin-bottom:4px; display:block;">למה בחרת לעקוף?</label>
     <textarea id="override-reason-input" class="field-input" style="height:60px; margin-bottom:16px; width:100%; resize:none;"></textarea>
     <div style="display:flex; gap:8px;">
       <button class="field-btn" style="flex:1; margin:0;" onclick="closeOverrideModal()">ביטול</button>
-      <button class="btn-primary" style="flex:2; padding:0; border-radius:8px;" onclick="confirmOverride()">אשר ושמור</button>
+      <button class="btn-primary" style="flex:2; padding:0; border-radius:var(--radius-md);" onclick="confirmOverride()">אשר ושמור</button>
     </div>
   </div>
 </div>
@@ -1088,13 +1091,13 @@ function renderJournal() {
         <div class="tc-badge ${ocCls}" style="margin-right:auto;">${ocHTML}</div>
       </div>
       <div class="tc-body" id="tb-${t.id}">
-        <div style="display:flex; gap:16px; margin-bottom:12px; font-family:Rubik; direction:ltr; justify-content:flex-end;">
+        <div style="display:flex; gap:16px; margin-bottom:12px; font-family:var(--font-display); direction:ltr; justify-content:flex-end;">
            <div>Entry: $${t.entryPrice||'—'}</div>
            <div>Stop: $${t.stopPrice||'—'}</div>
            <div>RR: ${t.rr?t.rr+'R':'—'}</div>
         </div>
-        ${t.analysis ? `<div style="background:var(--bg); padding:12px; border-radius:6px; margin-bottom:12px; font-size:12px;">${t.analysis}</div>`:''}
-        ${t.screenshot ? `<img src="${t.screenshot}" style="max-width:100%; border-radius:6px; margin-bottom:12px;">`:''}
+        ${t.analysis ? `<div style="background:var(--bg); padding:12px; border-radius:var(--radius-md); margin-bottom:12px; font-size:12px;">${t.analysis}</div>`:''}
+        ${t.screenshot ? `<img src="${t.screenshot}" style="max-width:100%; border-radius:var(--radius-md); margin-bottom:12px;">`:''}
         
         <div style="border-top:1px solid var(--border); padding-top:12px; display:flex; gap:8px; align-items:center;">
           <select id="ex-out-${t.id}" class="field-select" style="width:120px;">
