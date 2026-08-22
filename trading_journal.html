@@ -11,21 +11,28 @@
     --font-body: 'Noto Sans Hebrew', sans-serif; 
     --font-display: 'Rubik', sans-serif;         
 
+    /* 1b. סולם טיפוגרפי (היררכיה) */
+    --text-section: 16px;   /* section title */
+    --text-label: 12px;     /* field label */
+    --text-helper: 11.5px;  /* helper / metadata */
+    --text-value: 13.5px;   /* input / value text */
+
     /* 2. רדיוסים (מערכת עיגול פינות אחידה) */
     --radius-sm: 4px;   
     --radius-md: 8px;   
     --radius-lg: 16px;  
     --radius-pill: 99px;
+    --radius-cta: 11px;
 
     /* 3. פלטת צבעים נטרלית (Graphite / Slate) */
     --ink: #0f172a;             
-    --ink-soft: #475569;        
-    --ink-muted: #94a3b8;       
+    --ink-soft: #3f4b5c;        
+    --ink-muted: #6b7688;       
     
     --surface: #ffffff;         
-    --bg: #f8fafc;              
+    --bg: #f6f7f9;              
     --border: #e2e8f0;          
-    --border-light: #f1f5f9;    
+    --border-light: #eef1f4;    
     
     --accent: #334155;          
     --accent-bg: #f1f5f9;       
@@ -78,22 +85,24 @@
     z-index: 100;
     border-bottom: 1px solid var(--border);
   }
-  .app-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing: -0.5px; }
+  .app-title { font-family: var(--font-display); font-size: 14px; font-weight: 500; color: var(--ink-soft); }
   .tabs { display: flex; gap: 8px; }
   .tab-btn {
     display: flex; align-items: center; gap: 6px;
-    padding: 8px 12px; border: none; border-radius: var(--radius-md);
+    padding: 8px 12px; border: 1px solid transparent; border-radius: var(--radius-md);
     background: transparent; color: var(--ink-muted); font-size: 13px; font-weight: 600;
     cursor: pointer; transition: all 0.2s; font-family: inherit;
   }
   .tab-btn:hover { background: var(--bg); color: var(--ink); }
-  .tab-btn.active { background: var(--accent-bg); color: var(--accent); }
+  .tab-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .tab-btn.active { background: var(--accent-bg); border-color: var(--border); color: var(--accent); font-weight: 700; }
   .tab-icon { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
 
   /* ── SCORE BAR (TOP RAIL) ── */
   .score-bar {
+    max-width: calc(var(--max-width) - 48px);
+    margin: 16px auto 0;
     background: var(--surface);
-    border-bottom: 1px solid var(--border);
     padding: 10px 24px;
     display: flex;
     justify-content: space-between;
@@ -102,11 +111,12 @@
     top: 61px;
     z-index: 90;
     transition: all 0.3s;
+    border-radius: var(--radius-md);
   }
-  .score-bar.clean { background: var(--go-bg); border-bottom-color: var(--go-border); }
-  .score-bar.warn { background: var(--wait-bg); border-bottom-color: var(--wait-border); }
-  .score-bar.stop { background: var(--danger-bg); border-bottom-color: var(--danger-border); }
-  .score-bar.empty { background: var(--bg); border-bottom-color: var(--border); }
+  .score-bar.clean { background: var(--go-bg); }
+  .score-bar.warn { background: var(--wait-bg); }
+  .score-bar.stop { background: var(--danger-bg); }
+  .score-bar.empty { background: var(--bg); }
   .score-bar.empty .sb-v { color: var(--ink-muted); }
   
   .sb-v { font-size: 14px; font-weight: 700; color: var(--ink-soft); }
@@ -115,14 +125,14 @@
   .score-bar.stop .sb-v { color: var(--danger); }
 
   .sb-flags { display: flex; align-items: center; border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius-pill); overflow: hidden; }
-  .sb-flags span { padding: 4px 12px; font-size: 11px; font-weight: 700; }
+  .sb-flags span { padding: 4px 12px; font-size: var(--text-helper); font-weight: 700; }
   .sb-flags span:first-child { border-left: 1px solid var(--border-light); }
   .sb-y:not(.is-zero) { border-color: var(--wait); color: var(--wait); }
-  .sb-r:not(.is-zero) { border-color: var(--danger); color: var(--danger); }
+  .sb-r:not(.is-zero) { background: var(--danger); color: #ffffff; }
   .is-zero { color: var(--ink-muted); opacity: 0.7; }
 
   /* ── MAIN CONTENT ── */
-  .main { max-width: var(--max-width); margin: 0 auto; padding: 24px; }
+  .main { max-width: var(--max-width); margin: 0 auto; padding: 8px 24px 24px; }
   .view { display: none; }
   .view.active { display: block; }
 
@@ -131,13 +141,13 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: 24px;
-    margin-bottom: 24px;
+    padding: 20px;
+    margin-bottom: 20px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.02);
   }
   .card-header {
-    font-family: var(--font-display); font-size: 16px; font-weight: 700;
-    margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-light);
+    font-family: var(--font-display); font-size: var(--text-section); font-weight: 700;
+    margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-light);
     display: flex; align-items: center; gap: 8px;
   }
   .card-header-icon { width: 18px; height: 18px; stroke: var(--ink-muted); stroke-width: 2; fill: none; flex-shrink: 0; }
@@ -147,35 +157,38 @@
   }
   .stat-row {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 0; font-size: 13px; color: var(--ink);
+    padding: 10px 0; font-size: var(--text-value); color: var(--ink);
   }
   .stat-row + .stat-row { border-top: 1px solid var(--border-light); }
   .stat-row span:last-child { font-weight: 700; direction: ltr; }
   .section-title::before { content: ""; flex: 1; height: 1px; background: var(--border-light); }
   .section-title span { order: -1; }
+  .section-title--detached { margin-top: 24px; }
 
-  .grid-form { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .grid-form { display: grid; grid-template-columns: 1fr; gap: 14px; }
   @media (min-width: 768px) {
-    .grid-form { grid-template-columns: repeat(12, 1fr); gap: 20px 16px; }
+    .grid-form { grid-template-columns: repeat(12, 1fr); gap: 16px 14px; }
+    .col-1 { grid-column: span 1; } .col-2 { grid-column: span 2; }
     .col-3 { grid-column: span 3; } .col-4 { grid-column: span 4; }
     .col-5 { grid-column: span 5; } .col-6 { grid-column: span 6; }
     .col-7 { grid-column: span 7; } .col-12 { grid-column: span 12; }
   }
+  .row-break { margin-top: 8px; }
 
   /* ── FIELDS ── */
   .field-group { display: flex; flex-direction: column; gap: 6px; }
-  .field-group label { font-size: 11px; font-weight: 600; color: var(--ink-muted); }
+  .field-group label { font-size: var(--text-label); font-weight: 550; color: var(--ink-muted); }
   .field-input, .field-select, .field-btn {
     width: 100%; height: 40px; padding: 0 12px;
     border: 1px solid var(--border); border-radius: var(--radius-md);
-    background: var(--surface); font-family: inherit; font-size: 13px;
+    background: var(--surface); font-family: inherit; font-size: var(--text-value);
     color: var(--ink); transition: all 0.2s; outline: none;
   }
   .field-input:focus, .field-select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(51, 65, 85, 0.1); }
   .field-btn { background: var(--surface); cursor: pointer; font-weight: 600; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .field-btn:hover { background: var(--border); }
   
-  .ltr-input { direction: ltr; text-align: left; font-family: var(--font-display); font-weight: 500; }
+  .ltr-input { direction: ltr; text-align: left; font-family: var(--font-display); font-weight: 500; font-variant-numeric: tabular-nums; }
   
   .input-with-prefix { position: relative; display: flex; align-items: center; }
   .input-with-prefix span { position: absolute; left: 12px; font-weight: 600; color: var(--ink-muted); font-family: var(--font-display);}
@@ -185,10 +198,11 @@
   .radio-pills { display: flex; flex-wrap: wrap; gap: 6px; }
   .radio-pills label { cursor: pointer; user-select: none; }
   .radio-pills input[type="radio"] { display: none; }
+  .radio-pills input[type="radio"]:focus-visible + .pill { outline: 2px solid var(--accent); outline-offset: 2px; }
   .pill {
     display: inline-flex; align-items: center; justify-content: center;
     padding: 6px 14px; background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius-md); font-size: 12px; font-weight: 600; color: var(--ink-soft);
+    border-radius: var(--radius-md); font-size: var(--text-label); font-weight: 600; color: var(--ink-soft);
     transition: all 0.2s; min-height: 32px;
   }
   .radio-pills label:hover .pill { background: var(--bg); }
@@ -198,15 +212,16 @@
   .radio-pills label.hr .pill { background: var(--danger-bg); border-color: transparent; color: var(--danger); }
 
   /* ── RECOMMENDATION COLOR ON SELECTION (ideal / caution) ── */
-  .pill-good input[type="radio"]:checked + .pill { background: var(--go-bg); border-color: transparent; color: var(--go); }
-  .pill-caution input[type="radio"]:checked + .pill { background: var(--wait-bg); border-color: transparent; color: var(--wait); }
-  .seg-good input:checked + .seg-btn { background: var(--go-bg); color: var(--go); }
-  .seg-caution input:checked + .seg-btn { background: var(--wait-bg); color: var(--wait); }
+  .pill-good input[type="radio"]:checked + .pill { background: var(--go-bg); border-color: var(--go-border); color: var(--go); }
+  .pill-caution input[type="radio"]:checked + .pill { background: var(--wait-bg); border-color: var(--wait-border); color: var(--wait); }
+  .seg-good input:checked + .seg-btn { background: var(--go-bg); color: var(--go); box-shadow: inset 0 0 0 1px var(--go-border); }
+  .seg-caution input:checked + .seg-btn { background: var(--wait-bg); color: var(--wait); box-shadow: inset 0 0 0 1px var(--wait-border); }
 
   /* ── SEGMENTED CONTROL ── */
   .segmented-control { display: flex; height: 40px; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
   .segmented-control label { flex: 1; text-align: center; cursor: pointer; }
   .segmented-control input { display: none; }
+  .segmented-control input:focus-visible + .seg-btn { outline: 2px solid var(--accent); outline-offset: -2px; }
   .seg-btn {
     display: block; width: 100%; height: 100%; line-height: 38px;
     background: var(--surface); font-weight: 600; color: var(--ink-muted); transition: 0.2s;
@@ -214,7 +229,7 @@
   .segmented-control label:not(:last-child) .seg-btn { border-left: 1px solid var(--border); }
   .segmented-control label:hover .seg-btn { background: var(--border-light); }
   .segmented-control input:checked + .seg-btn { background: var(--accent-bg); color: var(--accent); }
-  .segmented-control input.on-danger:checked + .seg-btn { background: var(--danger-bg); color: var(--danger); }
+  .segmented-control input.on-danger:checked + .seg-btn { background: var(--danger-bg); color: var(--danger); box-shadow: inset 0 0 0 1px var(--danger-border); }
 
   /* ── CHECKBOXES (Pre-filter) ── */
   .prefilter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
@@ -228,62 +243,65 @@
     appearance: none; width: 18px; height: 18px; border: 2px solid var(--ink-muted);
     border-radius: var(--radius-sm); flex-shrink: 0; margin-top: 2px; position: relative;
   }
+  .checkbox-card input[type="checkbox"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .checkbox-card input[type="checkbox"]:checked { background: var(--go); border-color: var(--go); }
   .checkbox-card input[type="checkbox"]:checked::after {
     content: ""; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px;
     border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
   }
-  .checkbox-content .title { display: block; font-size: 13px; font-weight: 700; color: var(--ink); }
-  .checkbox-content .desc { display: block; font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
+  .checkbox-content .title { display: block; font-size: var(--text-value); font-weight: 700; color: var(--ink); }
+  .checkbox-content .desc { display: block; font-size: var(--text-helper); color: var(--ink-muted); margin-top: 2px; }
   .checkbox-card:has(input:checked) { background: var(--go-bg); border-color: var(--go-border); }
 
   /* ── INDICATORS & OUTPUTS ── */
   .status-indicator {
     display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px;
-    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: var(--bg); border-radius: var(--radius-md);
   }
-  .status-indicator.safe { background: var(--go-bg); border-color: var(--go-border); }
-  .status-indicator.warn { background: var(--wait-bg); border-color: var(--wait-border); }
-  .status-indicator.danger { background: var(--danger-bg); border-color: var(--danger-border); }
+  .status-indicator.safe { background: var(--go-bg); border: 1px solid var(--go-border); }
+  .status-indicator.warn { background: var(--wait-bg); border: 1px solid var(--wait-border); }
+  .status-indicator.danger { background: var(--danger-bg); border: 1px solid var(--danger-border); }
   .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-muted); }
   .status-indicator.safe .status-dot { background: var(--go); }
   .status-indicator.warn .status-dot { background: var(--wait); }
   .status-indicator.danger .status-dot { background: var(--danger); }
-  .status-text { font-size: 12px; font-weight: 700; }
+  .status-text { font-size: var(--text-label); font-weight: 700; }
   
   .blocker-box {
-    padding: 12px; border: 1px dashed var(--border); border-radius: var(--radius-md);
-    font-size: 12px; color: var(--ink-muted); text-align: center; background: var(--bg);
+    padding: 12px; border-radius: var(--radius-md);
+    font-size: var(--text-label); color: var(--ink-muted); text-align: center; background: var(--bg);
   }
-  .blocker-box.on { background: var(--danger-bg); border-color: var(--danger-border); color: var(--danger); font-weight: 700; border-style: solid; }
+  .blocker-box.on { background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); font-weight: 700; }
 
   .output-box {
     display: flex; align-items: center; justify-content: center; height: 40px;
-    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: var(--bg); border-radius: var(--radius-md);
     font-weight: 700; font-family: var(--font-display); color: var(--ink); font-size: 14px;
-    direction: ltr;
+    font-variant-numeric: tabular-nums; direction: ltr; cursor: default;
   }
+  .output-box--emphasis { background: var(--accent-bg); color: var(--ink); font-size: 17px; font-weight: 800; }
   .rr-banner {
     display: flex; align-items: center; justify-content: center; height: 48px;
-    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-md);
-    font-family: var(--font-display); font-size: 16px; font-weight: 800; color: var(--ink-muted); direction: ltr;
+    background: var(--bg); border-radius: var(--radius-md);
+    font-family: var(--font-display); font-size: 16px; font-weight: 800; color: var(--ink-muted);
+    font-variant-numeric: tabular-nums; direction: ltr;
   }
-  .rr-banner.good { background: var(--go-bg); border-color: var(--go-border); color: var(--go); }
-  .rr-banner.ok { border-color: var(--ink-muted); color: var(--ink-soft); }
-  .rr-banner.bad { background: var(--danger-bg); border-color: var(--danger-border); color: var(--danger); }
+  .rr-banner.good { background: var(--go-bg); border: 1px solid var(--go-border); color: var(--go); }
+  .rr-banner.ok { border: 1px solid var(--border); color: var(--ink-soft); }
+  .rr-banner.bad { background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); }
 
   .scores-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .sc-box {
     padding: 16px; text-align: center; border: 1px solid var(--border); border-radius: var(--radius-lg);
     background: var(--bg); opacity: 0.5; transition: all 0.2s;
   }
-  .sc-box.on { opacity: 1; border-width: 2px; transform: scale(1.02); }
+  .sc-box.on { opacity: 1; transform: scale(1.02); }
   .sc-go.on { background: var(--go-bg); border-color: var(--go); }
   .sc-wait.on { background: var(--wait-bg); border-color: var(--wait); }
   .sc-no.on { background: var(--danger-bg); border-color: var(--danger); }
-  .sc-l { font-family: var(--font-display); font-size: 18px; font-weight: 800; margin-bottom: 4px; }
-  .sc-go .sc-l { color: var(--go); } .sc-wait .sc-l { color: var(--wait); } .sc-no .sc-l { color: var(--danger); }
-  .sc-d { font-size: 11px; font-weight: 600; color: var(--ink-soft); }
+  .sc-l { font-family: var(--font-display); font-size: 18px; font-weight: 800; margin-bottom: 4px; font-variant-numeric: tabular-nums; display: flex; align-items: center; justify-content: center; gap: 5px; color: var(--ink-muted); }
+  .sc-go.on .sc-l { color: var(--go); } .sc-wait.on .sc-l { color: var(--wait); } .sc-no.on .sc-l { color: var(--danger); }
+  .sc-d { font-size: var(--text-helper); font-weight: 600; color: var(--ink-soft); }
 
   /* ── DOCUMENTATION & UPLOAD ── */
   textarea.field-input { height: 100px; padding: 12px; resize: vertical; }
@@ -299,20 +317,21 @@
   .upload-box.has-image span { display: none; }
 
   /* ── ACTIONS (MD3 Primary Button) ── */
-  .actions-row { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-top: 32px; }
+  .actions-row { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-top: 24px; }
   .btn-primary {
-    padding: 14px 32px; background: var(--accent-bg); color: var(--accent);
-    border: 1px solid transparent; border-radius: var(--radius-lg); font-size: 15px; font-weight: 700;
+    padding: 14px 32px; background: var(--ink); color: #ffffff;
+    border: 1px solid transparent; border-radius: var(--radius-cta); font-size: 15px; font-weight: 700;
     cursor: pointer; font-family: var(--font-display); transition: 0.2s;
     width: 100%; max-width: 300px; box-shadow: none;
     display: flex; align-items: center; justify-content: center; gap: 8px;
   }
-  .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-primary:hover { background: #1e293b; transform: translateY(-1px); }
+  .btn-primary:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
   .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   
   .btn-override {
     padding: 10px 24px; background: var(--wait-bg); color: var(--wait);
-    border: 1px solid transparent; border-radius: var(--radius-lg); font-size: 13px; font-weight: 700;
+    border: 1px solid transparent; border-radius: var(--radius-cta); font-size: var(--text-value); font-weight: 700;
     cursor: pointer; display: none;
   }
   
@@ -335,26 +354,26 @@
   .toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
     background: var(--ink); color: white; padding: 10px 20px; border-radius: var(--radius-pill);
-    font-size: 13px; font-weight: 600; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 2000;
+    font-size: var(--text-value); font-weight: 600; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 2000;
   }
   .toast.show { opacity: 1; }
 
   /* ── JOURNAL CARDS ── */
   .trade-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
     margin-bottom: 12px; overflow: hidden;
   }
   .tc-header {
     display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; flex-wrap: wrap;
   }
   .tc-ticker { font-family: var(--font-display); font-size: 18px; font-weight: 800; direction: ltr; }
-  .tc-date { font-size: 12px; color: var(--ink-muted); }
+  .tc-date { font-size: var(--text-label); color: var(--ink-muted); }
   
   /* ── BADGES (MD3 Tonal with SVG Icons) ── */
   .tc-badge { 
     display: inline-flex; align-items: center; gap: 4px;
     padding: 4px 10px; border-radius: var(--radius-md); 
-    font-size: 11px; font-weight: 600; 
+    font-size: var(--text-helper); font-weight: 600; 
     background: var(--bg); border: 1px solid transparent;
   }
   .tc-badge svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 1px; }
@@ -374,7 +393,7 @@
   
   /* Utilities */
   .flex-between { display: flex; justify-content: space-between; align-items: center; }
-  .hint { font-size: 10px; color: var(--ink-muted); margin-top: 4px; }
+  .hint { font-size: var(--text-helper); color: var(--ink-muted); margin-top: 4px; }
 
   /* ── RANGE SLIDER ── */
   input[type="range"] {
@@ -407,7 +426,7 @@
 <body class="tab-checklist">
 
 <div class="app-header">
-  <div class="app-title">TRADE JOURNAL</div>
+  <div class="app-title">יומן מסחר</div>
   <div class="tabs">
     <button class="tab-btn active" onclick="showView('checklist')"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1.5 1.5L7.5 5M4 12l1.5 1.5L7.5 11M4 18l1.5 1.5L7.5 17"/></svg> צ׳קליסט</button>
     <button class="tab-btn" onclick="showView('journal')"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z"/><path d="M8 4v16M11 8h5M11 12h5"/></svg> יומן <span id="tab-badge" style="display:none; background:var(--danger); color:white; border-radius:var(--radius-pill); padding:2px 6px; font-size:10px;"></span></button>
@@ -431,7 +450,7 @@
   <div class="draft-banner" id="draft-banner">
     <div>
       <div class="draft-title" id="draft-banner-title">נמצאה טיוטה</div>
-      <div style="font-size:12px; color:var(--ink-soft);" id="draft-banner-sub"></div>
+      <div style="font-size:var(--text-label); color:var(--ink-soft);" id="draft-banner-sub"></div>
     </div>
     <div class="draft-btns">
       <button onclick="restoreDraft()">שחזר</button>
@@ -454,7 +473,7 @@
       <div class="field-group col-2">
         <button type="button" id="earn-toggle" class="field-btn" style="margin-top:24px;" onclick="toggleEarnings()">מדווחת השבוע</button>
       </div>
-      <div class="field-group col-2">
+      <div class="field-group col-3">
         <label>סיגנל</label>
         <select id="signal-type" class="field-select" onchange="onSignalChange()">
           <option value="">—</option>
@@ -466,8 +485,8 @@
           <option value="cup">Cup & Handle</option>
         </select>
       </div>
-      <div class="field-group col-2">
-        <label>טרייד #</label>
+      <div class="field-group col-1">
+        <label>#</label>
         <select id="trade-num" class="field-select" onchange="countFlags()">
           <option value="1">1</option><option value="2">2</option><option value="3">3+</option>
         </select>
@@ -492,7 +511,7 @@
       <div class="field-group col-4">
         <label>CPI / PPI היום?</label>
         <div class="segmented-control">
-          <label class="seg-good"><input type="radio" name="cpi_toggle" value="no" id="cpi-no" onchange="setCpiToday(false)"><span class="seg-btn">לא</span></label>
+          <label><input type="radio" name="cpi_toggle" value="no" id="cpi-no" onchange="setCpiToday(false)"><span class="seg-btn">לא</span></label>
           <label class="seg-caution"><input type="radio" name="cpi_toggle" value="yes" id="cpi-yes" onchange="setCpiToday(true)"><span class="seg-btn">כן</span></label>
         </div>
         <a href="https://www.bls.gov/schedule/news_release/cpi.htm" target="_blank" rel="noopener" style="font-size:10px; color:var(--accent); text-decoration:none; display:block; margin-top:4px;">בדוק בלוח BLS הרשמי →</a>
@@ -523,9 +542,9 @@
         <div class="checkbox-content"><span class="title">ללא גאפים</span><span class="desc">מבנה נקי</span></div>
       </label>
     </div>
-    <div id="pf-result" style="font-size:12px; color:var(--ink-muted); text-align:center;">סמן את שלושת הפילטרים כדי להמשיך</div>
+    <div id="pf-result" style="font-size:var(--text-label); color:var(--ink-muted); text-align:center;">סמן את שלושת הפילטרים כדי להמשיך</div>
 
-    <div class="section-title" style="margin-top:24px;"><span>הקשר שוק (SPY/QQQ)</span></div>
+    <div class="section-title section-title--detached"><span>הקשר שוק (SPY/QQQ)</span></div>
     <div class="radio-pills">
       <label class="pill-good"><input type="radio" name="spy" value="up" onchange="countFlags()"><span class="pill">עולה</span></label>
       <label class="pill-caution"><input type="radio" name="spy" value="down" onchange="countFlags()"><span class="pill">יורד</span></label>
@@ -609,35 +628,35 @@
         </div>
       </div>
 
-      <div class="field-group col-3" style="margin-top:16px;">
+      <div class="field-group col-3 row-break">
         <div class="flex-between"><label>Max Risk</label><span style="font-size:10px; color:var(--accent); cursor:pointer;" onclick="resetToDefaultRisk()">ברירת מחדל <span id="default-risk-display"></span></span></div>
         <div class="input-with-prefix"><span>$</span><input type="number" id="max-risk" class="field-input ltr-input" value="100" oninput="calcSizing()"></div>
       </div>
       
-      <div class="field-group col-3" style="margin-top:16px;">
+      <div class="field-group col-3 row-break">
         <label>Risk / Share</label>
         <div class="output-box" id="risk-per-share">—</div>
       </div>
 
-      <div class="field-group col-3" style="margin-top:16px;">
+      <div class="field-group col-3 row-break">
         <label>Position Size (מניות)</label>
-        <div class="output-box" id="position-size" style="background:var(--accent-bg); border-color:var(--border); color:var(--ink); font-size:16px;">—</div>
+        <div class="output-box output-box--emphasis" id="position-size">—</div>
       </div>
 
-      <div class="field-group col-3" style="margin-top:16px;">
+      <div class="field-group col-3 row-break">
         <label>סה״כ סיכון בפועל</label>
         <div class="output-box" id="total-risk-display">—</div>
       </div>
       
-      <div class="field-group col-12" id="sizing-warning" style="display:none; color:var(--danger); font-size:12px; text-align:center; font-weight:600;"></div>
+      <div class="field-group col-12" id="sizing-warning" style="display:none; color:var(--danger); font-size:var(--text-label); text-align:center; font-weight:600;"></div>
 
-      <div class="field-group col-12" style="margin-top:16px; display:flex; flex-direction:row; gap:16px;">
+      <div class="field-group col-12 row-break" style="display:flex; flex-direction:row; gap:16px;">
         <div style="flex:1;">
-          <label style="font-size:11px; font-weight:600; color:var(--ink-muted); display:block; margin-bottom:6px;">יעד</label>
+          <label style="font-size:var(--text-label); font-weight:550; color:var(--ink-muted); display:block; margin-bottom:6px;">יעד</label>
           <div class="input-with-prefix"><span>$</span><input type="number" step="0.01" id="price-target" class="field-input ltr-input" oninput="calcRR()"></div>
         </div>
         <div style="flex:2;">
-          <label style="font-size:11px; font-weight:600; color:var(--ink-muted); display:block; margin-bottom:6px;">R:R</label>
+          <label style="font-size:var(--text-label); font-weight:550; color:var(--ink-muted); display:block; margin-bottom:6px;">R:R</label>
           <div class="rr-banner" id="rr-display">R:R = —</div>
         </div>
       </div>
@@ -649,9 +668,9 @@
     <div class="card-header"><svg class="card-header-icon" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>החלטה ותיעוד</div>
     
     <div class="scores-grid" style="margin-bottom:24px;">
-      <div class="sc-box sc-go" id="score-go"><div class="sc-l">GO</div><div class="sc-d" id="score-go-reason">מוכן</div></div>
-      <div class="sc-box sc-wait" id="score-wait"><div class="sc-l">WAIT</div><div class="sc-d" id="score-wait-reason">חסר אישור</div></div>
-      <div class="sc-box sc-no" id="score-no"><div class="sc-l">NO</div><div class="sc-d" id="score-no-reason">לא עומד בתנאים</div></div>
+      <div class="sc-box sc-go" id="score-go"><div class="sc-l"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;"><path d="M5 13l4 4L19 7"/></svg>GO</div><div class="sc-d" id="score-go-reason">מוכן</div></div>
+      <div class="sc-box sc-wait" id="score-wait"><div class="sc-l"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>WAIT</div><div class="sc-d" id="score-wait-reason">חסר אישור</div></div>
+      <div class="sc-box sc-no" id="score-no"><div class="sc-l"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;"><path d="M18 6L6 18M6 6l12 12"/></svg>NO</div><div class="sc-d" id="score-no-reason">לא עומד בתנאים</div></div>
     </div>
 
     <div class="grid-form">
@@ -666,20 +685,20 @@
           <span>+ צרף תמונה</span>
           <img id="ss-img" src="">
         </div>
-        <span style="font-size:11px; color:var(--accent); cursor:pointer; text-align:center; margin-top:4px; display:none;" id="remove-ss-btn" onclick="removeScreenshot()">הסר תמונה</span>
+        <span style="font-size:var(--text-helper); color:var(--accent); cursor:pointer; text-align:center; margin-top:4px; display:none;" id="remove-ss-btn" onclick="removeScreenshot()">הסר תמונה</span>
       </div>
     </div>
 
     <div class="actions-row">
       <button class="btn-primary" id="save-btn" onclick="saveTrade()"><svg viewBox="0 0 24 24" style="width:18px; height:18px; stroke:currentColor; stroke-width:2; fill:none; flex-shrink:0;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>שמור טרייד ביומן</button>
       <button class="btn-override" id="override-action-btn" onclick="openCurrentOverride()">Override והמשך</button>
-      <span style="font-size:11px; color:var(--accent); cursor:pointer; text-decoration:underline;" onclick="printChecklist()">הפק PDF</span>
-      <span style="font-size:11px; color:var(--ink-muted);" id="draft-time"></span>
+      <span style="font-size:var(--text-helper); color:var(--accent); cursor:pointer; text-decoration:underline;" onclick="printChecklist()">הפק PDF</span>
+      <span style="font-size:var(--text-helper); color:var(--ink-muted);" id="draft-time"></span>
     </div>
   </div>
   
   <!-- Iron Rules Footer -->
-  <div style="text-align:center; color:var(--ink); font-family:var(--font-display); font-size:13px; font-weight:500; line-height:1.8; margin-top:24px; padding:16px 20px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);">
+  <div style="text-align:center; color:var(--ink); font-family:var(--font-display); font-size:var(--text-value); font-weight:500; line-height:1.8; margin-top:24px; padding:16px 20px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);">
     <strong style="font-weight:800;">כללי ברזל:</strong> אל תזיז סטופ למטה • תן לטרייד לעבוד • אל תוסיף למפסידה • Cash is a position<br>
     <strong style="font-weight:800;">שעות:</strong> 16:30-17:00 (המתן) | 17:30-19:00 (מומלץ)
   </div>
@@ -689,7 +708,7 @@
 <!-- ================= JOURNAL VIEW ================= -->
 <div id="view-journal" class="view">
   <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
-    <h2 id="journal-count" style="font-size:16px;"></h2>
+    <h2 id="journal-count" style="font-family:var(--font-display); font-size:var(--text-section); font-weight:700;"></h2>
     <div style="display:flex; gap:8px;">
       <button class="field-btn" style="height:32px; padding:0 12px; margin:0;" onclick="exportJSON()">גיבוי JSON</button>
     </div>
@@ -715,12 +734,12 @@
 <div class="modal-backdrop" id="override-backdrop">
   <div class="modal-box">
     <div class="modal-title" style="display:flex; align-items:center; gap:8px;"><svg viewBox="0 0 24 24" style="width:18px; height:18px; stroke:currentColor; stroke-width:2; fill:none; flex-shrink:0;"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>כניסה למרות הפרת כללים</div>
-    <ul id="modal-reasons" style="font-size:13px; color:var(--danger); margin-bottom:16px; padding-right:16px;"></ul>
-    <label style="font-size:12px; font-weight:600; margin-bottom:4px; display:block;">למה בחרת לעקוף?</label>
+    <ul id="modal-reasons" style="font-size:var(--text-value); color:var(--danger); margin-bottom:16px; padding-right:16px;"></ul>
+    <label style="font-size:var(--text-label); font-weight:550; color:var(--ink-muted); margin-bottom:4px; display:block;">למה בחרת לעקוף?</label>
     <textarea id="override-reason-input" class="field-input" style="height:60px; margin-bottom:16px; width:100%; resize:none;"></textarea>
     <div style="display:flex; gap:8px;">
       <button class="field-btn" style="flex:1; margin:0;" onclick="closeOverrideModal()">ביטול</button>
-      <button class="btn-primary" style="flex:2; padding:0; border-radius:var(--radius-md);" onclick="confirmOverride()">אשר ושמור</button>
+      <button class="btn-primary" style="flex:2; padding:0;" onclick="confirmOverride()">אשר ושמור</button>
     </div>
   </div>
 </div>
@@ -831,10 +850,9 @@ function updateEventIndicator() {
   var ind = document.getElementById('event-indicator');
   var title = document.getElementById('ei-title');
   var isFomcToday = FOMC_DATES_2026.includes(dateStr);
-  var cpiToday = document.getElementById('cpi-yes').checked;
   ind.className = 'status-indicator';
   
-  if (isFomcToday || cpiToday) { ind.classList.add('danger'); title.textContent = isFomcToday ? 'FOMC היום' : 'CPI/PPI היום'; }
+  if (isFomcToday) { ind.classList.add('danger'); title.textContent = 'FOMC היום'; }
   else if (fomcThisWeek(dateStr)) { ind.classList.add('warn'); title.textContent = 'FOMC השבוע'; }
   else if (isOpExToday(dateStr)) { ind.classList.add('warn'); title.textContent = 'OpEx היום'; }
   else { ind.classList.add('safe'); title.textContent = 'נקי — אין אירועים'; }
@@ -1091,12 +1109,12 @@ function renderJournal() {
         <div class="tc-badge ${ocCls}" style="margin-right:auto;">${ocHTML}</div>
       </div>
       <div class="tc-body" id="tb-${t.id}">
-        <div style="display:flex; gap:16px; margin-bottom:12px; font-family:var(--font-display); direction:ltr; justify-content:flex-end;">
+        <div style="display:flex; gap:16px; margin-bottom:12px; font-family:var(--font-display); font-variant-numeric:tabular-nums; direction:ltr; justify-content:flex-end;">
            <div>Entry: $${t.entryPrice||'—'}</div>
            <div>Stop: $${t.stopPrice||'—'}</div>
            <div>RR: ${t.rr?t.rr+'R':'—'}</div>
         </div>
-        ${t.analysis ? `<div style="background:var(--bg); padding:12px; border-radius:var(--radius-md); margin-bottom:12px; font-size:12px;">${t.analysis}</div>`:''}
+        ${t.analysis ? `<div style="background:var(--bg); padding:12px; border-radius:var(--radius-md); margin-bottom:12px; font-size:var(--text-label);">${t.analysis}</div>`:''}
         ${t.screenshot ? `<img src="${t.screenshot}" style="max-width:100%; border-radius:var(--radius-md); margin-bottom:12px;">`:''}
         
         <div style="border-top:1px solid var(--border); padding-top:12px; display:flex; gap:8px; align-items:center;">
@@ -1165,10 +1183,10 @@ function renderStats() {
       <div class="sc-box on"><div class="sc-l">${closed.length}</div><div class="sc-d">טריידים סגורים</div></div>
     </div>
     <div class="card" style="margin-top:0;">
-      <div class="card-header" style="font-size:13px;">Win Rate לפי סוג סיגנל</div>
+      <div class="card-header" style="font-size:var(--text-value);">Win Rate לפי סוג סיגנל</div>
       ${signalRowsHtml}
     </div>
-    <div style="text-align:center; font-size:11px; color:var(--ink-muted); margin-top:12px;">סה"כ ${all.length} טריידים במערכת · ${all.length-closed.length} עדיין פתוחים</div>
+    <div style="text-align:center; font-size:var(--text-helper); color:var(--ink-muted); margin-top:12px;">סה"כ ${all.length} טריידים במערכת · ${all.length-closed.length} עדיין פתוחים</div>
   `;
 }
 
