@@ -32,7 +32,7 @@
     --surface: #ffffff;         
     --bg: #f6f7f9;              
     --border: #e2e8f0;          
-    --border-light: #eef1f4;    
+    --border-light: #e6eaef;    
     
     --accent: #334155;          
     --accent-bg: #f1f5f9;       
@@ -101,34 +101,45 @@
   /* ── SCORE BAR (TOP RAIL) ── */
   .score-bar {
     max-width: calc(var(--max-width) - 48px);
-    margin: 16px auto 0;
+    margin: 16px auto 8px;
     background: var(--surface);
     padding: 10px 24px;
+    border-bottom: 1px solid var(--border-light);
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
+    gap: 8px 16px;
     position: sticky;
     top: 61px;
     z-index: 90;
     transition: all 0.3s;
     border-radius: var(--radius-md);
   }
-  .score-bar.clean { background: var(--go-bg); }
+  .score-bar.clean:not(.has-warn) { background: var(--go-bg); }
+  .score-bar.has-warn:not(.stop) { background: var(--wait-bg); }
+  .score-bar.has-warn:not(.stop) .sb-v { color: var(--wait); }
+  .score-bar.has-warn:not(.stop) .sb-v .status-dot { background: var(--wait); }
   .score-bar.warn { background: var(--wait-bg); }
   .score-bar.stop { background: var(--danger-bg); }
   .score-bar.empty { background: var(--bg); }
   .score-bar.empty .sb-v { color: var(--ink-muted); }
   
-  .sb-v { font-size: 14px; font-weight: 700; color: var(--ink-soft); }
-  .score-bar.clean .sb-v { color: var(--go); }
+  .sb-v { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 600; color: var(--ink-soft); }
+  .sb-v .status-dot { background: var(--ink-muted); }
+  .score-bar.clean:not(.has-warn) .sb-v { color: var(--go); }
+  .score-bar.clean:not(.has-warn) .sb-v .status-dot { background: var(--go); }
   .score-bar.warn .sb-v { color: var(--wait); }
+  .score-bar.warn .sb-v .status-dot { background: var(--wait); }
   .score-bar.stop .sb-v { color: var(--danger); }
+  .score-bar.stop .sb-v .status-dot { background: var(--danger); }
 
-  .sb-flags { display: flex; align-items: center; border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius-pill); overflow: hidden; }
-  .sb-flags span { padding: 4px 12px; font-size: var(--text-helper); font-weight: 700; }
-  .sb-flags span:first-child { border-left: 1px solid var(--border-light); }
-  .sb-y:not(.is-zero) { border-color: var(--wait); color: var(--wait); }
-  .sb-r:not(.is-zero) { background: var(--danger); color: #ffffff; }
+  .sb-flags { display: flex; align-items: center; gap: 8px; }
+  .sb-flags span { font-size: var(--text-helper); font-weight: 700; color: var(--ink-muted); }
+  .sb-flags span:first-child { position: relative; padding-left: 16px; }
+  .sb-flags span:first-child::before { content: "·"; position: absolute; left: 6px; color: var(--border); font-weight: 700; }
+  .sb-y:not(.is-zero) { background: var(--wait); color: #ffffff; padding: 2px 8px; border-radius: var(--radius-sm); }
+  .sb-r:not(.is-zero) { background: var(--danger); color: #ffffff; padding: 2px 8px; border-radius: var(--radius-sm); }
   .is-zero { color: var(--ink-muted); opacity: 0.7; }
 
   /* ── MAIN CONTENT ── */
@@ -190,46 +201,38 @@
   
   .ltr-input { direction: ltr; text-align: left; font-family: var(--font-display); font-weight: 500; font-variant-numeric: tabular-nums; }
   
-  .input-with-prefix { position: relative; display: flex; align-items: center; }
-  .input-with-prefix span { position: absolute; left: 12px; font-weight: 600; color: var(--ink-muted); font-family: var(--font-display);}
-  .input-with-prefix input { padding-left: 28px; }
+  .input-with-prefix { direction: ltr; display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+  .input-with-prefix span { font-weight: 600; color: var(--ink-muted); font-family: var(--font-display); flex-shrink: 0; }
+  .input-with-prefix input { width: 100px; flex: 0 0 auto; text-align: right; padding-left: 8px; padding-right: 8px; }
 
-  /* ── RADIO PILLS ── */
-  .radio-pills { display: flex; flex-wrap: wrap; gap: 6px; }
-  .radio-pills label { cursor: pointer; user-select: none; }
-  .radio-pills input[type="radio"] { display: none; }
-  .radio-pills input[type="radio"]:focus-visible + .pill { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .pill {
-    display: inline-flex; align-items: center; justify-content: center;
-    padding: 6px 14px; background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius-md); font-size: var(--text-label); font-weight: 600; color: var(--ink-soft);
-    transition: all 0.2s; min-height: 32px;
+  /* ── SEGMENTED CONTROL (unified single-choice selection pattern) ── */
+  .segmented-control {
+    display: flex; background: var(--bg); border-radius: 9px; padding: 3px; gap: 2px;
   }
-  .radio-pills label:hover .pill { background: var(--bg); }
-  .radio-pills input[type="radio"]:checked + .pill { background: var(--accent-bg); border-color: transparent; color: var(--accent); }
-  
-  .radio-pills label.hy .pill { background: var(--wait-bg); border-color: transparent; color: var(--wait); }
-  .radio-pills label.hr .pill { background: var(--danger-bg); border-color: transparent; color: var(--danger); }
+  .segmented-control label { flex: 1; cursor: pointer; user-select: none; }
+  .segmented-control input { display: none; }
+  .segmented-control input:focus-visible + .seg-btn { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .seg-btn {
+    display: flex; align-items: center; justify-content: center;
+    height: 34px; padding: 0 10px; border-radius: 6px;
+    font-size: var(--text-value); font-weight: 500; color: var(--ink-muted);
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+  }
+  .segmented-control label:hover .seg-btn { color: var(--ink-soft); }
+  .segmented-control input:checked + .seg-btn {
+    background: var(--surface); color: var(--ink); font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .segmented-control input.on-danger:checked + .seg-btn { background: var(--danger-bg); color: var(--danger); box-shadow: inset 0 0 0 1px var(--danger-border); }
 
-  /* ── RECOMMENDATION COLOR ON SELECTION (ideal / caution) ── */
-  .pill-good input[type="radio"]:checked + .pill { background: var(--go-bg); border-color: var(--go-border); color: var(--go); }
-  .pill-caution input[type="radio"]:checked + .pill { background: var(--wait-bg); border-color: var(--wait-border); color: var(--wait); }
+  /* Highlight states for actively-selected problematic choices (dynamic, via JS) */
+  .segmented-control label.hy .seg-btn { background: var(--wait-bg); color: var(--wait); box-shadow: inset 0 0 0 1px var(--wait-border); }
+  .segmented-control label.hr .seg-btn { background: var(--danger-bg); color: var(--danger); box-shadow: inset 0 0 0 1px var(--danger-border); }
+
+  /* Semantic variants reserved for genuine trade-quality judgment (not descriptive market state) */
   .seg-good input:checked + .seg-btn { background: var(--go-bg); color: var(--go); box-shadow: inset 0 0 0 1px var(--go-border); }
   .seg-caution input:checked + .seg-btn { background: var(--wait-bg); color: var(--wait); box-shadow: inset 0 0 0 1px var(--wait-border); }
-
-  /* ── SEGMENTED CONTROL ── */
-  .segmented-control { display: flex; height: 40px; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-  .segmented-control label { flex: 1; text-align: center; cursor: pointer; }
-  .segmented-control input { display: none; }
-  .segmented-control input:focus-visible + .seg-btn { outline: 2px solid var(--accent); outline-offset: -2px; }
-  .seg-btn {
-    display: block; width: 100%; height: 100%; line-height: 38px;
-    background: var(--surface); font-weight: 600; color: var(--ink-muted); transition: 0.2s;
-  }
-  .segmented-control label:not(:last-child) .seg-btn { border-left: 1px solid var(--border); }
-  .segmented-control label:hover .seg-btn { background: var(--border-light); }
-  .segmented-control input:checked + .seg-btn { background: var(--accent-bg); color: var(--accent); }
-  .segmented-control input.on-danger:checked + .seg-btn { background: var(--danger-bg); color: var(--danger); box-shadow: inset 0 0 0 1px var(--danger-border); }
 
   /* ── CHECKBOXES (Pre-filter) ── */
   .prefilter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
@@ -268,37 +271,49 @@
   .status-text { font-size: var(--text-label); font-weight: 700; }
   
   .blocker-box {
-    padding: 12px; border-radius: var(--radius-md);
-    font-size: var(--text-label); color: var(--ink-muted); text-align: center; background: var(--bg);
+    display: flex; align-items: center; justify-content: flex-start; gap: 6px;
+    padding-top: 5px; margin-top: 1px; border-top: 1px solid var(--border-light);
+    font-size: var(--text-value); color: var(--ink-muted); font-weight: 500;
   }
-  .blocker-box.on { background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); font-weight: 700; }
+  .blocker-box .status-dot { background: var(--ink-muted); }
+  .blocker-box.on { color: var(--danger); }
+  .blocker-box.on strong { font-weight: 700; }
+  .blocker-box.on .status-dot { background: var(--danger); }
 
   .output-box {
-    display: flex; align-items: center; justify-content: center; height: 40px;
-    background: var(--bg); border-radius: var(--radius-md);
-    font-weight: 700; font-family: var(--font-display); color: var(--ink); font-size: 14px;
+    display: flex; align-items: baseline; justify-content: flex-end;
+    padding-top: 5px; margin-top: 1px; border-top: 1px solid var(--border-light);
+    font-weight: 700; font-family: var(--font-display); color: var(--ink); font-size: 15px;
     font-variant-numeric: tabular-nums; direction: ltr; cursor: default;
   }
-  .output-box--emphasis { background: var(--accent-bg); color: var(--ink); font-size: 17px; font-weight: 800; }
+  .output-box--emphasis { font-size: 19px; font-weight: 800; }
   .rr-banner {
-    display: flex; align-items: center; justify-content: center; height: 48px;
-    background: var(--bg); border-radius: var(--radius-md);
-    font-family: var(--font-display); font-size: 16px; font-weight: 800; color: var(--ink-muted);
+    display: flex; align-items: baseline; justify-content: flex-end;
+    padding-top: 5px; margin-top: 1px; border-top: 1px solid var(--border-light);
+    font-family: var(--font-display); font-size: 17px; font-weight: 800; color: var(--ink-muted);
     font-variant-numeric: tabular-nums; direction: ltr;
   }
-  .rr-banner.good { background: var(--go-bg); border: 1px solid var(--go-border); color: var(--go); }
-  .rr-banner.ok { border: 1px solid var(--border); color: var(--ink-soft); }
-  .rr-banner.bad { background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); }
+  .rr-banner.good { color: var(--go); }
+  .rr-banner.ok { color: var(--ink-soft); }
+  .rr-banner.bad { color: var(--danger); }
+  .output-box.is-empty, .rr-banner.is-empty { color: var(--ink-muted); font-weight: 500; }
 
   .scores-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .sc-box {
-    padding: 16px; text-align: center; border: 1px solid var(--border); border-radius: var(--radius-lg);
-    background: var(--bg); opacity: 0.5; transition: all 0.2s;
+  .verdict-grid .sc-box { position: relative; }
+  .verdict-grid .sc-box:not(:first-child)::before {
+    content: ""; position: absolute; top: 50%; right: -7px;
+    transform: translateY(-50%);
+    width: 1px; height: 60%;
+    background: var(--border-light);
   }
-  .sc-box.on { opacity: 1; transform: scale(1.02); }
-  .sc-go.on { background: var(--go-bg); border-color: var(--go); }
-  .sc-wait.on { background: var(--wait-bg); border-color: var(--wait); }
-  .sc-no.on { background: var(--danger-bg); border-color: var(--danger); }
+  .sc-box {
+    padding: 12px; text-align: center; border: 1px solid transparent; border-radius: var(--radius-lg);
+    opacity: 0.45; transition: all 0.2s; cursor: default;
+  }
+  .sc-box.on { opacity: 1; }
+  .sc-go.on { background: var(--go-bg); border-color: var(--go-border); }
+  .sc-wait.on { background: var(--wait-bg); border-color: var(--wait-border); }
+  .sc-no.on { background: var(--danger-bg); border-color: var(--danger-border); }
   .sc-l { font-family: var(--font-display); font-size: 18px; font-weight: 800; margin-bottom: 4px; font-variant-numeric: tabular-nums; display: flex; align-items: center; justify-content: center; gap: 5px; color: var(--ink-muted); }
   .sc-go.on .sc-l { color: var(--go); } .sc-wait.on .sc-l { color: var(--wait); } .sc-no.on .sc-l { color: var(--danger); }
   .sc-d { font-size: var(--text-helper); font-weight: 600; color: var(--ink-soft); }
@@ -398,20 +413,34 @@
   /* ── RANGE SLIDER ── */
   input[type="range"] {
     -webkit-appearance: none; appearance: none;
-    height: 4px; border-radius: var(--radius-sm); background: var(--border); outline: none;
+    height: 5px; border-radius: var(--radius-sm); outline: none;
+    background: linear-gradient(to left,
+      var(--border) 0%, var(--border) 22%,
+      var(--wait) 30%, var(--wait) 45%,
+      var(--danger) 50%, var(--danger) 100%
+    );
   }
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none; appearance: none;
-    width: 18px; height: 18px; border-radius: 50%;
-    background: var(--accent); border: 2px solid var(--surface);
-    box-shadow: 0 0 0 1px var(--accent); cursor: pointer;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--surface); border: 2px solid var(--accent);
+    cursor: pointer;
   }
+  input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--accent); outline-offset: 2px; }
   input[type="range"]::-moz-range-thumb {
-    width: 18px; height: 18px; border-radius: 50%;
-    background: var(--accent); border: 2px solid var(--surface);
-    box-shadow: 0 0 0 1px var(--accent); cursor: pointer;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--surface); border: 2px solid var(--accent);
+    cursor: pointer;
   }
-  input[type="range"]::-moz-range-track { background: var(--border); height: 4px; border-radius: var(--radius-sm); }
+  input[type="range"]:focus-visible::-moz-range-thumb { outline: 2px solid var(--accent); outline-offset: 2px; }
+  input[type="range"]::-moz-range-track {
+    height: 5px; border-radius: var(--radius-sm);
+    background: linear-gradient(to left,
+      var(--border) 0%, var(--border) 22%,
+      var(--wait) 30%, var(--wait) 45%,
+      var(--danger) 50%, var(--danger) 100%
+    );
+  }
 
   /* Print */
   @media print {
@@ -435,7 +464,7 @@
 </div>
 
 <div class="score-bar" id="sb">
-  <div class="sb-v" id="sv">ממתין לנתונים</div>
+  <div class="sb-v"><span class="status-dot"></span><span id="sv">ממתין לנתונים</span></div>
   <div class="sb-flags">
     <span class="sb-y is-zero" id="yc">אזהרות 0</span>
     <span class="sb-r is-zero" id="rc">חריגות 0</span>
@@ -471,7 +500,7 @@
         <input type="text" id="ticker" class="field-input ltr-input" placeholder="NVDA" style="text-transform:uppercase;" oninput="updateTitle()">
       </div>
       <div class="field-group col-2">
-        <button type="button" id="earn-toggle" class="field-btn" style="margin-top:24px;" onclick="toggleEarnings()">מדווחת השבוע</button>
+        <button type="button" id="earn-toggle" class="field-btn" style="margin-top:24px;" onclick="toggleEarnings()">מדווחת השבוע?</button>
       </div>
       <div class="field-group col-3">
         <label>סיגנל</label>
@@ -519,7 +548,7 @@
 
       <div class="field-group col-4">
         <label>חסימות מסחר (Stop)</label>
-        <div class="blocker-box" id="blocker">אין חסימות פעילות</div>
+        <div class="blocker-box" id="blocker"><span class="status-dot"></span><span id="blocker-text">אין חסימות פעילות</span></div>
         <div id="bl-reason" style="display:none;"></div>
         <div id="stop-box-inner" style="display:none;"></div>
         <div id="stop-box-title" style="display:none;"></div>
@@ -545,10 +574,10 @@
     <div id="pf-result" style="font-size:var(--text-label); color:var(--ink-muted); text-align:center;">סמן את שלושת הפילטרים כדי להמשיך</div>
 
     <div class="section-title section-title--detached"><span>הקשר שוק (SPY/QQQ)</span></div>
-    <div class="radio-pills">
-      <label class="pill-good"><input type="radio" name="spy" value="up" onchange="countFlags()"><span class="pill">עולה</span></label>
-      <label class="pill-caution"><input type="radio" name="spy" value="down" onchange="countFlags()"><span class="pill">יורד</span></label>
-      <label><input type="radio" name="spy" value="flat" onchange="countFlags()"><span class="pill">דשדוש</span></label>
+    <div class="segmented-control">
+      <label><input type="radio" name="spy" value="up" onchange="countFlags()"><span class="seg-btn">עולה</span></label>
+      <label><input type="radio" name="spy" value="down" onchange="countFlags()"><span class="seg-btn">יורד</span></label>
+      <label><input type="radio" name="spy" value="flat" onchange="countFlags()"><span class="seg-btn">דשדוש</span></label>
     </div>
   </div>
 
@@ -559,9 +588,9 @@
     <div class="grid-form">
       <div class="field-group col-6" id="distance-field">
         <div style="width:60%;">
-          <div class="flex-between">
-            <label>מרחק מהסיגנל</label>
-            <span id="distance-value" style="font-weight:700; direction:ltr;">0.0%</span>
+          <div style="display:flex; align-items:baseline; justify-content:flex-start; gap:8px;">
+            <label style="margin:0;">מרחק מהסיגנל</label>
+            <span id="distance-value" style="font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums; direction:ltr;">0.0%</span>
           </div>
           <input type="range" id="distance" min="0" max="10" step="0.1" value="0" style="margin-top:8px; width:100%;" oninput="countFlags()">
         </div>
@@ -570,38 +599,38 @@
 
       <div class="field-group col-6">
         <label>מגמת המניה (1-3 חודשים)</label>
-        <div class="radio-pills">
-          <label class="pill-good"><input type="radio" name="trend" value="up" onchange="countFlags()"><span class="pill">עלייה</span></label>
-          <label id="lbl-trend-down" class="pill-caution"><input type="radio" name="trend" value="down" onchange="countFlags()"><span class="pill">ירידה</span></label>
-          <label><input type="radio" name="trend" value="flat" onchange="countFlags()"><span class="pill">דשדוש</span></label>
+        <div class="segmented-control">
+          <label><input type="radio" name="trend" value="up" onchange="countFlags()"><span class="seg-btn">עלייה</span></label>
+          <label id="lbl-trend-down"><input type="radio" name="trend" value="down" onchange="countFlags()"><span class="seg-btn">ירידה</span></label>
+          <label><input type="radio" name="trend" value="flat" onchange="countFlags()"><span class="seg-btn">דשדוש</span></label>
         </div>
       </div>
 
       <div class="field-group col-6">
         <label>אופן כניסה</label>
-        <div class="radio-pills">
-          <label class="pill-good"><input type="radio" name="entry" value="limit" onchange="countFlags()"><span class="pill">Limit</span></label>
-          <label class="pill-good"><input type="radio" name="entry" value="stoplimit" onchange="countFlags()"><span class="pill">Stop Limit</span></label>
-          <label class="pill-good"><input type="radio" name="entry" value="retest" onchange="countFlags()"><span class="pill">Retest</span></label>
-          <label id="lbl-market" class="pill-caution"><input type="radio" name="entry" value="market" onchange="countFlags()"><span class="pill">Market</span></label>
+        <div class="segmented-control">
+          <label class="seg-good"><input type="radio" name="entry" value="limit" onchange="countFlags()"><span class="seg-btn">Limit</span></label>
+          <label class="seg-good"><input type="radio" name="entry" value="stoplimit" onchange="countFlags()"><span class="seg-btn">Stop Limit</span></label>
+          <label class="seg-good"><input type="radio" name="entry" value="retest" onchange="countFlags()"><span class="seg-btn">Retest</span></label>
+          <label id="lbl-market" class="seg-caution"><input type="radio" name="entry" value="market" onchange="countFlags()"><span class="seg-btn">Market</span></label>
         </div>
       </div>
 
       <div class="field-group col-6">
         <label>Volume (מול ממוצע 20 יום)</label>
-        <div class="radio-pills">
-          <label class="pill-good"><input type="radio" name="vol" value="high" onchange="countFlags()"><span class="pill">גבוה ×1.5+</span></label>
-          <label><input type="radio" name="vol" value="normal" onchange="countFlags()"><span class="pill">רגיל</span></label>
-          <label id="lbl-lowvol" class="pill-caution"><input type="radio" name="vol" value="low" onchange="countFlags()"><span class="pill">נמוך</span></label>
+        <div class="segmented-control">
+          <label class="seg-good"><input type="radio" name="vol" value="high" onchange="countFlags()"><span class="seg-btn">גבוה ×1.5+</span></label>
+          <label><input type="radio" name="vol" value="normal" onchange="countFlags()"><span class="seg-btn">רגיל</span></label>
+          <label id="lbl-lowvol" class="seg-caution"><input type="radio" name="vol" value="low" onchange="countFlags()"><span class="seg-btn">נמוך</span></label>
         </div>
       </div>
 
       <div class="field-group col-12" id="support-row" style="display:none; margin-top:8px;">
         <label>תמיכה נבדקה</label>
-        <div class="radio-pills">
-          <label class="pill-good"><input type="radio" name="support" value="23" onchange="countFlags()"><span class="pill">2-3 פעמים</span></label>
-          <label id="lbl-sup4" class="pill-caution"><input type="radio" name="support" value="4plus" onchange="countFlags()"><span class="pill">4+</span></label>
-          <label id="lbl-supbroken" class="pill-caution"><input type="radio" name="support" value="broken" onchange="countFlags()"><span class="pill">נשברה</span></label>
+        <div class="segmented-control">
+          <label class="seg-good"><input type="radio" name="support" value="23" onchange="countFlags()"><span class="seg-btn">2-3 פעמים</span></label>
+          <label id="lbl-sup4" class="seg-caution"><input type="radio" name="support" value="4plus" onchange="countFlags()"><span class="seg-btn">4+</span></label>
+          <label id="lbl-supbroken" class="seg-caution"><input type="radio" name="support" value="broken" onchange="countFlags()"><span class="seg-btn">נשברה</span></label>
         </div>
       </div>
     </div>
@@ -635,17 +664,17 @@
       
       <div class="field-group col-3 row-break">
         <label>Risk / Share</label>
-        <div class="output-box" id="risk-per-share">—</div>
+        <div class="output-box is-empty" id="risk-per-share">—</div>
       </div>
 
       <div class="field-group col-3 row-break">
         <label>Position Size (מניות)</label>
-        <div class="output-box output-box--emphasis" id="position-size">—</div>
+        <div class="output-box output-box--emphasis is-empty" id="position-size">—</div>
       </div>
 
       <div class="field-group col-3 row-break">
         <label>סה״כ סיכון בפועל</label>
-        <div class="output-box" id="total-risk-display">—</div>
+        <div class="output-box is-empty" id="total-risk-display">—</div>
       </div>
       
       <div class="field-group col-12" id="sizing-warning" style="display:none; color:var(--danger); font-size:var(--text-label); text-align:center; font-weight:600;"></div>
@@ -657,7 +686,7 @@
         </div>
         <div style="flex:2;">
           <label style="font-size:var(--text-label); font-weight:550; color:var(--ink-muted); display:block; margin-bottom:6px;">R:R</label>
-          <div class="rr-banner" id="rr-display">R:R = —</div>
+          <div class="rr-banner is-empty" id="rr-display">—</div>
         </div>
       </div>
     </div>
@@ -667,7 +696,7 @@
   <div class="card" id="group-5">
     <div class="card-header"><svg class="card-header-icon" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>החלטה ותיעוד</div>
     
-    <div class="scores-grid" style="margin-bottom:24px;">
+    <div class="scores-grid verdict-grid" style="margin-bottom:40px;">
       <div class="sc-box sc-go" id="score-go"><div class="sc-l"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;"><path d="M5 13l4 4L19 7"/></svg>GO</div><div class="sc-d" id="score-go-reason">מוכן</div></div>
       <div class="sc-box sc-wait" id="score-wait"><div class="sc-l"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>WAIT</div><div class="sc-d" id="score-wait-reason">חסר אישור</div></div>
       <div class="sc-box sc-no" id="score-no"><div class="sc-l"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;"><path d="M18 6L6 18M6 6l12 12"/></svg>NO</div><div class="sc-d" id="score-no-reason">לא עומד בתנאים</div></div>
@@ -714,11 +743,11 @@
     </div>
   </div>
   <input type="text" id="search-input" class="field-input" placeholder="חפש מניה..." style="margin-bottom:16px;" oninput="applyFilters()">
-  <div class="radio-pills" style="margin-bottom:24px;" id="filter-chips">
-    <label><input type="radio" name="filter_out" value="all" checked onchange="applyFilters()"><span class="pill">הכל</span></label>
-    <label><input type="radio" name="filter_out" value="open" onchange="applyFilters()"><span class="pill">פתוחים</span></label>
-    <label><input type="radio" name="filter_out" value="win" onchange="applyFilters()"><span class="pill">רווחים</span></label>
-    <label><input type="radio" name="filter_out" value="loss" onchange="applyFilters()"><span class="pill">הפסדים</span></label>
+  <div class="segmented-control" style="margin-bottom:24px;" id="filter-chips">
+    <label><input type="radio" name="filter_out" value="all" checked onchange="applyFilters()"><span class="seg-btn">הכל</span></label>
+    <label><input type="radio" name="filter_out" value="open" onchange="applyFilters()"><span class="seg-btn">פתוחים</span></label>
+    <label><input type="radio" name="filter_out" value="win" onchange="applyFilters()"><span class="seg-btn">רווחים</span></label>
+    <label><input type="radio" name="filter_out" value="loss" onchange="applyFilters()"><span class="seg-btn">הפסדים</span></label>
   </div>
   <div id="journal-container"></div>
 </div>
@@ -869,9 +898,9 @@ function toggleEarnings() {
   var btn = document.getElementById('earn-toggle');
   btn.classList.toggle('active-state');
   if (btn.classList.contains('active-state')) {
-    btn.style.background = 'var(--danger-bg)'; btn.style.color = 'var(--danger)'; btn.style.borderColor = 'var(--danger)'; btn.textContent = 'מדווחת השבוע';
+    btn.style.background = 'var(--danger-bg)'; btn.style.color = 'var(--danger)'; btn.style.borderColor = 'var(--danger)'; btn.textContent = 'מדווחת השבוע?';
   } else {
-    btn.style.background = 'var(--bg)'; btn.style.color = 'var(--ink-soft)'; btn.style.borderColor = 'var(--border)'; btn.textContent = 'מדווחת השבוע';
+    btn.style.background = 'var(--bg)'; btn.style.color = 'var(--ink-soft)'; btn.style.borderColor = 'var(--border)'; btn.textContent = 'מדווחת השבוע?';
   }
   countFlags();
 }
@@ -893,14 +922,15 @@ function resetToDefaultRisk() {
 function calcSizing() {
   var e = parseFloat(document.getElementById('price-entry').value), s = parseFloat(document.getElementById('price-stop').value), max = parseFloat(document.getElementById('max-risk').value);
   var rpsEl = document.getElementById('risk-per-share'), posEl = document.getElementById('position-size'), totEl = document.getElementById('total-risk-display'), warnEl = document.getElementById('sizing-warning');
+  function setVal(el, text, empty) { el.textContent = text; el.classList.toggle('is-empty', !!empty); }
   warnEl.style.display = 'none';
-  if (!e || !s) { rpsEl.textContent = '—'; posEl.textContent = '—'; totEl.textContent = '—'; return {valid:false}; }
-  if (s >= e) { rpsEl.textContent = '—'; posEl.textContent = '—'; totEl.textContent = '—'; warnEl.style.display = 'block'; warnEl.textContent = 'Stop חייב להיות מתחת לכניסה'; return {valid:false}; }
-  var rps = e - s; rpsEl.textContent = '$' + rps.toFixed(2);
-  if (!max || max<=0) { posEl.textContent='—'; totEl.textContent='—'; return {valid:false}; }
+  if (!e || !s) { setVal(rpsEl,'—',true); setVal(posEl,'—',true); setVal(totEl,'—',true); return {valid:false}; }
+  if (s >= e) { setVal(rpsEl,'—',true); setVal(posEl,'—',true); setVal(totEl,'—',true); warnEl.style.display = 'block'; warnEl.textContent = 'Stop חייב להיות מתחת לכניסה'; return {valid:false}; }
+  var rps = e - s; setVal(rpsEl, '$' + rps.toFixed(2), false);
+  if (!max || max<=0) { setVal(posEl,'—',true); setVal(totEl,'—',true); return {valid:false}; }
   var pos = Math.floor(max / rps);
-  if (pos < 1) { posEl.textContent='0'; totEl.textContent='—'; warnEl.style.display='block'; warnEl.textContent='הסיכון למניה גדול מה-Max Risk'; return {valid:false}; }
-  posEl.textContent = pos; totEl.textContent = '$' + (pos * rps).toFixed(2);
+  if (pos < 1) { setVal(posEl,'0',false); setVal(totEl,'—',true); warnEl.style.display='block'; warnEl.textContent='הסיכון למניה גדול מה-Max Risk'; return {valid:false}; }
+  setVal(posEl, pos, false); setVal(totEl, '$' + (pos * rps).toFixed(2), false);
   return {valid:true, pos:pos, rps:rps};
 }
 
@@ -909,9 +939,9 @@ function calcRR() {
   var el = document.getElementById('rr-display');
   if (e && s && t && e > s && t > e) {
     var rr = ((t-e)/(e-s)).toFixed(1);
-    el.textContent = 'R:R = '+rr+':1';
+    el.textContent = rr+' : 1';
     el.className = 'rr-banner' + (rr>=2.5?' good':rr>=2?' ok':' bad');
-  } else { el.textContent = 'R:R = —'; el.className = 'rr-banner'; }
+  } else { el.textContent = '—'; el.className = 'rr-banner is-empty'; }
   calcSizing(); countFlags();
 }
 
@@ -1000,20 +1030,22 @@ function countFlags() {
   var verdict;
   if (isEmpty) {
     verdict='—'; bar.className='score-bar empty'; sv.textContent='ממתין לנתונים';
-    document.getElementById('blocker').className='blocker-box'; document.getElementById('blocker').textContent='אין חסימות פעילות';
+    document.getElementById('blocker').className='blocker-box'; document.getElementById('blocker-text').textContent='אין חסימות פעילות';
   } else if(blockerReasons.length>0){
     verdict='NO'; bar.className='score-bar stop'; sv.textContent='המסחר חסום'; sno.classList.add('on');
-    document.getElementById('blocker').className='blocker-box on'; document.getElementById('blocker').textContent=blockerReasons.join(' | ');
+    document.getElementById('blocker').className='blocker-box on';
+    document.getElementById('blocker-text').innerHTML = '<strong>NO</strong> · ' + (blockerReasons.length > 1 ? blockerReasons.length + ' חסימות פעילות' : blockerReasons[0]);
   } else if(r>0||y>=4){
     verdict='NO'; bar.className='score-bar stop'; sv.textContent = violationReasons.length ? 'NO · ' + violationReasons[0] : 'NO · אזהרות'; sno.classList.add('on');
-    document.getElementById('blocker').className='blocker-box'; document.getElementById('blocker').textContent='אין חסימות פעילות';
+    document.getElementById('blocker').className='blocker-box'; document.getElementById('blocker-text').textContent='אין חסימות פעילות';
   } else if(y===3){
     verdict='WAIT'; bar.className='score-bar warn'; sv.textContent='WAIT · ' + (warningReasons[0]||''); swa.classList.add('on');
-    document.getElementById('blocker').className='blocker-box'; document.getElementById('blocker').textContent='אין חסימות פעילות';
+    document.getElementById('blocker').className='blocker-box'; document.getElementById('blocker-text').textContent='אין חסימות פעילות';
   } else{
     verdict='GO'; bar.className='score-bar clean'; sv.textContent = y>0 ? 'GO · ' + y + ' אזהרות' : 'GO · תקין'; sgo.classList.add('on');
-    document.getElementById('blocker').className='blocker-box'; document.getElementById('blocker').textContent='אין חסימות פעילות';
+    document.getElementById('blocker').className='blocker-box'; document.getElementById('blocker-text').textContent='אין חסימות פעילות';
   }
+  bar.classList.toggle('has-warn', y > 0);
 
   applyGate(blockerReasons.length > 0);
   
