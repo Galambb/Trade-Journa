@@ -720,7 +720,6 @@
 
     <div class="actions-row">
       <button class="btn-primary" id="save-btn" onclick="saveTrade()"><svg viewBox="0 0 24 24" style="width:18px; height:18px; stroke:currentColor; stroke-width:2; fill:none; flex-shrink:0;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>שמור טרייד ביומן</button>
-      <button class="btn-override" id="override-action-btn" onclick="openCurrentOverride()">Override והמשך</button>
       <span style="font-size:var(--text-helper); color:var(--accent); cursor:pointer; text-decoration:underline;" onclick="printChecklist()">הפק PDF</span>
       <span style="font-size:var(--text-helper); color:var(--ink-muted);" id="draft-time"></span>
     </div>
@@ -762,13 +761,16 @@
 <!-- MODALS & ALERTS -->
 <div class="modal-backdrop" id="override-backdrop">
   <div class="modal-box">
-    <div class="modal-title" style="display:flex; align-items:center; gap:8px;"><svg viewBox="0 0 24 24" style="width:18px; height:18px; stroke:currentColor; stroke-width:2; fill:none; flex-shrink:0;"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>כניסה למרות הפרת כללים</div>
+    <div class="modal-title" style="display:flex; align-items:center; gap:8px;"><svg viewBox="0 0 24 24" style="width:18px; height:18px; stroke:currentColor; stroke-width:2; fill:none; flex-shrink:0;"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg><span id="modal-title-text">כניסה למרות הפרת כללים</span></div>
     <ul id="modal-reasons" style="font-size:var(--text-value); color:var(--danger); margin-bottom:16px; padding-right:16px;"></ul>
-    <label style="font-size:var(--text-label); font-weight:550; color:var(--ink-muted); margin-bottom:4px; display:block;">למה בחרת לעקוף?</label>
-    <textarea id="override-reason-input" class="field-input" style="height:60px; margin-bottom:16px; width:100%; resize:none;"></textarea>
+    <div id="modal-hint" style="display:none; font-size:var(--text-helper); color:var(--ink-muted); margin-top:-8px; margin-bottom:16px;"></div>
+    <div id="override-reason-section">
+      <label style="font-size:var(--text-label); font-weight:550; color:var(--ink-muted); margin-bottom:4px; display:block;">למה בחרת לעקוף?</label>
+      <textarea id="override-reason-input" class="field-input" style="height:60px; margin-bottom:16px; width:100%; resize:none;"></textarea>
+    </div>
     <div style="display:flex; gap:8px;">
-      <button class="field-btn" style="flex:1; margin:0;" onclick="closeOverrideModal()">ביטול</button>
-      <button class="btn-primary" style="flex:2; padding:0;" onclick="confirmOverride()">אשר ושמור</button>
+      <button class="field-btn" id="modal-cancel-btn" style="flex:1; margin:0;" onclick="closeOverrideModal()">ביטול</button>
+      <button class="btn-primary" id="modal-confirm-btn" style="flex:2; padding:0;" onclick="confirmOverride()">אשר ושמור</button>
     </div>
   </div>
 </div>
@@ -1048,24 +1050,58 @@ function countFlags() {
   bar.classList.toggle('has-warn', y > 0);
 
   applyGate(blockerReasons.length > 0);
-  
-  var overridable = (violationReasons.length > 0 && blockerReasons.length === 0);
-  document.getElementById('override-action-btn').style.display = overridable ? 'block' : 'none';
+  if (blockerReasons.length > 0 && !wasBlocked) { openBlockedInfo(blockerReasons); }
+  wasBlocked = blockerReasons.length > 0;
   
   return {y:y, r:r, verdict:verdict, vReasons:violationReasons, bReasons:blockerReasons};
 }
 
 // ── SAVE & OVERRIDE ──
 var pendingViolations = [];
+var modalMode = 'override';
+var wasBlocked = false;
+function setupModal(reasons, isOverridable, customContent) {
+  if (!customContent) {
+    document.getElementById('modal-reasons').innerHTML = reasons.map(r=>'<li>'+r+'</li>').join('');
+    document.getElementById('modal-title-text').textContent = isOverridable ? 'כניסה למרות הפרת כללים' : 'המסחר חסום';
+  }
+  document.getElementById('override-reason-section').style.display = isOverridable ? 'block' : 'none';
+  document.getElementById('modal-cancel-btn').style.display = isOverridable ? 'block' : 'none';
+  var confirmBtn = document.getElementById('modal-confirm-btn');
+  confirmBtn.textContent = isOverridable ? 'אשר ושמור' : 'הבנתי';
+  confirmBtn.style.flex = isOverridable ? '2' : '1';
+  document.getElementById('override-backdrop').style.display = 'flex';
+}
 function openCurrentOverride() {
   var flags = countFlags();
-  if (flags.vReasons.length === 0) return;
-  pendingViolations = flags.vReasons;
-  document.getElementById('modal-reasons').innerHTML = flags.vReasons.map(r=>'<li>'+r+'</li>').join('');
-  document.getElementById('override-backdrop').style.display = 'flex';
+  var reasons = flags.vReasons.length > 0 ? flags.vReasons : (flags.verdict==='NO' && flags.bReasons.length===0 ? ['4+ אזהרות מצטברות'] : []);
+  if (reasons.length === 0) return;
+  modalMode = 'override';
+  pendingViolations = reasons;
+  document.getElementById('modal-hint').style.display = 'none';
+  setupModal(reasons, true);
+}
+function openBlockedInfo(reasons) {
+  modalMode = 'info';
+  var hintEl = document.getElementById('modal-hint');
+  var titleEl = document.getElementById('modal-title-text');
+  var reasonsEl = document.getElementById('modal-reasons');
+  var isEarningsOnly = reasons.length === 1 && reasons[0] === 'דיווח תוצאות השבוע';
+  if (isEarningsOnly) {
+    titleEl.textContent = 'דיווח תוצאות השבוע';
+    reasonsEl.style.display = 'none';
+    hintEl.textContent = 'נסה למצוא מניה אחרת שלא מדווחת השבוע.';
+    hintEl.style.cssText = 'display:block; font-size:var(--text-value); color:var(--ink-soft); margin-top:0; margin-bottom:16px;';
+  } else {
+    titleEl.textContent = 'המסחר חסום';
+    reasonsEl.style.display = 'block';
+    hintEl.style.display = 'none';
+  }
+  setupModal(reasons, false, isEarningsOnly);
 }
 function closeOverrideModal() { document.getElementById('override-backdrop').style.display = 'none'; }
 async function confirmOverride() {
+  if (modalMode === 'info') { closeOverrideModal(); return; }
   var reason = document.getElementById('override-reason-input').value.trim();
   if(!reason){ toast('חובה להזין סיבה'); return; }
   closeOverrideModal();
@@ -1073,7 +1109,8 @@ async function confirmOverride() {
 }
 async function saveTrade() {
   var flags = countFlags();
-  if (flags.bReasons.length > 0 || flags.verdict === 'NO') { await executeSave(null, null, 'NO'); return; }
+  if (flags.bReasons.length > 0) { openBlockedInfo(flags.bReasons); return; }
+  if (flags.verdict === 'NO') { openCurrentOverride(); return; }
   await executeSave(null, null);
 }
 async function executeSave(overrideReason, overrideRules, forceVerdict) {
