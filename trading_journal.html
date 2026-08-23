@@ -1508,7 +1508,7 @@ function checkDraft() {
   } catch(e){}
 }
 function restoreDraft() {
-  try { var d = JSON.parse(localStorage.getItem('draft26')); document.getElementById('ticker').value = d.ticker; countFlags(); dismissDraft(); } catch(e){}
+  try { var d = JSON.parse(localStorage.getItem('draft26')); document.getElementById('ticker').value = d.ticker; countFlags(); markFormDirty(); dismissDraft(); } catch(e){}
 }
 function dismissDraft() { localStorage.removeItem('draft26'); document.getElementById('draft-banner').classList.remove('show'); }
 
