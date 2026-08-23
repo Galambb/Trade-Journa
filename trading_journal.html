@@ -49,6 +49,13 @@
     --danger-border: #fca5a5;
     
     --max-width: 960px;
+
+    /* 5. תנועה (מיקרו-אינטראקציות) */
+    --motion-fast: 140ms;
+    --motion-standard: 180ms;
+    --motion-state: 220ms;
+    --motion-press: 110ms;
+    --ease-ui: ease-out;
   }
 
   /* Per-tab accent theming */
@@ -113,7 +120,7 @@
     position: sticky;
     top: 61px;
     z-index: 90;
-    transition: all 0.3s;
+    transition: background-color var(--motion-state) var(--ease-ui), border-color var(--motion-state) var(--ease-ui);
     border-radius: var(--radius-md);
   }
   .score-bar.clean:not(.has-warn) { background: var(--go-bg); }
@@ -125,7 +132,8 @@
   .score-bar.empty { background: var(--bg); }
   .score-bar.empty .sb-v { color: var(--ink-muted); }
   
-  .sb-v { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 600; color: var(--ink-soft); }
+  .sb-v { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 600; color: var(--ink-soft); transition: color var(--motion-state) var(--ease-ui); }
+  .sb-v .status-dot { transition: background-color var(--motion-state) var(--ease-ui); }
   .sb-v .status-dot { background: var(--ink-muted); }
   .score-bar.clean:not(.has-warn) .sb-v { color: var(--go); }
   .score-bar.clean:not(.has-warn) .sb-v .status-dot { background: var(--go); }
@@ -135,7 +143,7 @@
   .score-bar.stop .sb-v .status-dot { background: var(--danger); }
 
   .sb-flags { display: flex; align-items: center; gap: 8px; }
-  .sb-flags span { font-size: var(--text-helper); font-weight: 700; color: var(--ink-muted); }
+  .sb-flags span { font-size: var(--text-helper); font-weight: 700; color: var(--ink-muted); transition: background-color var(--motion-state) var(--ease-ui), color var(--motion-state) var(--ease-ui); }
   .sb-flags span:first-child { position: relative; padding-left: 16px; }
   .sb-flags span:first-child::before { content: "·"; position: absolute; left: 6px; color: var(--border); font-weight: 700; }
   .sb-y:not(.is-zero) { background: var(--wait); color: #ffffff; padding: 2px 8px; border-radius: var(--radius-sm); }
@@ -162,6 +170,13 @@
     display: flex; align-items: center; gap: 8px;
   }
   .card-header-icon { width: 18px; height: 18px; stroke: var(--ink-muted); stroke-width: 2; fill: none; flex-shrink: 0; }
+  .section-complete-marker {
+    display: inline-flex; align-items: center; opacity: 0; transform: translateY(1px);
+    transition: opacity var(--motion-state) var(--ease-ui), transform var(--motion-state) var(--ease-ui);
+    color: var(--go); cursor: default; pointer-events: none;
+  }
+  .section-complete-marker.complete { opacity: 1; transform: translateY(0); }
+  .section-complete-marker svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.5; fill: none; }
   .section-title {
     font-size: 13px; font-weight: 700; color: var(--ink-muted); margin-bottom: 16px;
     display: flex; align-items: center; gap: 8px;
@@ -193,11 +208,13 @@
     width: 100%; height: 40px; padding: 0 12px;
     border: 1px solid var(--border); border-radius: var(--radius-md);
     background: var(--surface); font-family: inherit; font-size: var(--text-value);
-    color: var(--ink); transition: all 0.2s; outline: none;
+    color: var(--ink); transition: border-color var(--motion-fast) var(--ease-ui), box-shadow var(--motion-fast) var(--ease-ui), background-color var(--motion-fast) var(--ease-ui); outline: none;
   }
   .field-input:focus, .field-select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(51, 65, 85, 0.1); }
-  .field-btn { background: var(--surface); cursor: pointer; font-weight: 600; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .field-btn:hover { background: var(--border); }
+  .field-input.invalid { border-color: var(--danger); }
+  .field-btn { background: var(--surface); cursor: pointer; font-weight: 600; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: border-color var(--motion-fast) var(--ease-ui), box-shadow var(--motion-fast) var(--ease-ui), background-color var(--motion-fast) var(--ease-ui), transform var(--motion-fast) var(--ease-ui); }
+  .field-btn:hover { background: var(--border); transform: translateY(-1px); }
+  .field-btn:active { transform: translateY(0) scale(0.99); transition-duration: var(--motion-press); }
   
   .ltr-input { direction: ltr; text-align: left; font-family: var(--font-display); font-weight: 500; font-variant-numeric: tabular-nums; }
   
@@ -207,41 +224,62 @@
 
   /* ── SEGMENTED CONTROL (unified single-choice selection pattern) ── */
   .segmented-control {
-    display: flex; background: var(--bg); border-radius: 9px; padding: 3px; gap: 2px;
+    display: flex; background: var(--bg); border-radius: 9px; padding: 3px; position: relative;
   }
-  .segmented-control label { flex: 1; cursor: pointer; user-select: none; }
+  .segmented-control label { flex: 1; cursor: pointer; user-select: none; position: relative; z-index: 1; }
   .segmented-control input { display: none; }
   .segmented-control input:focus-visible + .seg-btn { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  /* ── SLIDING SELECTED-SURFACE INDICATOR ── */
+  .segmented-control::before {
+    content: ""; position: absolute; top: 3px; bottom: 3px; right: 3px;
+    background: var(--surface); border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    pointer-events: none; z-index: 0;
+  }
+  .seg-count-2::before { width: calc((100% - 6px) / 2); }
+  .seg-count-3::before { width: calc((100% - 6px) / 3); }
+  .seg-count-4::before { width: calc((100% - 6px) / 4); }
+  .seg-count-2:has(label:nth-child(1) input:checked)::before,
+  .seg-count-3:has(label:nth-child(1) input:checked)::before,
+  .seg-count-4:has(label:nth-child(1) input:checked)::before { transform: translateX(0); }
+  .seg-count-2:has(label:nth-child(2) input:checked)::before,
+  .seg-count-3:has(label:nth-child(2) input:checked)::before,
+  .seg-count-4:has(label:nth-child(2) input:checked)::before { transform: translateX(-100%); }
+  .seg-count-3:has(label:nth-child(3) input:checked)::before,
+  .seg-count-4:has(label:nth-child(3) input:checked)::before { transform: translateX(-200%); }
+  .seg-count-4:has(label:nth-child(4) input:checked)::before { transform: translateX(-300%); }
+
   .seg-btn {
+    position: relative; z-index: 1;
     display: flex; align-items: center; justify-content: center;
     height: 34px; padding: 0 10px; border-radius: 6px;
     font-size: var(--text-value); font-weight: 500; color: var(--ink-muted);
-    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    transition: color 160ms var(--ease-ui);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
   }
   .segmented-control label:hover .seg-btn { color: var(--ink-soft); }
-  .segmented-control input:checked + .seg-btn {
-    background: var(--surface); color: var(--ink); font-weight: 600;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
-  }
-  .segmented-control input.on-danger:checked + .seg-btn { background: var(--danger-bg); color: var(--danger); box-shadow: inset 0 0 0 1px var(--danger-border); }
+  .segmented-control input:checked + .seg-btn { color: var(--ink); font-weight: 600; }
+  .segmented-control input.on-danger:checked + .seg-btn { color: var(--danger); }
 
   /* Highlight states for actively-selected problematic choices (dynamic, via JS) */
-  .segmented-control label.hy .seg-btn { background: var(--wait-bg); color: var(--wait); box-shadow: inset 0 0 0 1px var(--wait-border); }
-  .segmented-control label.hr .seg-btn { background: var(--danger-bg); color: var(--danger); box-shadow: inset 0 0 0 1px var(--danger-border); }
+  .segmented-control label.hy .seg-btn { color: var(--wait); }
+  .segmented-control label.hr .seg-btn { color: var(--danger); }
 
   /* Semantic variants reserved for genuine trade-quality judgment (not descriptive market state) */
-  .seg-good input:checked + .seg-btn { background: var(--go-bg); color: var(--go); box-shadow: inset 0 0 0 1px var(--go-border); }
-  .seg-caution input:checked + .seg-btn { background: var(--wait-bg); color: var(--wait); box-shadow: inset 0 0 0 1px var(--wait-border); }
+  .seg-good input:checked + .seg-btn { color: var(--go); }
+  .seg-caution input:checked + .seg-btn { color: var(--wait); }
 
   /* ── CHECKBOXES (Pre-filter) ── */
   .prefilter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
   .checkbox-card {
     display: flex; align-items: flex-start; gap: 10px; cursor: pointer;
     padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface);
-    transition: all 0.2s;
+    transition: border-color var(--motion-fast) var(--ease-ui), background-color var(--motion-fast) var(--ease-ui), transform var(--motion-fast) var(--ease-ui);
   }
-  .checkbox-card:hover { border-color: var(--ink-muted); }
+  .checkbox-card:hover { border-color: var(--ink-muted); transform: translateY(-1px); }
+  .checkbox-card:active { transform: translateY(0) scale(0.99); transition-duration: var(--motion-press); }
   .checkbox-card input[type="checkbox"] {
     appearance: none; width: 18px; height: 18px; border: 2px solid var(--ink-muted);
     border-radius: var(--radius-sm); flex-shrink: 0; margin-top: 2px; position: relative;
@@ -275,7 +313,9 @@
     padding-top: 5px; margin-top: 1px; border-top: 1px solid var(--border-light);
     font-size: var(--text-value); color: var(--ink-muted); font-weight: 500;
   }
-  .blocker-box .status-dot { background: var(--ink-muted); }
+  .blocker-box .status-dot { background: var(--ink-muted); transition: background-color var(--motion-state) var(--ease-ui); }
+  #blocker-text { transition: color var(--motion-state) var(--ease-ui), opacity var(--motion-state) var(--ease-ui); }
+  #blocker-text.text-updating { opacity: 0; }
   .blocker-box.on { color: var(--danger); }
   .blocker-box.on strong { font-weight: 700; }
   .blocker-box.on .status-dot { background: var(--danger); }
@@ -298,6 +338,16 @@
   .rr-banner.bad { color: var(--danger); }
   .output-box.is-empty, .rr-banner.is-empty { color: var(--ink-muted); font-weight: 500; }
 
+  @keyframes value-flash {
+    0% { background-color: transparent; opacity: 1; }
+    25% { background-color: var(--accent-bg); opacity: 0.78; }
+    100% { background-color: transparent; opacity: 1; }
+  }
+  .output-box.value-updated, .rr-banner.value-updated {
+    animation: value-flash 280ms var(--ease-ui);
+    border-radius: var(--radius-sm);
+  }
+
   .scores-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .verdict-grid .sc-box { position: relative; }
   .verdict-grid .sc-box:not(:first-child)::before {
@@ -308,13 +358,13 @@
   }
   .sc-box {
     padding: 12px; text-align: center; border: 1px solid transparent; border-radius: var(--radius-lg);
-    opacity: 0.45; transition: all 0.2s; cursor: default;
+    opacity: 0.45; transition: opacity var(--motion-state) var(--ease-ui), border-color var(--motion-state) var(--ease-ui), background-color var(--motion-state) var(--ease-ui); cursor: default;
   }
   .sc-box.on { opacity: 1; }
   .sc-go.on { background: var(--go-bg); border-color: var(--go-border); }
   .sc-wait.on { background: var(--wait-bg); border-color: var(--wait-border); }
   .sc-no.on { background: var(--danger-bg); border-color: var(--danger-border); }
-  .sc-l { font-family: var(--font-display); font-size: 18px; font-weight: 800; margin-bottom: 4px; font-variant-numeric: tabular-nums; display: flex; align-items: center; justify-content: center; gap: 5px; color: var(--ink-muted); }
+  .sc-l { font-family: var(--font-display); font-size: 18px; font-weight: 800; margin-bottom: 4px; font-variant-numeric: tabular-nums; display: flex; align-items: center; justify-content: center; gap: 5px; color: var(--ink-muted); transition: color var(--motion-state) var(--ease-ui); }
   .sc-go.on .sc-l { color: var(--go); } .sc-wait.on .sc-l { color: var(--wait); } .sc-no.on .sc-l { color: var(--danger); }
   .sc-d { font-size: var(--text-helper); font-weight: 600; color: var(--ink-soft); }
 
@@ -333,16 +383,33 @@
 
   /* ── ACTIONS (MD3 Primary Button) ── */
   .actions-row { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-top: 24px; }
+  #dirty-indicator {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: var(--text-helper); color: var(--ink-muted);
+    opacity: 0; transition: opacity var(--motion-state) var(--ease-ui), color var(--motion-state) var(--ease-ui);
+  }
+  #dirty-indicator.visible { opacity: 1; }
+  #dirty-indicator.unsaved { color: var(--wait); }
+  #dirty-indicator .status-dot { width: 5px; height: 5px; }
+  #dirty-indicator.unsaved .status-dot { background: var(--wait); }
+  #dirty-indicator:not(.unsaved) .status-dot { background: var(--go); }
   .btn-primary {
     padding: 14px 32px; background: var(--ink); color: #ffffff;
     border: 1px solid transparent; border-radius: var(--radius-cta); font-size: 15px; font-weight: 700;
-    cursor: pointer; font-family: var(--font-display); transition: 0.2s;
+    cursor: pointer; font-family: var(--font-display); transition: background-color var(--motion-standard) var(--ease-ui), transform var(--motion-fast) var(--ease-ui);
     width: 100%; max-width: 300px; box-shadow: none;
     display: flex; align-items: center; justify-content: center; gap: 8px;
   }
   .btn-primary:hover { background: #1e293b; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(1px) scale(0.99); transition-duration: var(--motion-press); }
   .btn-primary:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
   .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .btn-content {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: opacity 200ms var(--ease-ui), transform 200ms var(--ease-ui);
+  }
+  .btn-content.swapping { opacity: 0; transform: translateY(3px); }
+  .btn-content.success { color: var(--go); }
   
   .btn-override {
     padding: 10px 24px; background: var(--wait-bg); color: var(--wait);
@@ -362,8 +429,16 @@
   .modal-backdrop {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5);
     z-index: 1000; display: none; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 200ms var(--ease-ui);
   }
-  .modal-box { background: var(--surface); padding: 24px; border-radius: var(--radius-lg); width: 90%; max-width: 400px; }
+  .modal-backdrop.showing { display: flex; }
+  .modal-backdrop.open { opacity: 1; }
+  .modal-box {
+    background: var(--surface); padding: 24px; border-radius: var(--radius-lg); width: 90%; max-width: 400px;
+    opacity: 0; transform: translateY(5px);
+    transition: opacity 200ms var(--ease-ui), transform 200ms var(--ease-ui);
+  }
+  .modal-backdrop.open .modal-box { opacity: 1; transform: translateY(0); }
   .modal-title { font-size: 16px; font-weight: 700; color: var(--danger); margin-bottom: 12px; font-family: var(--font-display); }
   
   .toast {
@@ -423,15 +498,19 @@
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none; appearance: none;
     width: 15px; height: 15px; border-radius: 50%;
-    background: var(--surface); border: 2px solid var(--accent);
+    background: var(--surface); border: 2px solid var(--thumb-ring-color, var(--accent));
+    transition: border-color 200ms var(--ease-ui), border-width 140ms var(--ease-ui);
     cursor: pointer;
   }
+  input[type="range"]:active::-webkit-slider-thumb { border-width: 3px; }
   input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--accent); outline-offset: 2px; }
   input[type="range"]::-moz-range-thumb {
     width: 15px; height: 15px; border-radius: 50%;
-    background: var(--surface); border: 2px solid var(--accent);
+    background: var(--surface); border: 2px solid var(--thumb-ring-color, var(--accent));
+    transition: border-color 200ms var(--ease-ui), border-width 140ms var(--ease-ui);
     cursor: pointer;
   }
+  input[type="range"]:active::-moz-range-thumb { border-width: 3px; }
   input[type="range"]:focus-visible::-moz-range-thumb { outline: 2px solid var(--accent); outline-offset: 2px; }
   input[type="range"]::-moz-range-track {
     height: 5px; border-radius: var(--radius-sm);
@@ -441,8 +520,47 @@
       var(--danger) 50%, var(--danger) 100%
     );
   }
+  #distance-value { transition: color 200ms var(--ease-ui); }
+
+  .slider-tooltip {
+    position: absolute; top: -28px;
+    right: clamp(20px, calc(var(--slider-progress, 0) * 100%), calc(100% - 20px));
+    transform: translateX(50%) translateY(2px);
+    background: var(--ink); color: #ffffff;
+    font-size: var(--text-helper); font-weight: 700;
+    padding: 3px 8px; border-radius: var(--radius-sm);
+    font-variant-numeric: tabular-nums; direction: ltr;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    opacity: 0; pointer-events: none; white-space: nowrap;
+    transition: opacity 160ms var(--ease-ui), transform 160ms var(--ease-ui);
+  }
+  .slider-tooltip.visible { opacity: 1; transform: translateX(50%) translateY(0); }
 
   /* Print */
+  @media (prefers-reduced-motion: reduce) {
+    .field-input, .field-select, .field-btn, .checkbox-card,
+    .btn-primary,
+    .seg-btn,
+    .score-bar, .sb-v, .sb-v .status-dot, .sb-flags span,
+    .blocker-box .status-dot, #blocker-text,
+    .sc-box, .sc-l,
+    .segmented-control::before,
+    .btn-content,
+    input[type="range"]::-webkit-slider-thumb,
+    input[type="range"]::-moz-range-thumb,
+    #distance-value,
+    .slider-tooltip,
+    .section-complete-marker,
+    .modal-backdrop, .modal-box {
+      transition-duration: 0.01ms !important;
+    }
+    .btn-primary:hover, .btn-primary:active,
+    .field-btn:hover, .field-btn:active,
+    .checkbox-card:hover, .checkbox-card:active { transform: none; }
+    .output-box.value-updated, .rr-banner.value-updated { animation-duration: 0.01ms !important; }
+    .slider-tooltip.visible { transform: translateX(50%) translateY(0) !important; }
+  }
+
   @media print {
     body * { visibility: hidden; }
     #view-checklist, #view-checklist * { visibility: visible; }
@@ -489,7 +607,7 @@
 
   <!-- CARD 1: פרטי טרייד -->
   <div class="card">
-    <div class="card-header"><svg class="card-header-icon" viewBox="0 0 24 24"><path d="M11 2H4a2 2 0 0 0-2 2v7l11 11 9-9L11 2z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>פרטי הטרייד</div>
+    <div class="card-header"><svg class="card-header-icon" viewBox="0 0 24 24"><path d="M11 2H4a2 2 0 0 0-2 2v7l11 11 9-9L11 2z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>פרטי הטרייד<span class="section-complete-marker" id="section1-complete"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span></div>
     <div class="grid-form">
       <div class="field-group col-3">
         <label>תאריך</label>
@@ -497,7 +615,7 @@
       </div>
       <div class="field-group col-3">
         <label>מניה</label>
-        <input type="text" id="ticker" class="field-input ltr-input" placeholder="NVDA" style="text-transform:uppercase;" oninput="updateTitle()">
+        <input type="text" id="ticker" class="field-input ltr-input" placeholder="NVDA" style="text-transform:uppercase;" oninput="updateTitle(); this.classList.remove('invalid'); updateSection1Completion();">
       </div>
       <div class="field-group col-2">
         <button type="button" id="earn-toggle" class="field-btn" style="margin-top:24px;" onclick="toggleEarnings()">מדווחת השבוע?</button>
@@ -539,7 +657,7 @@
       
       <div class="field-group col-4">
         <label>CPI / PPI היום?</label>
-        <div class="segmented-control">
+        <div class="segmented-control seg-count-2">
           <label><input type="radio" name="cpi_toggle" value="no" id="cpi-no" onchange="setCpiToday(false)"><span class="seg-btn">לא</span></label>
           <label class="seg-caution"><input type="radio" name="cpi_toggle" value="yes" id="cpi-yes" onchange="setCpiToday(true)"><span class="seg-btn">כן</span></label>
         </div>
@@ -574,7 +692,7 @@
     <div id="pf-result" style="font-size:var(--text-label); color:var(--ink-muted); text-align:center;">סמן את שלושת הפילטרים כדי להמשיך</div>
 
     <div class="section-title section-title--detached"><span>הקשר שוק (SPY/QQQ)</span></div>
-    <div class="segmented-control">
+    <div class="segmented-control seg-count-3">
       <label><input type="radio" name="spy" value="up" onchange="countFlags()"><span class="seg-btn">עולה</span></label>
       <label><input type="radio" name="spy" value="down" onchange="countFlags()"><span class="seg-btn">יורד</span></label>
       <label><input type="radio" name="spy" value="flat" onchange="countFlags()"><span class="seg-btn">דשדוש</span></label>
@@ -587,19 +705,20 @@
     
     <div class="grid-form">
       <div class="field-group col-6" id="distance-field">
-        <div style="width:60%;">
+        <div style="width:60%; position:relative;">
           <div style="display:flex; align-items:baseline; justify-content:flex-start; gap:8px;">
             <label style="margin:0;">מרחק מהסיגנל</label>
             <span id="distance-value" style="font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums; direction:ltr;">0.0%</span>
           </div>
-          <input type="range" id="distance" min="0" max="10" step="0.1" value="0" style="margin-top:8px; width:100%;" oninput="countFlags()">
+          <input type="range" id="distance" min="0" max="10" step="0.1" value="0" style="margin-top:8px; width:100%;" oninput="countFlags()" onfocus="document.getElementById('distance-tooltip').classList.add('visible')" onblur="document.getElementById('distance-tooltip').classList.remove('visible')">
+          <span class="slider-tooltip" id="distance-tooltip">0.0%</span>
         </div>
         <div class="hint" id="dist-hint"></div>
       </div>
 
       <div class="field-group col-6">
         <label>מגמת המניה (1-3 חודשים)</label>
-        <div class="segmented-control">
+        <div class="segmented-control seg-count-3">
           <label><input type="radio" name="trend" value="up" onchange="countFlags()"><span class="seg-btn">עלייה</span></label>
           <label id="lbl-trend-down"><input type="radio" name="trend" value="down" onchange="countFlags()"><span class="seg-btn">ירידה</span></label>
           <label><input type="radio" name="trend" value="flat" onchange="countFlags()"><span class="seg-btn">דשדוש</span></label>
@@ -608,7 +727,7 @@
 
       <div class="field-group col-6">
         <label>אופן כניסה</label>
-        <div class="segmented-control">
+        <div class="segmented-control seg-count-4">
           <label class="seg-good"><input type="radio" name="entry" value="limit" onchange="countFlags()"><span class="seg-btn">Limit</span></label>
           <label class="seg-good"><input type="radio" name="entry" value="stoplimit" onchange="countFlags()"><span class="seg-btn">Stop Limit</span></label>
           <label class="seg-good"><input type="radio" name="entry" value="retest" onchange="countFlags()"><span class="seg-btn">Retest</span></label>
@@ -618,7 +737,7 @@
 
       <div class="field-group col-6">
         <label>Volume (מול ממוצע 20 יום)</label>
-        <div class="segmented-control">
+        <div class="segmented-control seg-count-3">
           <label class="seg-good"><input type="radio" name="vol" value="high" onchange="countFlags()"><span class="seg-btn">גבוה ×1.5+</span></label>
           <label><input type="radio" name="vol" value="normal" onchange="countFlags()"><span class="seg-btn">רגיל</span></label>
           <label id="lbl-lowvol" class="seg-caution"><input type="radio" name="vol" value="low" onchange="countFlags()"><span class="seg-btn">נמוך</span></label>
@@ -627,7 +746,7 @@
 
       <div class="field-group col-12" id="support-row" style="display:none; margin-top:8px;">
         <label>תמיכה נבדקה</label>
-        <div class="segmented-control">
+        <div class="segmented-control seg-count-3">
           <label class="seg-good"><input type="radio" name="support" value="23" onchange="countFlags()"><span class="seg-btn">2-3 פעמים</span></label>
           <label id="lbl-sup4" class="seg-caution"><input type="radio" name="support" value="4plus" onchange="countFlags()"><span class="seg-btn">4+</span></label>
           <label id="lbl-supbroken" class="seg-caution"><input type="radio" name="support" value="broken" onchange="countFlags()"><span class="seg-btn">נשברה</span></label>
@@ -638,7 +757,7 @@
 
   <!-- CARD 4: ניהול סיכון -->
   <div class="card" id="group-4">
-    <div class="card-header"><svg class="card-header-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>תוכנית טרייד וסיכון</div>
+    <div class="card-header"><svg class="card-header-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>תוכנית טרייד וסיכון<span class="section-complete-marker" id="section4-complete"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span></div>
     
     <div class="grid-form">
       <div class="field-group col-4">
@@ -651,7 +770,7 @@
       </div>
       <div class="field-group col-4">
         <label>ATR מרווח מתחת לסטופ?</label>
-        <div class="segmented-control">
+        <div class="segmented-control seg-count-2">
           <label class="seg-good"><input type="radio" name="atr" value="yes" onchange="countFlags()"><span class="seg-btn">כן</span></label>
           <label class="seg-caution"><input type="radio" name="atr" value="no" onchange="countFlags()"><span class="seg-btn">לא</span></label>
         </div>
@@ -659,7 +778,7 @@
 
       <div class="field-group col-3 row-break">
         <div class="flex-between"><label>Max Risk</label><span style="font-size:10px; color:var(--accent); cursor:pointer;" onclick="resetToDefaultRisk()">ברירת מחדל <span id="default-risk-display"></span></span></div>
-        <div class="input-with-prefix"><span>$</span><input type="number" id="max-risk" class="field-input ltr-input" value="100" oninput="calcSizing()"></div>
+        <div class="input-with-prefix"><span>$</span><input type="number" id="max-risk" class="field-input ltr-input" value="100" oninput="calcSizing(); updateSection4Completion();"></div>
       </div>
       
       <div class="field-group col-3 row-break">
@@ -719,9 +838,10 @@
     </div>
 
     <div class="actions-row">
-      <button class="btn-primary" id="save-btn" onclick="saveTrade()"><svg viewBox="0 0 24 24" style="width:18px; height:18px; stroke:currentColor; stroke-width:2; fill:none; flex-shrink:0;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>שמור טרייד ביומן</button>
+      <button class="btn-primary" id="save-btn" onclick="saveTrade()"><span class="btn-content" id="save-btn-content" aria-live="polite"><svg viewBox="0 0 24 24" style="width:18px; height:18px; stroke:currentColor; stroke-width:2; fill:none; flex-shrink:0;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>שמור טרייד ביומן</span></button>
       <span style="font-size:var(--text-helper); color:var(--accent); cursor:pointer; text-decoration:underline;" onclick="printChecklist()">הפק PDF</span>
       <span style="font-size:var(--text-helper); color:var(--ink-muted);" id="draft-time"></span>
+      <span id="dirty-indicator"></span>
     </div>
   </div>
   
@@ -742,7 +862,7 @@
     </div>
   </div>
   <input type="text" id="search-input" class="field-input" placeholder="חפש מניה..." style="margin-bottom:16px;" oninput="applyFilters()">
-  <div class="segmented-control" style="margin-bottom:24px;" id="filter-chips">
+  <div class="segmented-control seg-count-4" style="margin-bottom:24px;" id="filter-chips">
     <label><input type="radio" name="filter_out" value="all" checked onchange="applyFilters()"><span class="seg-btn">הכל</span></label>
     <label><input type="radio" name="filter_out" value="open" onchange="applyFilters()"><span class="seg-btn">פתוחים</span></label>
     <label><input type="radio" name="filter_out" value="win" onchange="applyFilters()"><span class="seg-btn">רווחים</span></label>
@@ -766,7 +886,7 @@
     <div id="modal-hint" style="display:none; font-size:var(--text-helper); color:var(--ink-muted); margin-top:-8px; margin-bottom:16px;"></div>
     <div id="override-reason-section">
       <label style="font-size:var(--text-label); font-weight:550; color:var(--ink-muted); margin-bottom:4px; display:block;">למה בחרת לעקוף?</label>
-      <textarea id="override-reason-input" class="field-input" style="height:60px; margin-bottom:16px; width:100%; resize:none;"></textarea>
+      <textarea id="override-reason-input" class="field-input" style="height:60px; margin-bottom:16px; width:100%; resize:none;" oninput="this.classList.remove('invalid');"></textarea>
     </div>
     <div style="display:flex; gap:8px;">
       <button class="field-btn" id="modal-cancel-btn" style="flex:1; margin:0;" onclick="closeOverrideModal()">ביטול</button>
@@ -921,10 +1041,59 @@ function resetToDefaultRisk() {
   if (val>0) { localStorage.setItem('def_risk', val); initSizing(); calcSizing(); }
 }
 
+function flashUpdate(el) {
+  el.classList.remove('value-updated');
+  void el.offsetWidth;
+  el.classList.add('value-updated');
+}
+function sleep(ms) { return new Promise(function(r){ setTimeout(r, ms); }); }
+function updateSliderVisuals(dist) {
+  var input = document.getElementById('distance');
+  var valueEl = document.getElementById('distance-value');
+  var tooltip = document.getElementById('distance-tooltip');
+  var progress = Math.min(dist, 10) / 10;
+  input.style.setProperty('--slider-progress', progress);
+  var zoneColor = dist >= 5 ? 'var(--danger)' : dist >= 3 ? 'var(--wait)' : 'var(--accent)';
+  var textColor = dist >= 5 ? 'var(--danger)' : dist >= 3 ? 'var(--wait)' : 'var(--ink)';
+  input.style.setProperty('--thumb-ring-color', zoneColor);
+  valueEl.style.color = textColor;
+  if (tooltip) tooltip.textContent = (dist>=10 ? '10+' : dist.toFixed(1)) + '%';
+}
+async function showSaveSuccess() {
+  var content = document.getElementById('save-btn-content');
+  var originalHTML = content.innerHTML;
+  content.classList.add('swapping');
+  await sleep(200);
+  content.innerHTML = '<svg viewBox="0 0 24 24" style="width:18px; height:18px; stroke:currentColor; stroke-width:2; fill:none; flex-shrink:0;"><path d="M20 6L9 17l-5-5"/></svg>נשמר';
+  content.classList.remove('swapping'); content.classList.add('success');
+  await sleep(800);
+  content.classList.add('swapping');
+  await sleep(200);
+  content.innerHTML = originalHTML;
+  content.classList.remove('swapping', 'success');
+}
+function updateSection1Completion() {
+  var marker = document.getElementById('section1-complete');
+  var tkr = document.getElementById('ticker').value.trim();
+  if (marker) marker.classList.toggle('complete', tkr.length > 0);
+}
+function updateSection4Completion() {
+  var marker = document.getElementById('section4-complete');
+  var posEl = document.getElementById('position-size');
+  var rrEl = document.getElementById('rr-display');
+  var complete = !posEl.classList.contains('is-empty') && !rrEl.classList.contains('is-empty');
+  if (marker) marker.classList.toggle('complete', complete);
+}
 function calcSizing() {
   var e = parseFloat(document.getElementById('price-entry').value), s = parseFloat(document.getElementById('price-stop').value), max = parseFloat(document.getElementById('max-risk').value);
   var rpsEl = document.getElementById('risk-per-share'), posEl = document.getElementById('position-size'), totEl = document.getElementById('total-risk-display'), warnEl = document.getElementById('sizing-warning');
-  function setVal(el, text, empty) { el.textContent = text; el.classList.toggle('is-empty', !!empty); }
+  function setVal(el, text, empty) {
+    var newText = String(text);
+    var changed = !empty && el.textContent !== newText;
+    el.textContent = text;
+    el.classList.toggle('is-empty', !!empty);
+    if (changed) flashUpdate(el);
+  }
   warnEl.style.display = 'none';
   if (!e || !s) { setVal(rpsEl,'—',true); setVal(posEl,'—',true); setVal(totEl,'—',true); return {valid:false}; }
   if (s >= e) { setVal(rpsEl,'—',true); setVal(posEl,'—',true); setVal(totEl,'—',true); warnEl.style.display = 'block'; warnEl.textContent = 'Stop חייב להיות מתחת לכניסה'; return {valid:false}; }
@@ -939,12 +1108,19 @@ function calcSizing() {
 function calcRR() {
   var e = parseFloat(document.getElementById('price-entry').value), s = parseFloat(document.getElementById('price-stop').value), t = parseFloat(document.getElementById('price-target').value);
   var el = document.getElementById('rr-display');
+  var oldText = el.textContent;
+  var newText, newClass;
   if (e && s && t && e > s && t > e) {
     var rr = ((t-e)/(e-s)).toFixed(1);
-    el.textContent = rr+' : 1';
-    el.className = 'rr-banner' + (rr>=2.5?' good':rr>=2?' ok':' bad');
-  } else { el.textContent = '—'; el.className = 'rr-banner is-empty'; }
+    newText = rr+' : 1';
+    newClass = 'rr-banner' + (rr>=2.5?' good':rr>=2?' ok':' bad');
+  } else { newText = '—'; newClass = 'rr-banner is-empty'; }
+  var changed = newText !== '—' && oldText !== newText;
+  el.textContent = newText;
+  el.className = newClass;
+  if (changed) flashUpdate(el);
   calcSizing(); countFlags();
+  updateSection4Completion();
 }
 
 // ── SCREENSHOT ──
@@ -964,6 +1140,7 @@ function removeScreenshot() {
   screenshotData = null;
   document.getElementById('ss-img').src = '';
   document.getElementById('upload-box').classList.remove('has-image');
+  markFormDirty();
   document.getElementById('remove-ss-btn').style.display = 'none';
   document.getElementById('screenshot-input').value = '';
 }
@@ -989,6 +1166,7 @@ function countFlags() {
   if(trend==='down' && ['support','ma','pullback'].includes(sig)) { y++; warningReasons.push('מגמה נגד הסיגנל'); }
   var dist=parseFloat(document.getElementById('distance').value)||0;
   document.getElementById('distance-value').textContent = (dist>=10 ? '10+' : dist.toFixed(1)) + '%';
+  updateSliderVisuals(dist);
   var dh=document.getElementById('dist-hint');
   if(dist>=5){r++;violationReasons.push('רדיפה 5%+');dh.textContent='🔴 רדיפה';dh.style.color='var(--danger)';}
   else if(dist>=3){y++;warningReasons.push('מרחק מהסיגנל');dh.textContent='⚠️ שקול Retest';dh.style.color='var(--wait)';}
@@ -1032,20 +1210,20 @@ function countFlags() {
   var verdict;
   if (isEmpty) {
     verdict='—'; bar.className='score-bar empty'; sv.textContent='ממתין לנתונים';
-    document.getElementById('blocker').className='blocker-box'; document.getElementById('blocker-text').textContent='אין חסימות פעילות';
+    document.getElementById('blocker').className='blocker-box'; setBlockerText('אין חסימות פעילות');
   } else if(blockerReasons.length>0){
     verdict='NO'; bar.className='score-bar stop'; sv.textContent='המסחר חסום'; sno.classList.add('on');
     document.getElementById('blocker').className='blocker-box on';
-    document.getElementById('blocker-text').innerHTML = '<strong>NO</strong> · ' + (blockerReasons.length > 1 ? blockerReasons.length + ' חסימות פעילות' : blockerReasons[0]);
+    setBlockerText('<strong>NO</strong> · ' + (blockerReasons.length > 1 ? blockerReasons.length + ' חסימות פעילות' : blockerReasons[0]));
   } else if(r>0||y>=4){
     verdict='NO'; bar.className='score-bar stop'; sv.textContent = violationReasons.length ? 'NO · ' + violationReasons[0] : 'NO · אזהרות'; sno.classList.add('on');
-    document.getElementById('blocker').className='blocker-box'; document.getElementById('blocker-text').textContent='אין חסימות פעילות';
+    document.getElementById('blocker').className='blocker-box'; setBlockerText('אין חסימות פעילות');
   } else if(y===3){
     verdict='WAIT'; bar.className='score-bar warn'; sv.textContent='WAIT · ' + (warningReasons[0]||''); swa.classList.add('on');
-    document.getElementById('blocker').className='blocker-box'; document.getElementById('blocker-text').textContent='אין חסימות פעילות';
+    document.getElementById('blocker').className='blocker-box'; setBlockerText('אין חסימות פעילות');
   } else{
     verdict='GO'; bar.className='score-bar clean'; sv.textContent = y>0 ? 'GO · ' + y + ' אזהרות' : 'GO · תקין'; sgo.classList.add('on');
-    document.getElementById('blocker').className='blocker-box'; document.getElementById('blocker-text').textContent='אין חסימות פעילות';
+    document.getElementById('blocker').className='blocker-box'; setBlockerText('אין חסימות פעילות');
   }
   bar.classList.toggle('has-warn', y > 0);
 
@@ -1057,9 +1235,16 @@ function countFlags() {
 }
 
 // ── SAVE & OVERRIDE ──
+function setBlockerText(html) {
+  var el = document.getElementById('blocker-text');
+  el.classList.add('text-updating');
+  el.innerHTML = html;
+  requestAnimationFrame(function(){ el.classList.remove('text-updating'); });
+}
 var pendingViolations = [];
 var modalMode = 'override';
 var wasBlocked = false;
+var modalPreviousFocus = null;
 function setupModal(reasons, isOverridable, customContent) {
   if (!customContent) {
     document.getElementById('modal-reasons').innerHTML = reasons.map(r=>'<li>'+r+'</li>').join('');
@@ -1070,7 +1255,14 @@ function setupModal(reasons, isOverridable, customContent) {
   var confirmBtn = document.getElementById('modal-confirm-btn');
   confirmBtn.textContent = isOverridable ? 'אשר ושמור' : 'הבנתי';
   confirmBtn.style.flex = isOverridable ? '2' : '1';
-  document.getElementById('override-backdrop').style.display = 'flex';
+  modalPreviousFocus = document.activeElement;
+  var backdrop = document.getElementById('override-backdrop');
+  backdrop.classList.add('showing');
+  if (isOverridable) { document.getElementById('override-reason-input').focus(); }
+  else { confirmBtn.focus(); }
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){ backdrop.classList.add('open'); });
+  });
 }
 function openCurrentOverride() {
   var flags = countFlags();
@@ -1099,14 +1291,48 @@ function openBlockedInfo(reasons) {
   }
   setupModal(reasons, false, isEarningsOnly);
 }
-function closeOverrideModal() { document.getElementById('override-backdrop').style.display = 'none'; }
+function closeOverrideModal() {
+  var backdrop = document.getElementById('override-backdrop');
+  backdrop.classList.remove('open');
+  if (modalPreviousFocus && typeof modalPreviousFocus.focus === 'function' && document.contains(modalPreviousFocus)) {
+    modalPreviousFocus.focus();
+  }
+  modalPreviousFocus = null;
+  var handled = false;
+  function finishClose() {
+    if (handled) return; handled = true;
+    backdrop.classList.remove('showing');
+  }
+  backdrop.addEventListener('transitionend', finishClose, {once:true});
+  setTimeout(finishClose, 250);
+}
 async function confirmOverride() {
   if (modalMode === 'info') { closeOverrideModal(); return; }
   var reason = document.getElementById('override-reason-input').value.trim();
-  if(!reason){ toast('חובה להזין סיבה'); return; }
+  if(!reason){
+    toast('חובה להזין סיבה');
+    var reasonEl = document.getElementById('override-reason-input');
+    reasonEl.classList.add('invalid');
+    reasonEl.focus();
+    return;
+  }
   closeOverrideModal();
   await executeSave(reason, pendingViolations);
 }
+document.addEventListener('keydown', function(e) {
+  var modalOpen = document.getElementById('override-backdrop').classList.contains('showing');
+  if (e.key === 'Escape' && modalOpen) {
+    closeOverrideModal();
+    return;
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+    e.preventDefault();
+    if (modalOpen) return;
+    var btn = document.getElementById('save-btn');
+    if (btn.disabled) return;
+    saveTrade();
+  }
+});
 async function saveTrade() {
   var flags = countFlags();
   if (flags.bReasons.length > 0) { openBlockedInfo(flags.bReasons); return; }
@@ -1115,7 +1341,14 @@ async function saveTrade() {
 }
 async function executeSave(overrideReason, overrideRules, forceVerdict) {
   var tkr = document.getElementById('ticker').value.toUpperCase().trim();
-  if(!tkr) { toast('חובה להזין מניה'); return; }
+  if(!tkr) {
+    toast('חובה להזין מניה');
+    var tickerEl = document.getElementById('ticker');
+    tickerEl.classList.add('invalid');
+    tickerEl.scrollIntoView({behavior:'smooth', block:'center'});
+    tickerEl.focus();
+    return;
+  }
   
   var flags = countFlags();
   var pe = parseFloat(document.getElementById('price-entry').value)||null;
@@ -1142,6 +1375,8 @@ async function executeSave(overrideReason, overrideRules, forceVerdict) {
     if(screenshotData) { await apiPost({action:'saveScreenshot', id:trade.id, image:screenshotData}); }
     var trades = getTrades(); trades.unshift(trade); setCache(trades);
     toast(overrideReason ? '✅ נשמר עם Override' : '✅ טרייד נשמר');
+    showSaveSuccess();
+    formDirty = false; updateDirtyIndicator();
     setTimeout(()=>location.reload(), 1500); 
   } catch(e) { toast('⚠️ שגיאה בשמירה'); } finally { showLoading(false); document.getElementById('save-btn').disabled = false; }
 }
@@ -1278,6 +1513,26 @@ function restoreDraft() {
 function dismissDraft() { localStorage.removeItem('draft26'); document.getElementById('draft-banner').classList.remove('show'); }
 
 function printChecklist() { window.print(); }
+
+// ── UNSAVED-CHANGES INDICATOR ──
+var formDirty = false;
+function updateDirtyIndicator() {
+  var el = document.getElementById('dirty-indicator');
+  if (!formDirty) { el.classList.remove('visible'); return; }
+  el.innerHTML = '<span class="status-dot"></span>יש שינויים שלא נשמרו';
+  el.classList.add('visible', 'unsaved');
+}
+function markFormDirty() {
+  if (formDirty) return;
+  formDirty = true;
+  updateDirtyIndicator();
+}
+document.getElementById('view-checklist').addEventListener('input', markFormDirty);
+document.getElementById('view-checklist').addEventListener('change', markFormDirty);
+window.addEventListener('beforeunload', function(e) {
+  if (!formDirty) return;
+  e.preventDefault(); e.returnValue = '';
+});
 
 // ── INIT ──
 document.getElementById('trade-date').valueAsDate = new Date();
