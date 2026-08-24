@@ -1642,8 +1642,11 @@ function exportCSV() {
 // ── STATS ──
 var SIGNAL_LABELS = {breakout:'פריצה', support:'תמיכה', retest:'Retest', ma:'ממוצע נע', pullback:'Pullback', cup:'Cup & Handle'};
 
+function tradePnL(t) { return (t.exitPrice - t.entryPrice) * t.positionSize; }
+function usableTrades(closed) { return closed.filter(function(t){ return t.exitPrice!=null && t.entryPrice!=null && t.positionSize!=null; }); }
+
 function renderEquityCurve(closed) {
-  var usable = closed.filter(function(t){ return t.exitPrice!=null && t.entryPrice!=null && t.positionSize!=null; });
+  var usable = usableTrades(closed);
   var skipped = closed.length - usable.length;
   if (usable.length < 2) {
     return '<div style="text-align:center; padding:24px; color:var(--ink-muted); font-size:var(--text-value);">אין מספיק טריידים עם נתוני יציאה מלאים כדי להציג עקומת הון' + (skipped>0 ? ' (' + skipped + ' טריידים חסרים נתונים)' : '') + '</div>';
@@ -1651,7 +1654,7 @@ function renderEquityCurve(closed) {
   usable.sort(function(a,b){ return new Date(a.date) - new Date(b.date); });
   var equity = 0;
   var points = usable.map(function(t){
-    equity += (t.exitPrice - t.entryPrice) * t.positionSize;
+    equity += tradePnL(t);
     return equity;
   });
   var w = 600, h = 160, pad = 8;
@@ -1675,6 +1678,23 @@ function renderEquityCurve(closed) {
       <line x1="${pad}" y1="${zeroY}" x2="${w-pad}" y2="${zeroY}" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,3"/>
       <polyline points="${coords}" fill="none" stroke="${lineColor}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
     </svg>`;
+}
+function renderYearlyBreakdown(closed) {
+  var usable = usableTrades(closed);
+  if (usable.length === 0) return '';
+  var byYear = {};
+  usable.forEach(function(t){
+    var year = new Date(t.date).getFullYear();
+    if (!byYear[year]) byYear[year] = 0;
+    byYear[year] += tradePnL(t);
+  });
+  var years = Object.keys(byYear).sort().reverse();
+  var rows = years.map(function(y){
+    var pnl = byYear[y];
+    var color = pnl >= 0 ? 'var(--go)' : 'var(--danger)';
+    return '<div class="stat-row"><span>' + y + '</span><span style="color:' + color + '; font-weight:700; font-variant-numeric:tabular-nums;">' + (pnl>=0?'+':'') + '$' + pnl.toFixed(0) + '</span></div>';
+  }).join('');
+  return '<div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border-light);"><div style="font-size:var(--text-label); font-weight:550; color:var(--ink-muted); margin-bottom:8px;">פירוט שנתי</div>' + rows + '</div>';
 }
 function renderStats() {
   var all = getTrades();
@@ -1720,7 +1740,7 @@ function renderStats() {
         <svg class="equity-chevron" viewBox="0 0 24 24" style="width:16px; height:16px; stroke:var(--ink-muted); stroke-width:2; fill:none;"><path d="M6 9l6 6 6-6"/></svg>
       </div>`}
       <div id="equity-curve-body" class="collapsible-body">
-        ${equityCurveUnlocked ? renderEquityCurve(closed) : ''}
+        ${equityCurveUnlocked ? renderEquityCurve(closed) + renderYearlyBreakdown(closed) : ''}
       </div>
     </div>
     <div style="text-align:center; font-size:var(--text-helper); color:var(--ink-muted); margin-top:12px;">סה"כ ${all.length} טריידים במערכת · ${all.length-closed.length} עדיין פתוחים</div>
