@@ -552,16 +552,15 @@
   .slider-tooltip {
     position: absolute; top: -28px;
     right: clamp(20px, calc(var(--slider-progress, 0) * 100%), calc(100% - 20px));
-    transform: translateX(50%) translateY(2px);
+    transform: translateX(50%);
     background: var(--tooltip-bg, var(--ink)); color: #ffffff;
     font-size: var(--text-helper); font-weight: 700;
     padding: 3px 8px; border-radius: var(--radius-sm);
     font-variant-numeric: tabular-nums; direction: ltr;
     box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-    opacity: 0; pointer-events: none; white-space: nowrap;
-    transition: opacity 160ms var(--ease-ui), transform 160ms var(--ease-ui), background-color 200ms var(--ease-ui);
+    opacity: 1; pointer-events: none; white-space: nowrap;
+    transition: background-color 200ms var(--ease-ui);
   }
-  .slider-tooltip.visible { opacity: 1; transform: translateX(50%) translateY(0); }
 
   /* Print */
   @media (prefers-reduced-motion: reduce) {
@@ -590,7 +589,6 @@
     .output-box.value-updated, .rr-banner.value-updated { animation-duration: 0.01ms !important; }
     .btn-primary::before { display: none; }
     .btn-ripple { animation: none; opacity: 0; }
-    .slider-tooltip.visible { transform: translateX(50%) translateY(0) !important; }
   }
 
   @media print {
@@ -747,7 +745,7 @@
           <div style="display:flex; align-items:baseline; justify-content:flex-start; gap:8px;">
             <label style="margin:0;">מרחק מהסיגנל</label>
           </div>
-          <input type="range" id="distance" min="0" max="10" step="0.1" value="0" style="margin-top:8px; width:100%;" oninput="countFlags()" onfocus="document.getElementById('distance-tooltip').classList.add('visible')" onblur="document.getElementById('distance-tooltip').classList.remove('visible')">
+          <input type="range" id="distance" min="0" max="10" step="0.1" value="0" style="margin-top:8px; width:100%;" oninput="countFlags()">
           <span class="slider-tooltip" id="distance-tooltip">0.0%</span>
         </div>
         <div class="hint" id="dist-hint"></div>
