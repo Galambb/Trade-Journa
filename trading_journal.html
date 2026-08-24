@@ -508,6 +508,9 @@
 
   .tc-body { display: none; padding: 16px; border-top: 1px solid var(--border-light); }
   .tc-body.open { display: block; }
+  .collapsible-body { display: none; }
+  .collapsible-body.open { display: block; }
+  .equity-chevron.open { transform: rotate(180deg); }
   
   /* Utilities */
   .flex-between { display: flex; justify-content: space-between; align-items: center; }
@@ -558,9 +561,10 @@
     padding: 3px 8px; border-radius: var(--radius-sm);
     font-variant-numeric: tabular-nums; direction: ltr;
     box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-    opacity: 1; pointer-events: none; white-space: nowrap;
-    transition: background-color 200ms var(--ease-ui);
+    opacity: 0; pointer-events: none; white-space: nowrap;
+    transition: opacity 160ms var(--ease-ui), background-color 200ms var(--ease-ui);
   }
+  .slider-tooltip.revealed { opacity: 1; }
 
   /* Print */
   @media (prefers-reduced-motion: reduce) {
@@ -745,7 +749,7 @@
           <div style="display:flex; align-items:baseline; justify-content:flex-start; gap:8px;">
             <label style="margin:0;">מרחק מהסיגנל</label>
           </div>
-          <input type="range" id="distance" min="0" max="10" step="0.1" value="0" style="margin-top:8px; width:100%;" oninput="countFlags()">
+          <input type="range" id="distance" min="0" max="10" step="0.1" value="0" style="margin-top:8px; width:100%;" oninput="countFlags(); document.getElementById('distance-tooltip').classList.add('revealed')">
           <span class="slider-tooltip" id="distance-tooltip">0.0%</span>
         </div>
         <div class="hint" id="dist-hint"></div>
@@ -927,6 +931,18 @@
     <div class="modal-actions" id="modal-actions">
       <button class="field-btn" id="modal-cancel-btn" style="margin:0;" onclick="closeOverrideModal()">ביטול</button>
       <button class="btn-primary modal-action-btn" id="modal-confirm-btn" onclick="confirmOverride()">אשר ושמור</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="password-backdrop">
+  <div class="modal-box">
+    <div class="modal-title" style="display:flex; align-items:center; gap:8px; color:var(--ink);"><svg viewBox="0 0 24 24" style="width:16px; height:16px; stroke:currentColor; stroke-width:2; fill:none; flex-shrink:0;"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>קוד גישה</span></div>
+    <input type="password" id="password-input" class="field-input" style="width:100%; margin-bottom:8px;" oninput="this.classList.remove('invalid'); document.getElementById('password-error').style.display='none';" autocomplete="off">
+    <div id="password-error" style="display:none; font-size:var(--text-helper); color:var(--danger); margin-bottom:12px;">קוד שגוי, נסה שוב</div>
+    <div class="modal-actions" id="password-actions">
+      <button class="field-btn" style="margin:0;" onclick="closePasswordModal()">ביטול</button>
+      <button class="btn-primary modal-action-btn" onclick="submitPasswordCode()">אשר</button>
     </div>
   </div>
 </div>
@@ -1301,6 +1317,52 @@ function setBlockerText(html) {
 var pendingViolations = [];
 var modalMode = 'override';
 var wasBlocked = false;
+// ── EQUITY CURVE PRIVACY LOCK (casual barrier only, not real security - code lives in this file) ──
+var equityCurveUnlocked = false;
+var EQUITY_CURVE_CODE = '2580'; // change this to set your own code
+var passwordModalPreviousFocus = null;
+
+function openPasswordModal() {
+  var backdrop = document.getElementById('password-backdrop');
+  passwordModalPreviousFocus = document.activeElement;
+  var input = document.getElementById('password-input');
+  input.value = ''; input.classList.remove('invalid');
+  document.getElementById('password-error').style.display = 'none';
+  backdrop.classList.add('showing');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){ backdrop.classList.add('open'); });
+  });
+  input.focus();
+}
+function closePasswordModal() {
+  var backdrop = document.getElementById('password-backdrop');
+  backdrop.classList.remove('open');
+  if (passwordModalPreviousFocus && typeof passwordModalPreviousFocus.focus === 'function' && document.contains(passwordModalPreviousFocus)) {
+    passwordModalPreviousFocus.focus();
+  }
+  passwordModalPreviousFocus = null;
+  var handled = false;
+  function finishClose() { if (handled) return; handled = true; backdrop.classList.remove('showing'); }
+  backdrop.addEventListener('transitionend', finishClose, {once:true});
+  setTimeout(finishClose, 250);
+}
+function submitPasswordCode() {
+  var input = document.getElementById('password-input');
+  if (input.value === EQUITY_CURVE_CODE) {
+    equityCurveUnlocked = true;
+    closePasswordModal();
+    renderStats();
+    var body = document.getElementById('equity-curve-body');
+    var chevron = document.querySelector('.equity-chevron');
+    if (body) body.classList.add('open');
+    if (chevron) chevron.classList.add('open');
+  } else {
+    input.classList.add('invalid');
+    document.getElementById('password-error').style.display = 'block';
+    input.focus(); input.select();
+  }
+}
+
 var modalPreviousFocus = null;
 function setupModal(reasons, isOverridable, customContent) {
   if (!customContent) {
@@ -1378,13 +1440,22 @@ async function confirmOverride() {
 }
 document.addEventListener('keydown', function(e) {
   var modalOpen = document.getElementById('override-backdrop').classList.contains('showing');
+  var pwModalOpen = document.getElementById('password-backdrop').classList.contains('showing');
   if (e.key === 'Escape' && modalOpen) {
     closeOverrideModal();
     return;
   }
+  if (e.key === 'Escape' && pwModalOpen) {
+    closePasswordModal();
+    return;
+  }
+  if (e.key === 'Enter' && pwModalOpen && document.activeElement === document.getElementById('password-input')) {
+    submitPasswordCode();
+    return;
+  }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
     e.preventDefault();
-    if (modalOpen) return;
+    if (modalOpen || pwModalOpen) return;
     var btn = document.getElementById('save-btn');
     if (btn.disabled) return;
     saveTrade();
@@ -1635,12 +1706,22 @@ function renderStats() {
       <div class="sc-box on"><div class="sc-l">${closed.length}</div><div class="sc-d">טריידים סגורים</div></div>
     </div>
     <div class="card" style="margin-top:0;">
-      <div class="card-header" style="font-size:var(--text-value);">עקומת הון</div>
-      ${renderEquityCurve(closed)}
-    </div>
-    <div class="card" style="margin-top:0;">
       <div class="card-header" style="font-size:var(--text-value);">Win Rate לפי סוג סיגנל</div>
       ${signalRowsHtml}
+    </div>
+    <div class="card" style="margin-top:0;">
+      ${equityCurveUnlocked ? `
+      <div class="card-header" style="font-size:var(--text-value); cursor:pointer; justify-content:space-between;" onclick="document.getElementById('equity-curve-body').classList.toggle('open'); this.querySelector('.equity-chevron').classList.toggle('open')">
+        <span>עקומת הון</span>
+        <svg class="equity-chevron" viewBox="0 0 24 24" style="width:16px; height:16px; stroke:var(--ink-muted); stroke-width:2; fill:none; transition:transform 200ms var(--ease-ui);"><path d="M6 9l6 6 6-6"/></svg>
+      </div>` : `
+      <div class="card-header" style="font-size:var(--text-value); cursor:pointer; justify-content:space-between;" onclick="openPasswordModal()">
+        <span style="display:flex; align-items:center; gap:6px;"><svg viewBox="0 0 24 24" style="width:14px; height:14px; stroke:var(--ink-muted); stroke-width:2; fill:none; flex-shrink:0;"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>עקומת הון</span>
+        <svg class="equity-chevron" viewBox="0 0 24 24" style="width:16px; height:16px; stroke:var(--ink-muted); stroke-width:2; fill:none;"><path d="M6 9l6 6 6-6"/></svg>
+      </div>`}
+      <div id="equity-curve-body" class="collapsible-body">
+        ${equityCurveUnlocked ? renderEquityCurve(closed) : ''}
+      </div>
     </div>
     <div style="text-align:center; font-size:var(--text-helper); color:var(--ink-muted); margin-top:12px;">סה"כ ${all.length} טריידים במערכת · ${all.length-closed.length} עדיין פתוחים</div>
   `;
