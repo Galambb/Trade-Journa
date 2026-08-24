@@ -98,9 +98,10 @@
     display: flex; align-items: center; gap: 6px;
     padding: 8px 12px; border: 1px solid transparent; border-radius: var(--radius-md);
     background: transparent; color: var(--ink-muted); font-size: 13px; font-weight: 600;
-    cursor: pointer; transition: all 0.2s; font-family: inherit;
+    cursor: pointer; transition: background-color var(--motion-fast) var(--ease-ui), color var(--motion-fast) var(--ease-ui), transform var(--motion-fast) var(--ease-ui); font-family: inherit;
   }
-  .tab-btn:hover { background: var(--bg); color: var(--ink); }
+  .tab-btn:hover { background: var(--bg); color: var(--ink); transform: translateY(-1px); }
+  .tab-btn:active { transform: translateY(0); transition-duration: var(--motion-press); }
   .tab-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .tab-btn.active { background: var(--accent-bg); border-color: var(--border); color: var(--accent); font-weight: 700; }
   .tab-icon { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
@@ -213,8 +214,8 @@
   .field-input:focus, .field-select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(51, 65, 85, 0.1); }
   .field-input.invalid { border-color: var(--danger); }
   .field-btn { background: var(--surface); cursor: pointer; font-weight: 600; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: border-color var(--motion-fast) var(--ease-ui), box-shadow var(--motion-fast) var(--ease-ui), background-color var(--motion-fast) var(--ease-ui), transform var(--motion-fast) var(--ease-ui); }
-  .field-btn:hover { background: var(--border); transform: translateY(-1px); }
-  .field-btn:active { transform: translateY(0) scale(0.99); transition-duration: var(--motion-press); }
+  .field-btn:hover { background: var(--border); transform: translateY(-2px); box-shadow: 0 3px 8px rgba(15,23,42,0.1); }
+  .field-btn:active { transform: translateY(0) scale(0.985); box-shadow: none; transition-duration: var(--motion-press); }
   
   .ltr-input { direction: ltr; text-align: left; font-family: var(--font-display); font-weight: 500; font-variant-numeric: tabular-nums; }
   
@@ -256,10 +257,11 @@
     display: flex; align-items: center; justify-content: center;
     height: 34px; padding: 0 10px; border-radius: 6px;
     font-size: var(--text-value); font-weight: 500; color: var(--ink-muted);
-    transition: color 160ms var(--ease-ui);
+    transition: color 160ms var(--ease-ui), opacity var(--motion-press) var(--ease-ui);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
   }
-  .segmented-control label:hover .seg-btn { color: var(--ink-soft); }
+  .segmented-control label:hover .seg-btn { color: var(--ink); }
+  .segmented-control label:active .seg-btn { opacity: 0.7; transition-duration: var(--motion-press); }
   .segmented-control input:checked + .seg-btn { color: var(--ink); font-weight: 600; }
   .segmented-control input.on-danger:checked + .seg-btn { color: var(--danger); }
 
@@ -276,10 +278,11 @@
   .checkbox-card {
     display: flex; align-items: flex-start; gap: 10px; cursor: pointer;
     padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface);
-    transition: border-color var(--motion-fast) var(--ease-ui), background-color var(--motion-fast) var(--ease-ui), transform var(--motion-fast) var(--ease-ui);
+    transition: border-color var(--motion-fast) var(--ease-ui), background-color var(--motion-fast) var(--ease-ui), transform var(--motion-fast) var(--ease-ui), box-shadow var(--motion-fast) var(--ease-ui);
   }
-  .checkbox-card:hover { border-color: var(--ink-muted); transform: translateY(-1px); }
-  .checkbox-card:active { transform: translateY(0) scale(0.99); transition-duration: var(--motion-press); }
+  .checkbox-card:hover:not(:has(input:checked)) { border-color: var(--ink-muted); transform: translateY(-2px); box-shadow: 0 3px 8px rgba(15,23,42,0.08); }
+  .checkbox-card:has(input:checked):hover { transform: translateY(-2px); box-shadow: 0 3px 8px rgba(15,23,42,0.08); }
+  .checkbox-card:active { transform: translateY(0) scale(0.99); box-shadow: none; transition-duration: var(--motion-press); }
   .checkbox-card input[type="checkbox"] {
     appearance: none; width: 18px; height: 18px; border: 2px solid var(--ink-muted);
     border-radius: var(--radius-sm); flex-shrink: 0; margin-top: 2px; position: relative;
@@ -396,12 +399,26 @@
   .btn-primary {
     padding: 14px 32px; background: var(--ink); color: #ffffff;
     border: 1px solid transparent; border-radius: var(--radius-cta); font-size: 15px; font-weight: 700;
-    cursor: pointer; font-family: var(--font-display); transition: background-color var(--motion-standard) var(--ease-ui), transform var(--motion-fast) var(--ease-ui);
+    cursor: pointer; font-family: var(--font-display); transition: background-color var(--motion-standard) var(--ease-ui), transform var(--motion-fast) var(--ease-ui), box-shadow var(--motion-fast) var(--ease-ui);
     width: 100%; max-width: 300px; box-shadow: none;
     display: flex; align-items: center; justify-content: center; gap: 8px;
+    position: relative; overflow: hidden;
   }
-  .btn-primary:hover { background: #1e293b; transform: translateY(-1px); }
-  .btn-primary:active { transform: translateY(1px) scale(0.99); transition-duration: var(--motion-press); }
+  .btn-primary::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    opacity: 0; transition: opacity 160ms var(--ease-ui);
+    background: radial-gradient(100px circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(255,255,255,0.14), transparent 70%);
+  }
+  .btn-primary.spotlight-active::before { opacity: 1; }
+  .btn-primary:disabled::before { display: none; }
+  .btn-ripple {
+    position: absolute; z-index: -1; pointer-events: none; border-radius: 50%;
+    background: rgba(255,255,255,0.16); transform: scale(0); opacity: 0.6;
+    animation: btn-ripple-expand 320ms var(--ease-ui) forwards;
+  }
+  @keyframes btn-ripple-expand { to { transform: scale(1); opacity: 0; } }
+  .btn-primary:hover { background: #1e293b; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(15,23,42,0.18); }
+  .btn-primary:active { transform: translateY(1px) scale(0.985); box-shadow: none; transition-duration: var(--motion-press); }
   .btn-primary:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
   .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   .btn-content {
@@ -427,9 +444,12 @@
   .draft-btns button { margin-right: 8px; padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--accent); background: transparent; color: var(--accent); font-weight: 600; cursor: pointer; }
   
   .modal-backdrop {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5);
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6);
     z-index: 1000; display: none; align-items: center; justify-content: center;
     opacity: 0; transition: opacity 200ms var(--ease-ui);
+  }
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    .modal-backdrop { backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
   }
   .modal-backdrop.showing { display: flex; }
   .modal-backdrop.open { opacity: 1; }
@@ -440,6 +460,14 @@
   }
   .modal-backdrop.open .modal-box { opacity: 1; transform: translateY(0); }
   .modal-title { font-size: 16px; font-weight: 700; color: var(--danger); margin-bottom: 12px; font-family: var(--font-display); }
+  .modal-title svg { width: 16px; height: 16px; }
+  .modal-action-btn { width: auto; max-width: none; min-width: 96px; height: 40px; padding: 0 28px; border-radius: var(--radius-cta); }
+  .modal-action-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(15,23,42,0.15); }
+  .modal-action-btn:active { transform: translateY(0) scale(0.99); box-shadow: none; }
+  #modal-cancel-btn { width: auto; min-width: 88px; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 24px; }
+  .modal-actions.single { justify-content: center; }
+  .modal-actions:not(.single) { justify-content: flex-start; }
   
   .toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -488,51 +516,50 @@
   /* ── RANGE SLIDER ── */
   input[type="range"] {
     -webkit-appearance: none; appearance: none;
-    height: 5px; border-radius: var(--radius-sm); outline: none;
+    height: 6px; border-radius: var(--radius-sm); outline: none;
     background: linear-gradient(to left,
-      var(--border) 0%, var(--border) 22%,
-      var(--wait) 30%, var(--wait) 45%,
-      var(--danger) 50%, var(--danger) 100%
+      #cbd2de 0%, #cbd2de 22%,
+      #e3ab5f 30%, #e3ab5f 45%,
+      #d98b7f 50%, #d98b7f 100%
     );
   }
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none; appearance: none;
-    width: 15px; height: 15px; border-radius: 50%;
+    width: 17px; height: 17px; border-radius: 50%;
     background: var(--surface); border: 2px solid var(--thumb-ring-color, var(--accent));
-    transition: border-color 200ms var(--ease-ui), border-width 140ms var(--ease-ui);
+    transition: border-color 200ms var(--ease-ui), border-width 140ms var(--ease-ui), width 140ms var(--ease-ui), height 140ms var(--ease-ui);
     cursor: pointer;
   }
-  input[type="range"]:active::-webkit-slider-thumb { border-width: 3px; }
+  input[type="range"]:active::-webkit-slider-thumb { border-width: 3px; width: 18px; height: 18px; }
   input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--accent); outline-offset: 2px; }
   input[type="range"]::-moz-range-thumb {
-    width: 15px; height: 15px; border-radius: 50%;
+    width: 17px; height: 17px; border-radius: 50%;
     background: var(--surface); border: 2px solid var(--thumb-ring-color, var(--accent));
-    transition: border-color 200ms var(--ease-ui), border-width 140ms var(--ease-ui);
+    transition: border-color 200ms var(--ease-ui), border-width 140ms var(--ease-ui), width 140ms var(--ease-ui), height 140ms var(--ease-ui);
     cursor: pointer;
   }
-  input[type="range"]:active::-moz-range-thumb { border-width: 3px; }
+  input[type="range"]:active::-moz-range-thumb { border-width: 3px; width: 18px; height: 18px; }
   input[type="range"]:focus-visible::-moz-range-thumb { outline: 2px solid var(--accent); outline-offset: 2px; }
   input[type="range"]::-moz-range-track {
-    height: 5px; border-radius: var(--radius-sm);
+    height: 6px; border-radius: var(--radius-sm);
     background: linear-gradient(to left,
-      var(--border) 0%, var(--border) 22%,
-      var(--wait) 30%, var(--wait) 45%,
-      var(--danger) 50%, var(--danger) 100%
+      #cbd2de 0%, #cbd2de 22%,
+      #e3ab5f 30%, #e3ab5f 45%,
+      #d98b7f 50%, #d98b7f 100%
     );
   }
-  #distance-value { transition: color 200ms var(--ease-ui); }
 
   .slider-tooltip {
     position: absolute; top: -28px;
     right: clamp(20px, calc(var(--slider-progress, 0) * 100%), calc(100% - 20px));
     transform: translateX(50%) translateY(2px);
-    background: var(--ink); color: #ffffff;
+    background: var(--tooltip-bg, var(--ink)); color: #ffffff;
     font-size: var(--text-helper); font-weight: 700;
     padding: 3px 8px; border-radius: var(--radius-sm);
     font-variant-numeric: tabular-nums; direction: ltr;
     box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     opacity: 0; pointer-events: none; white-space: nowrap;
-    transition: opacity 160ms var(--ease-ui), transform 160ms var(--ease-ui);
+    transition: opacity 160ms var(--ease-ui), transform 160ms var(--ease-ui), background-color 200ms var(--ease-ui);
   }
   .slider-tooltip.visible { opacity: 1; transform: translateX(50%) translateY(0); }
 
@@ -541,6 +568,8 @@
     .field-input, .field-select, .field-btn, .checkbox-card,
     .btn-primary,
     .seg-btn,
+    .tab-btn,
+    .modal-action-btn,
     .score-bar, .sb-v, .sb-v .status-dot, .sb-flags span,
     .blocker-box .status-dot, #blocker-text,
     .sc-box, .sc-l,
@@ -548,7 +577,6 @@
     .btn-content,
     input[type="range"]::-webkit-slider-thumb,
     input[type="range"]::-moz-range-thumb,
-    #distance-value,
     .slider-tooltip,
     .section-complete-marker,
     .modal-backdrop, .modal-box {
@@ -556,8 +584,12 @@
     }
     .btn-primary:hover, .btn-primary:active,
     .field-btn:hover, .field-btn:active,
-    .checkbox-card:hover, .checkbox-card:active { transform: none; }
+    .checkbox-card:hover, .checkbox-card:active,
+    .tab-btn:hover, .tab-btn:active,
+    .modal-action-btn:hover, .modal-action-btn:active { transform: none; box-shadow: none; }
     .output-box.value-updated, .rr-banner.value-updated { animation-duration: 0.01ms !important; }
+    .btn-primary::before { display: none; }
+    .btn-ripple { animation: none; opacity: 0; }
     .slider-tooltip.visible { transform: translateX(50%) translateY(0) !important; }
   }
 
@@ -618,9 +650,13 @@
         <input type="text" id="ticker" class="field-input ltr-input" placeholder="NVDA" style="text-transform:uppercase;" oninput="updateTitle(); this.classList.remove('invalid'); updateSection1Completion();">
       </div>
       <div class="field-group col-2">
-        <button type="button" id="earn-toggle" class="field-btn" style="margin-top:24px;" onclick="toggleEarnings()">מדווחת השבוע?</button>
+        <label>מדווחת השבוע?</label>
+        <div class="segmented-control seg-count-2" id="earn-toggle">
+          <label><input type="radio" name="earn_toggle" value="no" checked onchange="setEarningsToday(false)"><span class="seg-btn">לא</span></label>
+          <label class="seg-caution"><input type="radio" name="earn_toggle" value="yes" onchange="setEarningsToday(true)"><span class="seg-btn">כן</span></label>
+        </div>
       </div>
-      <div class="field-group col-3">
+      <div class="field-group col-2">
         <label>סיגנל</label>
         <select id="signal-type" class="field-select" onchange="onSignalChange()">
           <option value="">—</option>
@@ -632,11 +668,13 @@
           <option value="cup">Cup & Handle</option>
         </select>
       </div>
-      <div class="field-group col-1">
-        <label>#</label>
-        <select id="trade-num" class="field-select" onchange="countFlags()">
-          <option value="1">1</option><option value="2">2</option><option value="3">3+</option>
-        </select>
+      <div class="field-group col-2">
+        <label>מספר הטרייד</label>
+        <div class="segmented-control seg-count-3">
+          <label><input type="radio" name="tradeNum" value="1" checked onchange="countFlags()"><span class="seg-btn">1</span></label>
+          <label><input type="radio" name="tradeNum" value="2" onchange="countFlags()"><span class="seg-btn">2</span></label>
+          <label><input type="radio" name="tradeNum" value="3" onchange="countFlags()"><span class="seg-btn">3+</span></label>
+        </div>
       </div>
     </div>
   </div>
@@ -705,10 +743,9 @@
     
     <div class="grid-form">
       <div class="field-group col-6" id="distance-field">
-        <div style="width:60%; position:relative;">
+        <div style="width:calc(100% - 10px); position:relative;" id="distance-wrapper">
           <div style="display:flex; align-items:baseline; justify-content:flex-start; gap:8px;">
             <label style="margin:0;">מרחק מהסיגנל</label>
-            <span id="distance-value" style="font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums; direction:ltr;">0.0%</span>
           </div>
           <input type="range" id="distance" min="0" max="10" step="0.1" value="0" style="margin-top:8px; width:100%;" oninput="countFlags()" onfocus="document.getElementById('distance-tooltip').classList.add('visible')" onblur="document.getElementById('distance-tooltip').classList.remove('visible')">
           <span class="slider-tooltip" id="distance-tooltip">0.0%</span>
@@ -859,6 +896,7 @@
     <h2 id="journal-count" style="font-family:var(--font-display); font-size:var(--text-section); font-weight:700;"></h2>
     <div style="display:flex; gap:8px;">
       <button class="field-btn" style="height:32px; padding:0 12px; margin:0;" onclick="exportJSON()">גיבוי JSON</button>
+      <button class="field-btn" style="height:32px; padding:0 12px; margin:0;" onclick="exportCSV()">ייצוא CSV</button>
     </div>
   </div>
   <input type="text" id="search-input" class="field-input" placeholder="חפש מניה..." style="margin-bottom:16px;" oninput="applyFilters()">
@@ -881,16 +919,16 @@
 <!-- MODALS & ALERTS -->
 <div class="modal-backdrop" id="override-backdrop">
   <div class="modal-box">
-    <div class="modal-title" style="display:flex; align-items:center; gap:8px;"><svg viewBox="0 0 24 24" style="width:18px; height:18px; stroke:currentColor; stroke-width:2; fill:none; flex-shrink:0;"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg><span id="modal-title-text">כניסה למרות הפרת כללים</span></div>
+    <div class="modal-title" style="display:flex; align-items:center; gap:8px;"><svg viewBox="0 0 24 24" style="width:16px; height:16px; stroke:currentColor; stroke-width:2; fill:none; flex-shrink:0;"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg><span id="modal-title-text">כניסה למרות הפרת כללים</span></div>
     <ul id="modal-reasons" style="font-size:var(--text-value); color:var(--danger); margin-bottom:16px; padding-right:16px;"></ul>
     <div id="modal-hint" style="display:none; font-size:var(--text-helper); color:var(--ink-muted); margin-top:-8px; margin-bottom:16px;"></div>
     <div id="override-reason-section">
       <label style="font-size:var(--text-label); font-weight:550; color:var(--ink-muted); margin-bottom:4px; display:block;">למה בחרת לעקוף?</label>
       <textarea id="override-reason-input" class="field-input" style="height:60px; margin-bottom:16px; width:100%; resize:none;" oninput="this.classList.remove('invalid');"></textarea>
     </div>
-    <div style="display:flex; gap:8px;">
-      <button class="field-btn" id="modal-cancel-btn" style="flex:1; margin:0;" onclick="closeOverrideModal()">ביטול</button>
-      <button class="btn-primary" id="modal-confirm-btn" style="flex:2; padding:0;" onclick="confirmOverride()">אשר ושמור</button>
+    <div class="modal-actions" id="modal-actions">
+      <button class="field-btn" id="modal-cancel-btn" style="margin:0;" onclick="closeOverrideModal()">ביטול</button>
+      <button class="btn-primary modal-action-btn" id="modal-confirm-btn" onclick="confirmOverride()">אשר ושמור</button>
     </div>
   </div>
 </div>
@@ -1016,14 +1054,8 @@ function setCpiToday(val) {
   updateEventIndicator();
 }
 
-function toggleEarnings() {
-  var btn = document.getElementById('earn-toggle');
-  btn.classList.toggle('active-state');
-  if (btn.classList.contains('active-state')) {
-    btn.style.background = 'var(--danger-bg)'; btn.style.color = 'var(--danger)'; btn.style.borderColor = 'var(--danger)'; btn.textContent = 'מדווחת השבוע?';
-  } else {
-    btn.style.background = 'var(--bg)'; btn.style.color = 'var(--ink-soft)'; btn.style.borderColor = 'var(--border)'; btn.textContent = 'מדווחת השבוע?';
-  }
+function setEarningsToday(val) {
+  document.getElementById('earn-toggle').classList.toggle('active-state', val);
   countFlags();
 }
 
@@ -1047,16 +1079,44 @@ function flashUpdate(el) {
   el.classList.add('value-updated');
 }
 function sleep(ms) { return new Promise(function(r){ setTimeout(r, ms); }); }
+
+function attachButtonEffects(btn) {
+  if (!btn) return;
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  btn.addEventListener('pointerenter', function(){ if (!btn.disabled) btn.classList.add('spotlight-active'); });
+  btn.addEventListener('pointerleave', function(){ btn.classList.remove('spotlight-active'); });
+  btn.addEventListener('pointermove', function(e){
+    if (btn.disabled) return;
+    var r = btn.getBoundingClientRect();
+    btn.style.setProperty('--pointer-x', (e.clientX - r.left) + 'px');
+    btn.style.setProperty('--pointer-y', (e.clientY - r.top) + 'px');
+  });
+  btn.addEventListener('pointerdown', function(e){
+    if (btn.disabled || e.pointerType === 'keyboard') return;
+    if (reduceMotion) return;
+    var r = btn.getBoundingClientRect();
+    var size = Math.max(r.width, r.height) * 2;
+    var ripple = document.createElement('span');
+    ripple.className = 'btn-ripple';
+    ripple.style.width = size + 'px';
+    ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - r.left - size/2) + 'px';
+    ripple.style.top = (e.clientY - r.top - size/2) + 'px';
+    btn.appendChild(ripple);
+    ripple.addEventListener('animationend', function(){ ripple.remove(); });
+  });
+}
+attachButtonEffects(document.getElementById('save-btn'));
+attachButtonEffects(document.getElementById('modal-confirm-btn'));
 function updateSliderVisuals(dist) {
   var input = document.getElementById('distance');
-  var valueEl = document.getElementById('distance-value');
+  var wrapper = document.getElementById('distance-wrapper');
   var tooltip = document.getElementById('distance-tooltip');
   var progress = Math.min(dist, 10) / 10;
-  input.style.setProperty('--slider-progress', progress);
+  wrapper.style.setProperty('--slider-progress', progress);
   var zoneColor = dist >= 5 ? 'var(--danger)' : dist >= 3 ? 'var(--wait)' : 'var(--accent)';
-  var textColor = dist >= 5 ? 'var(--danger)' : dist >= 3 ? 'var(--wait)' : 'var(--ink)';
   input.style.setProperty('--thumb-ring-color', zoneColor);
-  valueEl.style.color = textColor;
+  wrapper.style.setProperty('--tooltip-bg', dist >= 5 ? 'var(--danger)' : dist >= 3 ? 'var(--wait)' : 'var(--ink)');
   if (tooltip) tooltip.textContent = (dist>=10 ? '10+' : dist.toFixed(1)) + '%';
 }
 async function showSaveSuccess() {
@@ -1154,7 +1214,7 @@ function applyGate(blocked) {
 // ── MAIN LOGIC: COUNT FLAGS ──
 function countFlags() {
   var y=0, r=0, reasons=[], blockerReasons=[], violationReasons=[], warningReasons=[];
-  if (document.getElementById('trade-num').value==='3') { r++; reasons.push('3+ טריידים'); violationReasons.push('3+ טריידים היום'); }
+  if (rv('tradeNum')==='3') { r++; reasons.push('3+ טריידים'); violationReasons.push('3+ טריידים היום'); }
 
   var dateStr = getSelectedDate();
   if (isOpExToday(dateStr)) { y++; warningReasons.push('OpEx — תנודתיות'); }
@@ -1165,7 +1225,6 @@ function countFlags() {
   var sig=document.getElementById('signal-type').value, trend=rv('trend');
   if(trend==='down' && ['support','ma','pullback'].includes(sig)) { y++; warningReasons.push('מגמה נגד הסיגנל'); }
   var dist=parseFloat(document.getElementById('distance').value)||0;
-  document.getElementById('distance-value').textContent = (dist>=10 ? '10+' : dist.toFixed(1)) + '%';
   updateSliderVisuals(dist);
   var dh=document.getElementById('dist-hint');
   if(dist>=5){r++;violationReasons.push('רדיפה 5%+');dh.textContent='🔴 רדיפה';dh.style.color='var(--danger)';}
@@ -1252,9 +1311,9 @@ function setupModal(reasons, isOverridable, customContent) {
   }
   document.getElementById('override-reason-section').style.display = isOverridable ? 'block' : 'none';
   document.getElementById('modal-cancel-btn').style.display = isOverridable ? 'block' : 'none';
+  document.getElementById('modal-actions').classList.toggle('single', !isOverridable);
   var confirmBtn = document.getElementById('modal-confirm-btn');
   confirmBtn.textContent = isOverridable ? 'אשר ושמור' : 'הבנתי';
-  confirmBtn.style.flex = isOverridable ? '2' : '1';
   modalPreviousFocus = document.activeElement;
   var backdrop = document.getElementById('override-backdrop');
   backdrop.classList.add('showing');
@@ -1359,7 +1418,7 @@ async function executeSave(overrideReason, overrideRules, forceVerdict) {
   
   var trade = {
     id: Date.now(), date: document.getElementById('trade-date').value, ticker: tkr,
-    signal: document.getElementById('signal-type').value, tradeNum: document.getElementById('trade-num').value,
+    signal: document.getElementById('signal-type').value, tradeNum: rv('tradeNum'),
     yellowFlags: flags.y, redFlags: flags.r, verdict: forceVerdict || (overrideReason?'GO':flags.verdict),
     entryPrice: pe, stopPrice: ps, targetPrice: pt, rr: rr, maxRisk: parseFloat(document.getElementById('max-risk').value)||null,
     positionSize: sz.pos||null, analysis: document.getElementById('analysis').value,
@@ -1394,6 +1453,17 @@ function renderJournal() {
     return true;
   });
   document.getElementById('journal-count').textContent = arr.length + ' טריידים';
+  var emptyHTML;
+  if (trades.length === 0) {
+    emptyHTML = `<div style="text-align:center; padding:48px 24px;">
+      <svg viewBox="0 0 24 24" style="width:40px; height:40px; stroke:var(--ink-muted); stroke-width:1.5; fill:none; margin-bottom:16px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+      <div style="font-family:var(--font-display); font-weight:700; font-size:var(--text-section); color:var(--ink-soft); margin-bottom:6px;">עדיין אין טריידים ביומן</div>
+      <div style="color:var(--ink-muted); font-size:var(--text-value); margin-bottom:20px;">מלא את הצ'קליסט כדי לתעד את הטרייד הראשון שלך</div>
+      <span style="color:var(--accent); font-weight:600; cursor:pointer; text-decoration:underline;" onclick="showView('checklist')">מעבר לצ'קליסט →</span>
+    </div>`;
+  } else {
+    emptyHTML = '<div style="text-align:center; padding:40px; color:var(--ink-muted);">אין תוצאות</div>';
+  }
   var html = arr.map(t => {
     var ocHTML = '';
     if (t.outcome === 'win') ocHTML = '<svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg> רווח';
@@ -1404,7 +1474,7 @@ function renderJournal() {
     var ocCls = t.outcome||'open';
     var isOv = t.override === true || t.override === 'true';
     return `
-    <div class="trade-card">
+    <div class="trade-card" id="trade-card-${t.id}">
       <div class="tc-header" onclick="document.getElementById('tb-${t.id}').classList.toggle('open')">
         <div class="tc-ticker">${t.ticker}</div>
         <div class="tc-date">${t.date}</div>
@@ -1427,13 +1497,39 @@ function renderJournal() {
           </select>
           <input type="number" id="ex-price-${t.id}" class="field-input ltr-input" placeholder="מחיר יציאה $" value="${t.exitPrice||''}" style="width:120px;">
           <button class="field-btn" style="margin:0;" onclick="saveExit(${t.id})">עדכן</button>
+          <button class="field-btn" style="margin:0; margin-right:auto; color:var(--danger); border-color:var(--danger-border);" onclick="deleteTrade(${t.id})">מחק</button>
         </div>
       </div>
     </div>`;
   }).join('');
-  document.getElementById('journal-container').innerHTML = html || '<div style="text-align:center; padding:40px; color:var(--ink-muted);">אין תוצאות</div>';
+  document.getElementById('journal-container').innerHTML = html || emptyHTML;
 }
 function applyFilters() { renderJournal(); }
+
+var pendingDeletes = {};
+function deleteTrade(id) {
+  var card = document.getElementById('trade-card-' + id);
+  if (!card) return;
+  card.dataset.originalHtml = card.innerHTML;
+  card.innerHTML = '<div style="padding:20px; text-align:center; color:var(--ink-muted); font-size:var(--text-value);">הטרייד נמחק · <span style="color:var(--accent); cursor:pointer; text-decoration:underline; font-weight:600;" onclick="undoDelete(' + id + ')">בטל</span></div>';
+  pendingDeletes[id] = setTimeout(function(){ finalizeDelete(id); }, 5000);
+}
+function undoDelete(id) {
+  clearTimeout(pendingDeletes[id]);
+  delete pendingDeletes[id];
+  var card = document.getElementById('trade-card-' + id);
+  if (card && card.dataset.originalHtml) { card.innerHTML = card.dataset.originalHtml; }
+}
+async function finalizeDelete(id) {
+  delete pendingDeletes[id];
+  var trades = getTrades().filter(function(t){ return t.id !== id; });
+  setCache(trades);
+  try {
+    var res = await apiPost({action:'deleteTrade', id:id});
+    if (res && res.error) { toast('⚠️ המחיקה בענן נכשלה'); }
+  } catch(e) { toast('⚠️ שגיאת רשת במחיקה'); }
+  renderJournal();
+}
 
 async function saveExit(id) {
   var t = getTrades().find(x=>x.id===id); if(!t)return;
@@ -1453,10 +1549,64 @@ function exportJSON() {
   var blob = new Blob([data], {type:'application/json'});
   var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'journal_backup.json'; a.click();
 }
+function csvEscape(val) {
+  var s = (val===null||val===undefined) ? '' : String(val);
+  if (/[",\n]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+function exportCSV() {
+  var trades = getTrades();
+  var outcomeLabels = {win:'רווח', loss:'הפסד', be:'B/E'};
+  var headers = ['תאריך','טיקר','סיגנל','ורדיקט','Override','Entry','Stop','Target','R:R','Max Risk','Position Size','מחיר יציאה','תוצאה','ניתוח'];
+  var rows = trades.map(function(t) {
+    return [
+      t.date||'', t.ticker||'', SIGNAL_LABELS[t.signal]||t.signal||'', t.verdict||'',
+      t.override?'כן':'לא', t.entryPrice||'', t.stopPrice||'', t.targetPrice||'', t.rr||'',
+      t.maxRisk||'', t.positionSize||'', t.exitPrice||'', outcomeLabels[t.outcome]||'', t.analysis||''
+    ].map(csvEscape).join(',');
+  });
+  var csv = '\uFEFF' + headers.map(csvEscape).join(',') + '\n' + rows.join('\n');
+  var blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'journal_export.csv'; a.click();
+}
 
 // ── STATS ──
 var SIGNAL_LABELS = {breakout:'פריצה', support:'תמיכה', retest:'Retest', ma:'ממוצע נע', pullback:'Pullback', cup:'Cup & Handle'};
 
+function renderEquityCurve(closed) {
+  var usable = closed.filter(function(t){ return t.exitPrice!=null && t.entryPrice!=null && t.positionSize!=null; });
+  var skipped = closed.length - usable.length;
+  if (usable.length < 2) {
+    return '<div style="text-align:center; padding:24px; color:var(--ink-muted); font-size:var(--text-value);">אין מספיק טריידים עם נתוני יציאה מלאים כדי להציג עקומת הון' + (skipped>0 ? ' (' + skipped + ' טריידים חסרים נתונים)' : '') + '</div>';
+  }
+  usable.sort(function(a,b){ return new Date(a.date) - new Date(b.date); });
+  var equity = 0;
+  var points = usable.map(function(t){
+    equity += (t.exitPrice - t.entryPrice) * t.positionSize;
+    return equity;
+  });
+  var w = 600, h = 160, pad = 8;
+  var min = Math.min(0, Math.min.apply(null, points)), max = Math.max(0, Math.max.apply(null, points));
+  var range = (max - min) || 1;
+  var stepX = (w - pad*2) / (points.length - 1);
+  var coords = points.map(function(v, i){
+    var x = pad + i*stepX;
+    var y = h - pad - ((v - min) / range) * (h - pad*2);
+    return x.toFixed(1) + ',' + y.toFixed(1);
+  }).join(' ');
+  var zeroY = (h - pad - ((0 - min) / range) * (h - pad*2)).toFixed(1);
+  var final = points[points.length-1];
+  var lineColor = final >= 0 ? 'var(--go)' : 'var(--danger)';
+  return `
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+      <span style="font-size:var(--text-value); font-weight:700; color:${lineColor};">${final>=0?'+':''}$${final.toFixed(0)}</span>
+      <span style="font-size:var(--text-helper); color:var(--ink-muted);">${usable.length} טריידים${skipped>0 ? ' · ' + skipped + ' לא נכללו (חסרי נתונים)' : ''}</span>
+    </div>
+    <svg viewBox="0 0 ${w} ${h}" style="width:100%; height:${h}px; overflow:visible;">
+      <line x1="${pad}" y1="${zeroY}" x2="${w-pad}" y2="${zeroY}" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,3"/>
+      <polyline points="${coords}" fill="none" stroke="${lineColor}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    </svg>`;
+}
 function renderStats() {
   var all = getTrades();
   var closed = all.filter(t=>t.outcome);
@@ -1485,6 +1635,10 @@ function renderStats() {
       <div class="sc-box on sc-go"><div class="sc-l">${wr}%</div><div class="sc-d">Win Rate</div></div>
       <div class="sc-box on"><div class="sc-l">${avgRR}R</div><div class="sc-d">R:R ממוצע בפועל</div></div>
       <div class="sc-box on"><div class="sc-l">${closed.length}</div><div class="sc-d">טריידים סגורים</div></div>
+    </div>
+    <div class="card" style="margin-top:0;">
+      <div class="card-header" style="font-size:var(--text-value);">עקומת הון</div>
+      ${renderEquityCurve(closed)}
     </div>
     <div class="card" style="margin-top:0;">
       <div class="card-header" style="font-size:var(--text-value);">Win Rate לפי סוג סיגנל</div>
