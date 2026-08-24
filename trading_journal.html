@@ -550,7 +550,7 @@
   }
 
   .slider-tooltip {
-    position: absolute; top: -28px;
+    position: absolute; top: -28px; z-index: 150;
     right: clamp(20px, calc(var(--slider-progress, 0) * 100%), calc(100% - 20px));
     transform: translateX(50%);
     background: var(--tooltip-bg, var(--ink)); color: #ffffff;
