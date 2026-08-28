@@ -714,23 +714,6 @@
       </div>
     </div>
 
-    <div class="section-title"><span>פילטר מקדים — 30 שניות</span></div>
-    <div class="prefilter-grid" style="margin-bottom: 24px;">
-      <label class="checkbox-card">
-        <input type="checkbox" id="pf1" onchange="checkPF()">
-        <div class="checkbox-content"><span class="title">MA20 תקין</span><span class="desc">מעל או נוגע בממוצע</span></div>
-      </label>
-      <label class="checkbox-card">
-        <input type="checkbox" id="pf2" onchange="checkPF()">
-        <div class="checkbox-content"><span class="title">אישור נגיעה</span><span class="desc">ווליום + סגירה חזקה</span></div>
-      </label>
-      <label class="checkbox-card">
-        <input type="checkbox" id="pf3" onchange="checkPF()">
-        <div class="checkbox-content"><span class="title">ללא גאפים</span><span class="desc">מבנה נקי</span></div>
-      </label>
-    </div>
-    <div id="pf-result" style="font-size:var(--text-label); color:var(--ink-muted); text-align:center;">סמן את שלושת הפילטרים כדי להמשיך</div>
-
     <div class="section-title section-title--detached"><span>הקשר שוק (SPY/QQQ)</span></div>
     <div class="segmented-control seg-count-3">
       <label><input type="radio" name="spy" value="up" onchange="countFlags()"><span class="seg-btn">עולה</span></label>
@@ -1048,6 +1031,11 @@ function fomcThisWeek(dateStr) {
 }
 function getSelectedDate() { var el = document.getElementById('trade-date'); return el && el.value ? el.value : new Date().toISOString().slice(0,10); }
 
+function updateTitle() {
+  var tkr = document.getElementById('ticker').value.trim().toUpperCase();
+  var date = document.getElementById('trade-date').value;
+  document.title = (tkr && date) ? (tkr + ' · ' + date) : 'יומן מסחר 2026';
+}
 function updateEventIndicator() {
   var dateStr = getSelectedDate();
   var ind = document.getElementById('event-indicator');
@@ -1073,7 +1061,6 @@ function setEarningsToday(val) {
   countFlags();
 }
 
-function checkPF() { countFlags(); }
 function onSignalChange() {
   document.getElementById('support-row').style.display = ['support','retest'].includes(document.getElementById('signal-type').value) ? 'block' : 'none';
   countFlags();
@@ -1256,10 +1243,6 @@ function countFlags() {
   if(pe&&ps&&pt&&pe>ps&&pt>pe&&(pt-pe)/(pe-ps)<2.0){r++;violationReasons.push('R:R מתחת 2:1');}
 
   // Pre-filters
-  var p1=document.getElementById('pf1').checked, p2=document.getElementById('pf2').checked, p3=document.getElementById('pf3').checked;
-  var pfResult = document.getElementById('pf-result');
-  if (pfResult) pfResult.style.display = (!p1||!p2||!p3) ? 'block' : 'none';
-
   // CSS Highlights
   document.querySelectorAll('.hy,.hr').forEach(e=>e.classList.remove('hy','hr'));
   if(trend==='down')hl('lbl-trend-down','y');
@@ -1761,7 +1744,7 @@ function checkDraft() {
   } catch(e){}
 }
 function restoreDraft() {
-  try { var d = JSON.parse(localStorage.getItem('draft26')); document.getElementById('ticker').value = d.ticker; countFlags(); markFormDirty(); dismissDraft(); } catch(e){}
+  try { var d = JSON.parse(localStorage.getItem('draft26')); document.getElementById('ticker').value = d.ticker; countFlags(); updateTitle(); markFormDirty(); dismissDraft(); } catch(e){}
 }
 function dismissDraft() { localStorage.removeItem('draft26'); document.getElementById('draft-banner').classList.remove('show'); }
 
