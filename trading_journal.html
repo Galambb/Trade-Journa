@@ -222,6 +222,8 @@
   .input-with-prefix { direction: ltr; display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
   .input-with-prefix span { font-weight: 600; color: var(--ink-muted); font-family: var(--font-display); flex-shrink: 0; }
   .input-with-prefix input { width: 100px; flex: 0 0 auto; text-align: right; padding-left: 8px; padding-right: 8px; }
+  #atr-toggle { max-width: 170px; margin-left: auto; }
+  #position-size { display: block; max-width: 100px; margin-left: auto; }
 
   /* ── SEGMENTED CONTROL (unified single-choice selection pattern) ── */
   .segmented-control {
@@ -513,7 +515,7 @@
   .equity-chevron.open { transform: rotate(180deg); }
   
   /* Utilities */
-  .flex-between { display: flex; justify-content: space-between; align-items: center; }
+  .flex-between { display: flex; justify-content: flex-start; align-items: center; gap: 8px; }
   .hint { font-size: var(--text-helper); color: var(--ink-muted); margin-top: 4px; }
 
   /* ── RANGE SLIDER ── */
@@ -792,7 +794,7 @@
       </div>
       <div class="field-group col-4">
         <label>ATR מרווח מתחת לסטופ?</label>
-        <div class="segmented-control seg-count-2">
+        <div class="segmented-control seg-count-2" id="atr-toggle">
           <label class="seg-good"><input type="radio" name="atr" value="yes" onchange="countFlags()"><span class="seg-btn">כן</span></label>
           <label class="seg-caution"><input type="radio" name="atr" value="no" onchange="countFlags()"><span class="seg-btn">לא</span></label>
         </div>
@@ -802,15 +804,15 @@
         <div class="flex-between"><label>Max Risk</label><span style="font-size:10px; color:var(--accent); cursor:pointer;" onclick="resetToDefaultRisk()">ברירת מחדל <span id="default-risk-display"></span></span></div>
         <div class="input-with-prefix"><span>$</span><input type="number" id="max-risk" class="field-input ltr-input" value="100" oninput="calcSizing(); updateSection4Completion();"></div>
       </div>
-      
-      <div class="field-group col-3 row-break">
-        <label>Risk / Share</label>
-        <div class="output-box is-empty" id="risk-per-share">—</div>
-      </div>
 
       <div class="field-group col-3 row-break">
         <label>Position Size (מניות)</label>
-        <div class="output-box output-box--emphasis is-empty" id="position-size">—</div>
+        <input type="number" id="position-size" class="field-input ltr-input is-empty" placeholder="—" oninput="onPositionSizeInput()">
+      </div>
+
+      <div class="field-group col-3 row-break">
+        <label>Risk / Share</label>
+        <div class="output-box is-empty" id="risk-per-share">—</div>
       </div>
 
       <div class="field-group col-3 row-break">
@@ -1149,9 +1151,11 @@ function calcSizing() {
   var e = parseFloat(document.getElementById('price-entry').value), s = parseFloat(document.getElementById('price-stop').value), max = parseFloat(document.getElementById('max-risk').value);
   var rpsEl = document.getElementById('risk-per-share'), posEl = document.getElementById('position-size'), totEl = document.getElementById('total-risk-display'), warnEl = document.getElementById('sizing-warning');
   function setVal(el, text, empty) {
-    var newText = String(text);
-    var changed = !empty && el.textContent !== newText;
-    el.textContent = text;
+    var isInput = el.tagName === 'INPUT';
+    var current = isInput ? el.value : el.textContent;
+    var newText = empty ? '' : String(text);
+    var changed = !empty && current !== newText;
+    if (isInput) { el.value = newText; } else { el.textContent = empty ? text : newText; }
     el.classList.toggle('is-empty', !!empty);
     if (changed) flashUpdate(el);
   }
@@ -1164,6 +1168,15 @@ function calcSizing() {
   if (pos < 1) { setVal(posEl,'0',false); setVal(totEl,'—',true); warnEl.style.display='block'; warnEl.textContent='הסיכון למניה גדול מה-Max Risk'; return {valid:false}; }
   setVal(posEl, pos, false); setVal(totEl, '$' + (pos * rps).toFixed(2), false);
   return {valid:true, pos:pos, rps:rps};
+}
+function onPositionSizeInput() {
+  var e = parseFloat(document.getElementById('price-entry').value), s = parseFloat(document.getElementById('price-stop').value);
+  var pos = parseFloat(document.getElementById('position-size').value);
+  if (!e || !s || s >= e || !pos || pos <= 0) return;
+  var rps = e - s;
+  document.getElementById('max-risk').value = (pos * rps).toFixed(2);
+  calcSizing();
+  updateSection4Completion();
 }
 
 function calcRR() {
@@ -1532,6 +1545,7 @@ function renderJournal() {
         <div class="tc-date">${t.date}</div>
         <div class="tc-badge ${t.verdict.toLowerCase()}">${t.verdict}</div>
         ${isOv ? '<div class="tc-badge" style="background:var(--wait-bg); color:var(--wait);">OVERRIDE</div>' : ''}
+        ${t.actualRR!=null && !isNaN(t.actualRR) ? `<div style="font-family:var(--font-display); font-weight:700; font-variant-numeric:tabular-nums; direction:ltr; color:${t.actualRR>=0?'var(--go)':'var(--danger)'};">${t.actualRR>=0?'+':''}${t.actualRR}R</div>` : ''}
         <div class="tc-badge ${ocCls}" style="margin-right:auto;">${ocHTML}</div>
       </div>
       <div class="tc-body" id="tb-${t.id}">
