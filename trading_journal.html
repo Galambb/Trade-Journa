@@ -952,33 +952,78 @@ function setCache(arr) {
 }
 
 // ── API ──
-// ── AUTH ── הסיסמה נשמרת רק בדפדפן הזה, לא בקובץ
-function getAuthToken(askAgain) {
-  var t = null;
-  try { t = localStorage.getItem('journal_token'); } catch(e) {}
-  if (!t || askAgain) {
-    t = prompt(askAgain ? 'הסיסמה לא התקבלה. הזן את סיסמת היומן:' : 'הזן את סיסמת היומן (פעם אחת בדפדפן הזה):');
-    t = t ? t.trim() : '';
-    try { if (t) localStorage.setItem('journal_token', t); else localStorage.removeItem('journal_token'); } catch(e) {}
+// ── AUTH ── הסיסמה נשמרת רק בדפדפן הזה, לא בקובץ. בלי סיסמה תקינה היומן נעול.
+function getAuthToken() { try { return localStorage.getItem('journal_token') || ''; } catch(e) { return ''; } }
+
+function lockJournal(msg) {
+  // מוחקים סיסמה ועותק מקומי, כדי שלא יישאר מה להציג מאחורי המסך הנעול
+  try { localStorage.removeItem('journal_token'); localStorage.removeItem('trades_cache'); } catch(e) {}
+  _tradesCache = [];
+  var el = document.getElementById('auth-lock');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'auth-lock';
+    el.setAttribute('style', 'position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,0.55);backdrop-filter:blur(8px) saturate(0.8);-webkit-backdrop-filter:blur(8px) saturate(0.8);display:flex;align-items:center;justify-content:center;direction:rtl;font-family:inherit');
+    el.innerHTML =
+      '<div style="background:var(--surface,#fff);padding:28px;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.35);width:min(360px,90vw);text-align:center">' +
+      '<div style="font-size:28px">🔒</div>' +
+      '<h3 style="margin:8px 0 4px">יומן המסחר נעול</h3>' +
+      '<p id="auth-msg" style="margin:0 0 14px;font-size:13px;opacity:.75"></p>' +
+      '<input id="auth-input" type="password" autocomplete="current-password" placeholder="סיסמה" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;direction:ltr">' +
+      '<button id="auth-btn" style="margin-top:12px;width:100%;padding:10px;border:0;border-radius:8px;background:var(--accent,#334155);color:#fff;font-size:14px;cursor:pointer">התחבר</button>' +
+      '</div>';
+    document.body.appendChild(el);
+    document.getElementById('auth-btn').onclick = submitAuth;
+    document.getElementById('auth-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') submitAuth(); });
   }
-  return t || '';
+  document.getElementById('auth-msg').textContent = msg || 'הזן את סיסמת היומן כדי להמשיך';
+  el.style.display = 'flex';
+  setTimeout(function() { var i = document.getElementById('auth-input'); if (i) i.focus(); }, 50);
 }
 
-async function apiPost(data, _retry) {
+async function submitAuth() {
+  var input = document.getElementById('auth-input'), btn = document.getElementById('auth-btn');
+  var t = input.value.trim();
+  if (!t) return;
+  btn.disabled = true; btn.textContent = 'בודק...';
+  try {
+    var res = await fetch(SCRIPT_URL + '?action=ping&token=' + encodeURIComponent(t));
+    var out = JSON.parse(await res.text());
+    if (out && out.ok) {
+      try { localStorage.setItem('journal_token', t); } catch(e) {}
+      location.reload();
+      return;
+    }
+    document.getElementById('auth-msg').textContent = 'סיסמה שגויה, נסה שוב';
+    input.value = '';
+  } catch(e) {
+    document.getElementById('auth-msg').textContent = 'אין חיבור לשרת, נסה שוב';
+  }
+  btn.disabled = false; btn.textContent = 'התחבר';
+}
+
+async function apiPost(data) {
   var form = new FormData();
-  form.append('payload', JSON.stringify(Object.assign({}, data, {token: getAuthToken(!!_retry)})));
+  form.append('payload', JSON.stringify(Object.assign({}, data, {token: getAuthToken()})));
   var res = await fetch(SCRIPT_URL, {method: 'POST', body: form});
   var out = JSON.parse(await res.text());
-  if (out && out.error === 'unauthorized' && !_retry) return apiPost(data, true);
+  if (out && out.error === 'unauthorized') lockJournal('הסיסמה לא התקבלה. הזן אותה שוב');
   return out;
 }
-async function apiGet(params, _retry) {
-  var all = Object.assign({}, params, {token: getAuthToken(!!_retry)});
+async function apiGet(params) {
+  var all = Object.assign({}, params, {token: getAuthToken()});
   var url = SCRIPT_URL + '?' + Object.entries(all).map(([k,v]) => k+'='+encodeURIComponent(v)).join('&');
   var res = await fetch(url);
   var out = JSON.parse(await res.text());
-  if (out && out.error === 'unauthorized' && !_retry) return apiGet(params, true);
+  if (out && out.error === 'unauthorized') lockJournal('הסיסמה לא התקבלה. הזן אותה שוב');
   return out;
+}
+
+// בפתיחה: אם אין סיסמה שמורה, נועלים מיד
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() { if (!getAuthToken()) lockJournal(); });
+} else if (!getAuthToken()) {
+  lockJournal();
 }
 
 function fixScreenshotUrl(url) {
