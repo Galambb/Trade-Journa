@@ -1011,6 +1011,8 @@ async function loadTradesFromCloud() {
         screenshot: fixScreenshotUrl(t.screenshotUrl)
       }));
       setCache(trades);
+    } else if (result && result.error) {
+      toast(result.error === 'unauthorized' ? '🔒 לא מחובר לענן - מוצגים נתונים שמורים מקומית' : '⚠️ שגיאה בטעינה מהענן');
     }
   } catch(e) { toast('⚠️ שגיאה בטעינה מהענן'); }
   finally { showLoading(false); }
@@ -1624,9 +1626,10 @@ async function saveExit(id) {
     t.actualRR = parseFloat(((t.exitPrice - t.entryPrice) / (t.entryPrice - t.stopPrice)).toFixed(2));
   }
   try {
-    showLoading(true); await apiPost({action:'updateTrade', trade:t});
+    showLoading(true); var res = await apiPost({action:'updateTrade', trade:t});
+    if (res && res.error) throw new Error(res.error);
     setCache(getTrades()); toast('✅ נשמר'); renderJournal();
-  } catch(e) { toast('⚠️ שגיאה'); } finally { showLoading(false); }
+  } catch(e) { toast('⚠️ לא נשמר בענן'); } finally { showLoading(false); }
 }
 
 function exportJSON() {
