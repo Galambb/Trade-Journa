@@ -952,14 +952,33 @@ function setCache(arr) {
 }
 
 // ── API ──
-async function apiPost(data) {
-  var form = new FormData(); form.append('payload', JSON.stringify(data));
-  var res = await fetch(SCRIPT_URL, {method: 'POST', body: form});
-  return JSON.parse(await res.text());
+// ── AUTH ── הסיסמה נשמרת רק בדפדפן הזה, לא בקובץ
+function getAuthToken(askAgain) {
+  var t = null;
+  try { t = localStorage.getItem('journal_token'); } catch(e) {}
+  if (!t || askAgain) {
+    t = prompt(askAgain ? 'הסיסמה לא התקבלה. הזן את סיסמת היומן:' : 'הזן את סיסמת היומן (פעם אחת בדפדפן הזה):');
+    t = t ? t.trim() : '';
+    try { if (t) localStorage.setItem('journal_token', t); else localStorage.removeItem('journal_token'); } catch(e) {}
+  }
+  return t || '';
 }
-async function apiGet(params) {
-  var url = SCRIPT_URL + '?' + Object.entries(params).map(([k,v]) => k+'='+encodeURIComponent(v)).join('&');
-  var res = await fetch(url); return JSON.parse(await res.text());
+
+async function apiPost(data, _retry) {
+  var form = new FormData();
+  form.append('payload', JSON.stringify(Object.assign({}, data, {token: getAuthToken(!!_retry)})));
+  var res = await fetch(SCRIPT_URL, {method: 'POST', body: form});
+  var out = JSON.parse(await res.text());
+  if (out && out.error === 'unauthorized' && !_retry) return apiPost(data, true);
+  return out;
+}
+async function apiGet(params, _retry) {
+  var all = Object.assign({}, params, {token: getAuthToken(!!_retry)});
+  var url = SCRIPT_URL + '?' + Object.entries(all).map(([k,v]) => k+'='+encodeURIComponent(v)).join('&');
+  var res = await fetch(url);
+  var out = JSON.parse(await res.text());
+  if (out && out.error === 'unauthorized' && !_retry) return apiGet(params, true);
+  return out;
 }
 
 function fixScreenshotUrl(url) {
