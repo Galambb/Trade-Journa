@@ -670,6 +670,7 @@
           <option value="ma">ממוצע נע</option>
           <option value="pullback">Pullback</option>
           <option value="cup">Cup & Handle</option>
+          <option value="discretionary">מחוץ לשיטה (שיקול דעת)</option>
         </select>
       </div>
       <div class="field-group col-2">
@@ -1097,7 +1098,7 @@ function fomcThisWeek(dateStr) {
   var end = new Date(start); end.setDate(start.getDate() + 6);
   return FOMC_DATES_2026.some(f => { var fd = new Date(f + 'T12:00:00'); return fd >= start && fd <= end; });
 }
-function getSelectedDate() { var el = document.getElementById('trade-date'); return el && el.value ? el.value : new Date().toISOString().slice(0,10); }
+function getSelectedDate() { var el = document.getElementById('trade-date'); return el && el.value ? el.value : todayLocal(); }
 
 function updateTitle() {
   var tkr = document.getElementById('ticker').value.trim().toUpperCase();
@@ -1530,6 +1531,7 @@ async function saveTrade() {
   await executeSave(null, null);
 }
 async function executeSave(overrideReason, overrideRules, forceVerdict) {
+  refreshTradeDate();
   var tkr = document.getElementById('ticker').value.toUpperCase().trim();
   if(!tkr) {
     toast('חובה להזין מניה');
@@ -1704,7 +1706,7 @@ function exportCSV() {
 }
 
 // ── STATS ──
-var SIGNAL_LABELS = {breakout:'פריצה', support:'תמיכה', retest:'Retest', ma:'ממוצע נע', pullback:'Pullback', cup:'Cup & Handle'};
+var SIGNAL_LABELS = {breakout:'פריצה', support:'תמיכה', retest:'Retest', ma:'ממוצע נע', pullback:'Pullback', cup:'Cup & Handle', discretionary:'מחוץ לשיטה'};
 
 function tradePnL(t) { return (t.exitPrice - t.entryPrice) * t.positionSize; }
 function usableTrades(closed) { return closed.filter(function(t){ return t.exitPrice!=null && t.entryPrice!=null && t.positionSize!=null; }); }
@@ -1852,7 +1854,26 @@ window.addEventListener('beforeunload', function(e) {
 });
 
 // ── INIT ──
-document.getElementById('trade-date').valueAsDate = new Date();
+// תאריך העסקה: מתעדכן להיום כל פעם שחוזרים לחלון, אלא אם שינית אותו ידנית
+function todayLocal() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function refreshTradeDate() {
+  var el = document.getElementById('trade-date');
+  if (!el || el.dataset.manual === '1') return;
+  if (el.value !== todayLocal()) {
+    el.value = todayLocal();
+    try { updateTitle(); updateEventIndicator(); } catch(e) {}
+  }
+}
+(function() {
+  var el = document.getElementById('trade-date');
+  el.value = todayLocal();
+  el.addEventListener('input', function() { el.dataset.manual = '1'; });
+  window.addEventListener('focus', refreshTradeDate);
+  document.addEventListener('visibilitychange', function() { if (!document.hidden) refreshTradeDate(); });
+})();
 initSizing();
 updateEventIndicator();
 checkDraft();
